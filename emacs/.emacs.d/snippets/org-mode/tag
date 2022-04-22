@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: tag
+# key: tag
+# --
+  :EXPORT_HUGO_TAGS: $0

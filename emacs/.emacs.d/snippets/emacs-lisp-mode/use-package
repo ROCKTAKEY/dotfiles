@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: use-package
+# key: up
+# --
+(use-package ${1:package-name}
+${2::defer t
+}:init
+:config
+$0)

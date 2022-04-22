@@ -1,0 +1,18 @@
+﻿
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: make-minor-mode
+# key: mmm
+# --
+(define-minor-mode
+		${1:minor-mode-name}
+		"${2:mode-description}"
+		${3:default-mode-init-value$(yas-choose-value '("t" "nil"))}
+		"${4:modeline-string}"
+		(progn (setq $1-map (make-sparse-keymap))
+		;; (define-key $1-map "key" 'function)
+		$0
+		$1-map)
+		(when $1
+		  ;; After turn-on this mode,
+
+		))

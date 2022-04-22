@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: global-set-key
+# key: gsk
+# --
+(global-set-key (kbd "${1:$$(yas-choose-value '("C-" "M-" "C-M-" "C-S-" "M-S-" "C-M-S-" ""))}") '${2:command})
+$0

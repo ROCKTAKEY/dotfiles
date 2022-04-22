@@ -1,0 +1,9 @@
+# key: nf
+# name: newpagefigure
+# --
+\newpage
+  \begin{figure}[H]
+   \centering
+   \caption{}
+   \label{}
+  \end{figure}

@@ -1,0 +1,27 @@
+# -*- mode: snippet -*-
+# name: CreateWindow
+# key: cw
+# --
+CreateWindow(
+           	"${1:LPCTSTR lpClassName$(yas-choose-value '("BUTTON"
+                                                         "COMBOBOX"
+                                                         "EDIT"
+                                                         "LISTBOX"
+                                                         "MDICLIENT"
+                                                         "SCROLLBAR"
+                                                         "STATIC"
+                                                         "other"))}",
+            ${2:LPCTSTR lpTitleName},
+            ${1:$(cond
+            ((yas-text "BUTTON") (yas-choose-value '("BS_TEXT|BS_PUSHBUTTON|BS_CENTER|BS_MULTILINE|BS_VCENTER"
+                                                     "BS_TEXT|BS_CHECKBOX|BS_MULTILINE|BS_VCENTER"
+                                                     "BS_TEXT|BS_RADIOBUTTON|BS_MULTILINE|BS_VCENTER"
+                                                     "BS_GROUPBOX")))
+            ((yas-text "COMBOBOX")))},
+	        ${4:int x},${5:int y},
+            ${6:int nWidth}, ${7:int nHeight},
+	        ${8:HWND hWndParent(NULLo)},
+            ${9:HMENU hMenu(NULLo)},
+	        ${10:HANDLE hInstance},
+            ${11:LPVOID lpParam(NULLo)}
+);

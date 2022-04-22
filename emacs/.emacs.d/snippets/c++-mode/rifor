@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: rifor
+# key: rifor
+# --
+for(auto &&i = ${1:container}.rbegin(); i != $1.rend(); ++i){
+    $0
+}

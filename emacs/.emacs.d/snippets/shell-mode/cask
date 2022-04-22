@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: cask
+# key: cask
+# --
+c:/Python27/python %USERPROFILE%/.cask/bin/cask

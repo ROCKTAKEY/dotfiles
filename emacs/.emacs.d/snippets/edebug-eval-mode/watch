@@ -1,0 +1,6 @@
+﻿# -*- mode: snippet -*-
+# name: watch
+# key: watch
+# --
+(with-current-buffer "*scratch*"
+  (insert (format "%S" $0)))

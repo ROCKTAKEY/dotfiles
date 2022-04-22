@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: GetCommandLine
+# key: gcl
+# --
+GetCommandLine()

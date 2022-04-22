@@ -1,0 +1,212 @@
+# key: graph
+# name: graph
+# --
+
+struct arc{
+    int to;
+    int cost;
+};
+
+template<typename T>
+struct node{
+    T value;
+    vector<arc> arcs;
+    node(T v) : value(v){}
+
+    node& operator= (T const& a){
+        value = a;
+        return *this;
+    }
+    operator T() const {
+        return value;
+    }
+
+};
+
+template<typename T>
+class graph{
+protected:
+    vector<node<T>> nodes;
+    T init;
+    int n;
+public:
+
+    graph(int N, T value) : nodes(N, value), init(value), n(N){};
+
+    void addArc(int from, int to, int cost){
+        assert(0 <= from && from <= n - 1 && 0 <= to && to <= n - 1);
+        nodes[from].arcs.push_back({to,cost});
+    }
+    void addEdge(int a, int b, int cost){
+        addArc(a, b, cost);
+        addArc(b, a, cost);
+    }
+    node<T>& operator[](int index) {
+        return nodes[index];
+    }
+
+    auto begin() { return nodes.begin(); }
+    auto end()   { return nodes.end();   }
+
+    auto const& getInstance(){
+        return nodes;
+    }
+
+    void reset(T init){
+        for(auto &x : nodes){
+            x.value = init;
+        }
+    }
+
+    void reset(void){
+        reset(init);
+    }
+};
+
+template<typename T>
+class tree : public graph<std::pair<T, bool>>{
+    std::map<pair<int, int>, std::list<int>> roads;
+
+public:
+    tree(int n, T value) : graph<std::pair<T, bool>>(n, {value, false}){}
+    std::list<int> road(int from, int to, std::list<int> l = std::list<int>()){
+        l.push_back(from);
+
+        if (from == to) { return l; }
+
+        if (roads.find(make_pair(from, to)) != roads.end()) {
+            return roads[make_pair(from, to)];
+        }
+
+        this->nodes[from].value.second = true;
+
+        for(auto &n : this->nodes[from].arcs){
+            if (this->nodes[n.to].value.second) continue;
+            auto x = road(n.to, to, l);
+            if (!x.empty()) {
+                this->nodes[from].value.second = false;
+                roads[make_pair(from, to)] = x;
+                roads[make_pair(to, from)].assign(x.rbegin(), x.rend());
+                return x;
+            }
+        }
+        this->nodes[from].value.second = false;
+        return list<int>();
+    }
+};
+
+class bellmanford : public graph<int>{
+    int N;
+    int changed;
+
+    void r(unordered_set<int> froms, int termination){
+        bool c = false;
+        unordered_set<int> f;
+        for (auto& from : froms){
+            for (auto& i : nodes[from].arcs) {
+                if (nodes[i.to].value > i.cost + nodes[from].value) {
+                    nodes[i.to].value = i.cost + nodes[from].value;
+                    f.insert(i.to);
+                    c = true;
+                }
+            }
+        }
+        // Terminated
+        if (!c) return;
+
+        // Negative loop?
+        if(!termination){
+            changed = c;
+            return;
+        }
+        // continue
+        r(move(f), termination-1);
+    }
+
+public:
+
+    bellmanford(int N): graph::graph(N, std::numeric_limits<int>::max()),
+                        N(N), changed(false){}
+
+    bool run(int start){
+        nodes[start].value = 0;
+        r({start}, N-1);
+        return changed;
+    }
+
+    int const& operator[] (int index){
+        return nodes[index].value;
+    }
+
+};
+
+struct warshallFloyd : public graph<ll>{
+    static constexpr auto INF = std::numeric_limits<ll>::max();
+    warshallFloyd(int n) : graph<ll>(n, 0){}
+
+    auto run(void){
+        std::vector<std::vector<ll>> K(n, std::vector<ll>(n, INF));
+
+        for (int i = 0; i < n; ++i) {
+            K[i][i] = 0;
+            auto const &arcs = getInstance()[i].arcs;
+            for(auto &x : arcs){
+                K[i][x.to] = min<ll>(K[i][x.to], x.cost);
+            }
+        }
+
+        for (int k = 0; k < n; ++k) {
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j){
+                    if (K[i][k] == INF || K[k][j] == INF) continue;
+                    K[i][j] = min(K[i][j], K[i][k] + K[k][j]);
+                }
+            }
+        }
+        return K;
+    }
+
+    auto runWithPath(void){
+        std::vector<std::vector<std::pair<ll, std::list<ll>>>>
+            K(n, std::vector<std::pair<ll, std::list<ll>>>(
+                  n,
+                  std::make_pair(INF, list<ll>())
+                  )
+                );
+
+        for (int i = 0; i < n; ++i) {
+            K[i][i].first = 0;
+            auto const &arcs = getInstance()[i].arcs;
+            for(auto &x : arcs){
+                if (K[i][x.to].first > x.cost) {
+                    K[i][x.to].first = x.cost;
+                    K[i][x.to].second.push_back(x.to);
+                }
+            }
+        }
+
+        for (int k = 0; k < n; ++k) {
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    if (K[i][k].first == INF || K[k][j].first == INF) continue;
+
+                    if (K[i][j].first > K[i][k].first + K[k][j].first) {
+                        K[i][j].first = K[i][k].first + K[k][j].first;
+                        K[i][j].second.assign(
+                            K[i][k].second.begin(),
+                            K[i][k].second.end()
+                            );
+                        K[i][j].second.insert(
+                            K[i][j].second.end(),
+                            K[k][j].second.begin(),
+                            K[k][j].second.end()
+                            );
+                    }
+                }
+            }
+        }
+        return K;
+    }
+};
+
+constexpr ll warshallFloyd::INF;

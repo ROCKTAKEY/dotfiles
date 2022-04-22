@@ -1,0 +1,5 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: defconst
+# key: dc
+# --
+(defconst ${1:varname} ${2:value})

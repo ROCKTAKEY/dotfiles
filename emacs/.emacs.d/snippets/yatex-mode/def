@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: def
+# key: def
+# --
+\newcommand{\\$1}${2:[$3]}{$4}

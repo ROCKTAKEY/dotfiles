@@ -1,0 +1,7 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: dm
+# key: defmacro
+# --
+(defmacro ${1:macroname} (${2:args})
+  "${3:function-description}"
+  $0)

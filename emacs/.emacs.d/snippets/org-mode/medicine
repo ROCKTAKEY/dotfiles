@@ -1,0 +1,7 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: medicine
+# key: med
+# --
+*** <<< [[$0]]
+    timing   :: ${2:$$(yas-choose-value '("ˆê“úŽO‰ñ–ˆHŒã" "ˆê“ú“ñ‰ñ–ˆHŒã" "ˆê“úˆê‰ñAQ‘O" "“K‹X" ""))}
+    amount   :: $3 “ú•ª

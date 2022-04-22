@@ -1,0 +1,7 @@
+# key: bibi
+# name: bibi
+# --
+\\bibitem{$1} \`\`$2''
+            $3\\\\
+            \\url{$0}
+            (`(insert (format-time-string "%Y/%m/%d"))` QÆ)

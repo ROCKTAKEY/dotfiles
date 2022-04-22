@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: geometry
+# key: geometry
+# --
+\usepackage[top=$1truemm,bottom=$2truemm,left=$3truemm,right=$4truemm]{geometry}

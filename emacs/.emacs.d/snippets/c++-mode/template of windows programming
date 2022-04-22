@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: template of windows programming
+# key: windowsp
+# --
+#include <windows.h>
+#include <windowsx.h>
+
+
+int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
+{
+
+	return 0;
+}

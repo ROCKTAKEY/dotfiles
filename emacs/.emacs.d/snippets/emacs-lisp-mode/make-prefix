@@ -1,0 +1,8 @@
+﻿# -*- mode: snippet; require-final-newline: nil -*-
+# name: make-prefix
+# key: mp
+# --
+(defvar ${1:prefix-map-name}-map (make-sparse-keymap)
+  "$1のプレフィクスマップで、keyは$3")
+(define-key ${2:parent-keymap-name} (kbd "${3:prefix-key}") $1-map)
+$0

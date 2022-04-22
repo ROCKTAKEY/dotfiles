@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: bib
+# key: bib
+# --
+\begin{thebibliography}{99}
+ \bibitem{$1} $0
+
+\end{thebibliography}

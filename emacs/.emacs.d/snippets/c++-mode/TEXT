@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: TEXT
+# key: txt
+# --
+TEXT("$0")

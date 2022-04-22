@@ -1,0 +1,18 @@
+# -*- mode: snippet -*-
+# name: MessageBox
+# key: mb
+# --
+MessageBox(${1:hWnd} ,
+           ${2:"${3:lpText_ボックス内のテキスト}"},
+           ${4:"${5:lpCaption_ボックスのタイトル}"},
+           ${6:uType_ボックスのスタイル$$(yas-choose-value '("MB_ABORTRETRYIGNORE"
+                                                              "MB_HELP"
+                                                              "MB_OK"
+                                                              "MB_OKCANCEL"
+                                                              "MB_RETRYCANCEL"
+                                                              "MB_YESNO"
+                                                              "MB_YESNOCANCEL"))} ${7:|${8:$$(yas-choose-value
+                                                              '("MB_ICONWARNING"
+                                                                "MB_ICONINFORMATION"
+                                                                "MB_ICONQUESTION"
+                                                                "MB_ICONERROR"))}} ${9:|MB_APPLMODAL})

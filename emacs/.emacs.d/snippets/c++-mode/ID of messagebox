@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: ID of messagebox
+# key: idm
+# --
+$$(yas-choose-value "IDABORT"
+                    "IDCANCEL"
+                    "IDCONTINUE"
+                    "IDIGNORE"
+                    "IDNO"
+                    "IDOK"
+                    "IDRETRY"
+                    "IDTRYAGAIN"
+                    "IDYES")

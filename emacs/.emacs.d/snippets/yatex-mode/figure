@@ -1,0 +1,9 @@
+# key: figure
+# name: figure
+# --
+\begin{figure}[H]
+  \centering
+  $0
+  \caption{}
+  \label{}
+\end{figure}

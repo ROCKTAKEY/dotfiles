@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: ffor
+# key: ffor
+# --
+for(auto &${1:variable} : ${2:container}){
+    $0
+}

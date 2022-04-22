@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: paircomp
+# key: paircomp
+# --
+
+template<class T>
+struct paircomp{
+    bool constexpr operator()(pair<ll, T> p, pair<ll, T> q){
+        return p.first < q.first;
+    }
+};

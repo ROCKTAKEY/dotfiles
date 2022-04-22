@@ -1,0 +1,12 @@
+# key: bs
+# name: bs
+# --
+// right is true, left is false.
+template<class T, class F>
+T bSearch(T l, T r, F func, T diff = 1){
+    while (std::abs(r - l) > diff) {
+        T m = (l + r) / 2;
+        (func(m) ? r : l) = m;
+    }
+    return r;
+}

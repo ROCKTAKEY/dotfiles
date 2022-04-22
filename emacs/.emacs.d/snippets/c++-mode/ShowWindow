@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: ShowWindow
+# key: sw
+# --
+ShowWindow(${1:HWND hWnd},${2:int nCmdShow$(yas-choose-value "SW_SHOW"
+                                                             "SW_HIDE"
+                                                             "SW_MAXIMIZE"
+                                                             "SW_MINIMIZE"
+                                                             "SW_SHOWNORMAL"
+                                                             "SW_SHOWMAXIMIZED"
+                                                             "SW_SHOWMINIMIZED"
+                                                             "SW_SHOWMINNOACTIVE"
+                                                             "SW_SHOWNA")})

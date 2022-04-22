@@ -1,0 +1,13 @@
+# key: shakutori
+# name: shakutori
+# --
+template<class Iterator1, class IteratorDynamic, class Condition, class Func>
+void shakutori(Iterator1 bg1, Iterator1 ed1,
+                    IteratorDynamic bg2, IteratorDynamic ed2,
+                    Condition cond, Func func){
+    auto it2 = bg2;
+    for(auto it1 = bg1; it1 != ed1; ++it2){
+        while (it2 != ed2 && cond(it1, it2)) ++it2;
+        func(it1, it2);
+    }
+}

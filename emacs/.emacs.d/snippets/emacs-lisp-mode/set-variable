@@ -1,0 +1,4 @@
+# key: sv
+# name: set-variable
+# --
+(set-variable '${1:variable} ${2:value}${3: make-local$(yas-choose-value '(" nil"  " t"))})

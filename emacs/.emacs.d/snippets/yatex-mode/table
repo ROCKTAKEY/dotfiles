@@ -1,0 +1,14 @@
+# key: table
+# name: table
+# --
+\begin{table}[H]
+   \centering
+   \caption{}
+   \label{}
+   \begin{tabular}{}
+    \toprule
+    \midrule
+    \\\\
+    \bottomrule
+   \end{tabular}
+  \end{table}

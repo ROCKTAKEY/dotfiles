@@ -1,0 +1,14 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: advice-add
+# key: aa
+# --
+(advice-add '${1:adviced-function} ${2:$$(yas-choose-value '(":before"
+                                                              ":after"
+                                                              ":around"
+                                                              ":override"
+                                                              ":filter-return"
+                                                              ":filter-args"  
+                                                              ":before-while" 
+                                                              ":before-until"
+                                                              ":after-while"
+                                                              ":after-until"))} '${3:advicing-function})

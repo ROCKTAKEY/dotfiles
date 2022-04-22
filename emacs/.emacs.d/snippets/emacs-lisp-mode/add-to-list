@@ -1,0 +1,5 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: add-to-list
+# key: atl
+# --
+(add-to-list '${1:list-var} '${2:element} ${3:$$(yas-choose-value '("nil" "t"))})

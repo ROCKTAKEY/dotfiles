@@ -1,0 +1,6 @@
+# key: gcal
+# name: org-gcal
+# --
+:org-gcal:
+$0
+:END:

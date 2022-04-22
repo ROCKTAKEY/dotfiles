@@ -1,0 +1,13 @@
+# key: url
+# name: url
+# --
+@misc{ ${title},
+  author       = {${author}},
+  title        = {${title}},
+  ${year         = \{${year}\},
+}  howpublished = {\url{${url}}},
+  note         = {(accessed `(format-time-string "%Y/%m/%d")`)},
+  annotate     = {${annotate}}
+}
+
+$0

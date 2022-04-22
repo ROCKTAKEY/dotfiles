@@ -1,0 +1,7 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: insert_defvar
+# key: dv
+# --
+(defvar ${1:variable} ${2:inital}${3:
+"${4:doc-string}"})
+$0

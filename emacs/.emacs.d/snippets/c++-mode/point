@@ -1,0 +1,30 @@
+# -*- mode: snippet -*-
+# name: point
+# key: pt
+# --
+template<typename T>
+struct point{
+    T x, y;
+    point(T a = 0, T b = 0) : x(a), y(b){}
+
+    point operator+(point p) const { return {p.x + x, p.y + y}; }
+    point operator-(point p) const { return {p.x - x, p.y - y}; }
+    T operator*(point p) const { return p.x * x + p.y * y; }
+
+    point operator+=(point p) {x += p.x; y += p.y; return *this; }
+    point operator-=(point p) {x -= p.x; y -= p.y; return *this; }
+
+    T length() const { return std::sqrt(x * x + y * y); }
+
+    operator T() const { return length(); }
+
+    T angle() const { return std::atan2(y, x); }
+
+    static bool angleLesser(point<T> const& p, point<T> const& q) {
+        return p.angle() < q.angle();
+    }
+
+    static bool lengthLesser(point<T> const& p, point<T> const& q) {
+        return p.length() < q.length();
+    }
+};

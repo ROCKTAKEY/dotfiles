@@ -1,0 +1,4 @@
+# key: include
+# name: include
+# --
+\\includegraphics[width=0.8\hsize]{$0}

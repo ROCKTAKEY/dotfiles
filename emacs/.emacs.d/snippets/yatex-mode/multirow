@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: multirow
+# key: multirow
+# --
+\\multirow{$1}{*}{$0}

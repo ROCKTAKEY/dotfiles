@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: minipage
+# key: minipage
+# --
+\\begin{minipage}[c]{$1\\hsize}
+$0
+\\end{minipage}

@@ -1,0 +1,4 @@
+# key: inc
+# name: include<>
+# --
+#include <$0>

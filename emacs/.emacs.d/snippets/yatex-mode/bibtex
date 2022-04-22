@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: bibtex
+# key: bibtex
+# --
+ \bibliographystyle{junsrt}
+ \bibliography{mine}

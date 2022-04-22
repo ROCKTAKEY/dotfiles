@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: defgroup
+# key: dg
+# --
+(defgroup ${1:group} ()
+  "Group for $1."
+  :group '$2
+  :prefix "$1-")

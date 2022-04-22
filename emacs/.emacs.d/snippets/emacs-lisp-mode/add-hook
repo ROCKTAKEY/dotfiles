@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: add-hook
+# key: ah
+# --
+(add-hook '${1:HOOKNAME} ${2:$$(yas-choose-value '("(lambda () nil nil" "'"))}$0)${2:$
+(if (string-match "^'" yas-text) "" ")" )}

@@ -1,0 +1,8 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: insert_defadvice
+# key: da
+# --
+(defadvice ${1:adviced-func} (${2:advice-type$(yas-choose-value '("before" "after" "around"))} ${3:advice-name} (${4:args} activate))
+${5:"${6:doc-string}"}
+$0
+)

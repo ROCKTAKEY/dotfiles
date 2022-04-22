@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: init
+# key: init
+# --
+#include <cstdio>
+#include <iostream>
+#include <cstdlib>
+
+int main(${1:int argc, char *argv[]}){
+    
+    $0
+        
+        return 0;
+}

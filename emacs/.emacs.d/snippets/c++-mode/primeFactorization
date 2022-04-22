@@ -1,0 +1,19 @@
+# key: pf
+# name: primeFactorization
+# --
+map<ll, ll> pf(ll x){
+    ll y = x;
+    ll a = 2;
+    map<ll, ll> m;
+    while (a * a <= x) {
+        if (y % a == 0) {
+            y /= a;
+            ++m[a];
+        } else {
+            ++a;
+        }
+    }
+    if (y != 1) ++m[y];
+
+    return m;
+}

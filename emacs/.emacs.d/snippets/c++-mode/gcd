@@ -1,0 +1,12 @@
+# key: gcd
+# name: gcd
+# --
+ll gcd(ll a, ll b){
+    if (a > b) return gcd(b, a);
+    if (a == 0) return b;
+    return gcd(b % a, a);
+}
+
+ll lcm (ll a, ll b){
+   return a * b / gcd(a, b);
+}

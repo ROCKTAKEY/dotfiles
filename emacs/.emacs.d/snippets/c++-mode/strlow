@@ -1,0 +1,21 @@
+# -*- mode: snippet -*-
+# name: strlow
+# key: strlow
+# --
+bool strLow(string const &a, string const &b) {
+    string aa, bb;
+    aa.resize(a.size());
+    bb.resize(b.size());
+    transform(a.cbegin(), a.cend(), aa.begin(), ::tolower);
+    transform(b.cbegin(), b.cend(), bb.begin(), ::tolower);
+    return aa < bb;
+}
+
+bool strGreater(string const &a, string const &b) {
+    string aa, bb;
+    aa.resize(a.size());
+    bb.resize(b.size());
+    transform(a.cbegin(), a.cend(), aa.begin(), ::tolower);
+    transform(b.cbegin(), b.cend(), bb.begin(), ::tolower);
+    return aa > bb;
+}

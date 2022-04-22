@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: define-key
+# key: dk
+# --
+(define-key ${1:$$(yas-choose-value '("global" "local" ""))}-map (kbd "${2:$$(yas-choose-value '("C-" "M-" "C-M-" "C-S-" "M-S-" "C-M-S-" ""))}") '${2:command})
+$0
