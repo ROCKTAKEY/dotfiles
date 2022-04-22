@@ -11,3 +11,5 @@
 	template = /home/rocktakey/.gitmessage
 [github]
 	user = ROCKTAKEY
+[tag]
+	gpgSign = true
