@@ -953,6 +953,16 @@ cases."
       :config
       (slime-setup '(slime-repl slime-fancy slime-banner slime-autodoc))))
 
+  (leaf* scheme
+    :config
+    (leaf geiser
+      :config
+      (leaf geiser-guile))
+    (leaf guix
+      :config
+      (defalias 'geiser-company--setup #'ignore)
+      (defvar geiser-repl-company-p nil)))
+
   (leaf dired
     :ensure nil
     :defun
