@@ -17,9 +17,3 @@ export GUIX_GTK3_IM_MODULE_FILE="$HOME/.guix-profile/lib/gtk-3.0/3.0.0/immodules
 export GTK_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 export QT_IM_MODULE=ibus
-
-# For keyboard
-setxkbmap -option ctrl:nocaps
-xmodmap -e 'keycode 102=Alt_L'  # 102 is Muhenkan
-xmodmap -e 'keycode 100=Muhenkan' # 100 is Henkan
-xmodmap -e 'keycode 101=Muhenkan' # 101 is Hiragana_Katakana
