@@ -1914,7 +1914,7 @@ reflect the change."
       (setf (cdr (assq 'counsel-yank-pop ivy-height-alist)) 25)))
 
   (leaf corfu
-    :global-minor-mode corfu-global-mode
+    :global-minor-mode global-corfu-mode
     :custom
     (corfu-auto . t)
     :config
