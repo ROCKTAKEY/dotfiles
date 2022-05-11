@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#
+# Switch github credentials for hub(1) and gh(1) command
+
+# This file is from  https://github.com/cli/cli/issues/326#issuecomment-1039901475
+
+do_hub() {
+    if [[ ! -e ~/.config/hub-"$1" ]]; then
+        echo "No hub config for $1. Ignoring" >&2
+        return
+    fi
+    ln -nsf "hub-$1" ~/.config/hub
+}
+
+do_gh() {
+    if [[ ! -e ~/.config/gh/"$1.yml" ]]; then
+        echo "No gh config for $1. Ignoring" >&2
+        return
+    fi
+    ln -nsf "$1.yml" ~/.config/gh/hosts.yml
+}
+
+main() {
+    if [[ -z "${1-}" ]]; then
+        echo "Missing arg: username" >&2
+        exit 1
+    fi
+    do_hub "$1"
+    do_gh "$1"
+}
+
+[[ "$(caller)" != 0\ * ]] || main "$@"
