@@ -2159,35 +2159,24 @@ reflect the change."
       `((ace-jump-mode-move-keys
          . ',(append "asdfghjkl;:qwertyuiopzxcvbnm,." nil)))
       :config
-      (leaf ace-pinyin
-        :global-minor-mode
-        ace-pinyin-global-mode
-        :when (executable-find "cmigemo")
-        :custom
-        (ace-pinyin-use-avy . nil)
-        (ace-pinyin-treat-word-as-char . nil)
-        (ace-pinyin-enable-punctuation-translation . nil)
-        :init
-        (defvar pinyinlib-migemoize-cache nil)
-        (defun pinyinlib-migemoize ()
-          (setq pinyinlib-migemoize-cache
-                (or pinyinlib-migemoize-cache
-                    (when (executable-find "cmigemo")
-                      (require 'migemo)
-                      (unwind-protect
-                          (mapcar
-                           (lambda (c)
-                             (let ((result (shell-command-to-string
-                                            (concat "cmigemo -q --emacs -d " migemo-dictionary " -w "
-                                                    (char-to-string c)))))
-                               (string-match "\\[\\(.*?\\)\\]" result)
-                               (match-string 1 result)))
-                           (number-sequence ?a ?z)))))))
-        (leaf pinyinlib
-          :require t
-          :custom
-          `((pinyinlib--simplified-char-table . ',(pinyinlib-migemoize))
-            (pinyinlib--traditional-char-table . ',(pinyinlib-migemoize))))))
+      (defun ace-jump-char-mode-migemo (query-char)
+        "AceJump char mode"
+        (interactive (list (read-char "Query Char:")))
+        (if ace-jump-current-mode (ace-jump-done))
+
+        (if (eq (ace-jump-char-category query-char) 'other)
+            (error "[AceJump] Non-printable character"))
+
+        (setq ace-jump-query-char query-char)
+        (setq ace-jump-current-mode 'ace-jump-char-mode)
+        (ace-jump-do
+         (if (require 'migemo nil t)
+             (let ((result (migemo-get-pattern (make-string 1 query-char))))
+               (if (string-empty-p result)
+                   (regexp-quote (make-string 1 query-char))
+                 result))
+           (regexp-quote (make-string 1 query-char)))))
+      (advice-add #'ace-jump-char-mode :override #'ace-jump-char-mode-migemo))
 
     (leaf ace-jump-zap
       :bind (("M-z" . ace-jump-zap-to-char)))
