@@ -1914,6 +1914,14 @@ reflect the change."
       (kind-icon-default-face . 'corfu-default)))
 
   (leaf cape
+    :custom
+    `((cape-dict-file
+       . ,(cl-some
+           (lambda (arg)
+             (when (file-exists-p arg)
+               (expand-file-name arg)))
+           '("/etc/dictionaries-common/words"
+             "~/.guix-profile/share/web2"))))
     :push
     ((completion-at-point-functions . #'cape-file)
      (completion-at-point-functions . #'cape-keyword)
