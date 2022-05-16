@@ -213,18 +213,6 @@
                 leaf--value)))
      leaf-keywords-normalize)
 
-    (setf (plist-get leaf-keywords-before-protection :cond-falllback)
-          '(when leaf--body
-             `((cond
-                ,@(mapcar
-                   (lambda (cons)
-                     (list `(not ,(car cons))
-                           (if (stringp (cdr cons))
-                               `(error "%s" ,(cdr cons))
-                             (cdr cons))))
-                   leaf--value))
-               (t
-                ,@leaf--body))))
 
     (leaf-keywords-init))
 
