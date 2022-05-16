@@ -2185,11 +2185,12 @@ reflect the change."
           (setq pinyinlib-migemoize-cache
                 (or pinyinlib-migemoize-cache
                     (when (executable-find "cmigemo")
+                      (require 'migemo)
                       (unwind-protect
                           (mapcar
                            (lambda (c)
                              (let ((result (shell-command-to-string
-                                            (concat "cmigemo -q --emacs -d /usr/share/cmigemo/utf-8/migemo-dict -w "
+                                            (concat "cmigemo -q --emacs -d " migemo-dictionary " -w "
                                                     (char-to-string c)))))
                                (string-match "\\[\\(.*?\\)\\]" result)
                                (match-string 1 result)))
@@ -2629,7 +2630,9 @@ reflect the change."
              (expand-file-name
               "dict/utf-8/migemo-dict"
               (file-name-directory (locate-file "cmigemo.exe" exec-path))))
-            (_ "/usr/share/cmigemo/utf-8/migemo-dict")))
+            (_ (cl-some (lambda (arg) (when (file-exists-p arg) (expand-file-name arg)))
+                        '("/usr/share/cmigemo/utf-8/migemo-dict"
+                          "~/.guix-profile/share/migemo/utf-8/migemo-dict")))))
       (migemo-user-dictionary . nil)
       (migemo-regex-dictionary . nil)
       (migemo-coding-system . 'utf-8))
