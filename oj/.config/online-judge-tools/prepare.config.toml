@@ -1,0 +1,5 @@
+[templates]
+"main.py" = "main.py"
+"main.cpp" = "my-template.cpp"
+"generate.py" = "generate.py"
+".ccls" = ".ccls"
