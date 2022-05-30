@@ -1644,7 +1644,7 @@ cases."
       (defun my-colorize-compilation-buffer ()
         (when (provided-mode-derived-p major-mode 'compilation-mode)
           (let ((inhibit-read-only t))
-           (ansi-color-apply-on-region compilation-filter-start (point-max)))))
+            (ansi-color-apply-on-region compilation-filter-start (point-max)))))
       :hook
       (compilation-filter-hook . my-colorize-compilation-buffer))
 
