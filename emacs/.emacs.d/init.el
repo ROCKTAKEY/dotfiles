@@ -945,11 +945,7 @@ cases."
     :config
     (leaf geiser
       :config
-      (leaf geiser-guile))
-    (leaf guix
-      :config
-      (defalias 'geiser-company--setup #'ignore)
-      (defvar geiser-repl-company-p nil)))
+      (leaf geiser-guile)))
 
   (leaf dired
     :ensure nil
