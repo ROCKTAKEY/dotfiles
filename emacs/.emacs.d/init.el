@@ -1269,13 +1269,6 @@ cases."
       vapniks/org-readme
       :depends http-post-simple)
 
-    (leaf org-modern
-      :global-minor-mode
-      (global-org-modern-mode)
-      :custom-face
-      (org-modern-done
-       . '((t (:background "#335533" :inherit org-modern-label)))))
-
     :config
     (defun my-org-netlify (str)
       (concat
