@@ -4,7 +4,7 @@ This dotfiles can be installed by [[https://www.gnu.org/software/stow/][GNU Stow
 
 ** Directory dependency
 - =cookiecutter= :: [[https://github.com/cookiecutter/cookiecutter][cookiecutter]]
-- =emacs= :: [[https://www.gnu.org/software/emacs/][GNU Emacs]]
+- =emacs= :: [[https://www.gnu.org/software/emacs/][GNU Emacs]], [[https://github.com/koron/cmigemo][cmigemo]], [[https://github.com/ggreer/the_silver_searcher][ag]]
 - =git= :: [[https://git-scm.com/][Git]]
 - =guix= :: [[https://guix.gnu.org][GNU Guix, GNU Guix System]]
 - =guix-config= :: [[https://guix.gnu.org][GNU Guix, GNU Guix System]] (Note that this is not for installation by stow)
@@ -34,7 +34,7 @@ With GNU Guix, all almost dependencies can be installed.
 Note that some packages are defined on [[https://github.com/ROCKTAKEY/roquix][roquix]], which is my channel for guix, or some other public channels.
 #+BEGIN_SRC shell -n
   guix pull
-  guix install python-cookiecutter emacs git online-judge-tools online-judge-template-generator rust-rhq
+  guix install python-cookiecutter emacs cmigemo migemo-dict the-silver-searcher git online-judge-tools online-judge-template-generator rust-rhq
 #+END_SRC
 
 *** Example on wslg
