@@ -1269,6 +1269,16 @@ cases."
       vapniks/org-readme
       :depends http-post-simple)
 
+    (leaf org-appear
+      :hook
+      ((org-mode-hook . org-appear-mode))
+      :custom
+      ((org-appear-autolinks . t)
+       (org-appear-autosubmarkers . t)
+       (org-appear-autoentities . t)
+       (org-appear-autokeywords . t)
+       (org-appear-inside-latex . t)))
+
     :config
     (defun my-org-netlify (str)
       (concat
