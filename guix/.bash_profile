@@ -19,3 +19,11 @@ export XMODIFIERS='@im=uim'
 
 uim-toolbar-gtk3 &
 uim-toolbar-gtk3-systray &
+
+if [ -x "$(command -v rclone)" ]; then
+    for remote in $(rclone listremotes); do
+        remoteDir=~/${remote:0:(-1)}
+        mkdir -p ${remoteDir}
+        rclone mount ${remote}/ ${remoteDir} &
+    done
+fi
