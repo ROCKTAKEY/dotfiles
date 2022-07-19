@@ -41,3 +41,16 @@ Note that some packages are defined on [[https://github.com/ROCKTAKEY/roquix][ro
 #+BEGIN_SRC shell -n
   stow cookiecutter emacs git oj rhq wslg
 #+END_SRC
+
+** GitHub account switching
+=ghs= is from [[https://github.com/cli/cli/issues/326#issuecomment-1039901475]].
+
+1. =stow git=
+2. Login to one account
+3. Rename ~./config/gh/hosts.yml~ to ID
+4. Login to another account
+5. Rename ~./config/gh/hosts.yml~ to ID
+6. Now you can switch to =<ID>= account by =ghs <ID>=
+
+* License
+This dotfiles are basically published under [[file:LICENSE][GPLv3]].
