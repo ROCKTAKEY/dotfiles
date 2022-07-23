@@ -552,7 +552,13 @@ how long to wait for a response before giving up."
     :preface
     (defun swap-buffers-keep-focus ()
       (interactive)
-      (swap-buffers t))))
+      (swap-buffers t)))
+
+  (leaf switch-window
+    :bind*
+    ("C-M-o" . switch-window)
+    :custom
+    (switch-window-shortcut-style . 'qwerty)))
 
 (leaf uniquify
   :ensure nil
