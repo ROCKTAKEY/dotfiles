@@ -1,0 +1,23 @@
+# -*- mode: snippet -*-
+# name: define-public-git
+# key: define-public-git
+# --
+(define-public ${1:name}
+  (package
+    (name "$1")
+    (version "0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (git-reference
+            (url "https://github.com/$1/$1")
+            (commit (string-append "v" version))))
+      (sha256
+       (base32
+        ""))))
+    (build-system gnu-build-system)
+    (arguments '())
+    (home-page "https://github.com/$1/$1/")
+    (synopsis "")
+    (description "")
+    (license license:expat)))

@@ -1,0 +1,20 @@
+# key: define-public-zip
+# name: define-public-zip
+# --
+(define-public ${1:name}
+  (package
+    (name "$1")
+    (version "0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/$1/$1/releases/download/"
+                                 version "/$1-linux-x64-" version ".zip"))
+             (sha256
+              (base32
+               ""))))
+    (build-system gnu-build-system)
+    (arguments '())
+    (home-page "https://github.com/$1/$1/")
+    (synopsis "")
+    (description "")
+    (license license:expat)))
