@@ -3,14 +3,25 @@
 
 (use-modules (gnu)
              (gnu services syncthing)
+             (gnu services linux)
+             (gnu packages xorg)
              (nongnu packages linux)
-             (nongnu system linux-initrd))
+             (nongnu system linux-initrd)
+             (nongnu packages nvidia)
+             (guix transformations))
+
+(define transform
+  (options->transformation
+   '((with-graft . "mesa=nvda"))))
+
 (use-service-modules desktop networking ssh xorg docker)
 
 (operating-system
   (kernel linux)
   (initrd microcode-initrd)
   (firmware (list linux-firmware))
+  (kernel-arguments (cons* "modprobe.blacklist=nouveau"
+                           %default-kernel-arguments))
 
   (locale "ja_JP.utf8")
   (timezone "Asia/Tokyo")
@@ -43,9 +54,18 @@
       (list (service gnome-desktop-service-type)
             (service syncthing-service-type
                      (syncthing-configuration (user "rocktakey")))
+            (simple-service 'custom-udev-rules
+                            udev-service-type (list nvidia-driver))
+            (service kernel-module-loader-service-type
+                     '("ipmi_devintf" "nvidia" "nvidia-modeset" "nvidia-uvm"))
+
             (set-xorg-configuration
               (xorg-configuration
-                (keyboard-layout keyboard-layout)))
+               (keyboard-layout keyboard-layout)
+               (modules (cons* nvidia-driver
+                               %default-xorg-modules))
+               (server (transform xorg-server))
+               (drivers '("nvidia"))))
             (service docker-service-type))
       (modify-services %desktop-services
              (guix-service-type config => (guix-configuration
