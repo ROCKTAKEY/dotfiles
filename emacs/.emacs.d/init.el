@@ -1006,9 +1006,7 @@ cases."
                                          dired-actual-switches))
         (dired-various-sort-change dired-various-sort-type)))
     :bind
-    ((:dired-mode-map
-      ("RET" . dired-open-in-accordance-with-situation)
-      ("a"   . dired-find-file)
+    ((dired-mode-map
       ("w"   . wdired-change-to-wdired-mode)
       ("e"   . wdired-change-to-wdired-mode)
       ("s"   . dired-various-sort-change-or-edit)
