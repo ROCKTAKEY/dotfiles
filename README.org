@@ -21,7 +21,7 @@ This dotfiles can be installed by [[https://www.gnu.org/software/stow/][GNU Stow
 
 *** Example on GNU Guix System
 #+BEGIN_SRC shell -n
-  stow cookiecutter emacs git guix oj rhq
+  stow cookiecutter emacs git guix guix-system oj rhq
 #+END_SRC
 
 If you want to reconfigure GNU Guix System, you can run:
@@ -39,7 +39,7 @@ Note that some packages are defined on [[https://github.com/ROCKTAKEY/roquix][ro
 
 *** Example on wslg
 #+BEGIN_SRC shell -n
-  stow cookiecutter emacs git oj rhq wslg
+  stow cookiecutter emacs git oj rhq wslg guix
 #+END_SRC
 
 ** GitHub account switching
