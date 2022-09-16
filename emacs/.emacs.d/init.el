@@ -750,8 +750,7 @@ cases."
   :config
   (add-to-list
    'multi-compile-template
-   ;; project-root (with projectile)
-   '("%proj" . (projectile-project-root))))
+   '("%proj" . (project-root (project-current)))))
 
 (leaf imenu
   :ensure nil
@@ -2041,26 +2040,6 @@ reflect the change."
 
 (leaf* management
   :config
-  (leaf projectile
-    :bind
-    (("C-x C-p" . projectile-switch-project))
-    :custom
-    `((projectile-cache-file
-       . ,(expand-file-name
-           "etc/projectile.cache"
-           user-emacs-directory))
-      (projectile-known-projects-file
-       . ,(expand-file-name
-           "etc/projectile-bookmarks.eld"
-           user-emacs-directory))
-      (projectile-indexing-method . 'alien)
-      (projectile-enable-caching . t)
-      (projectile-file-exists-remote-cache-expire . nil)
-      (projectile--mode-line . "")
-      (projectile-mode-line-function . #'ignore))
-    :global-minor-mode
-    projectile-mode)
-
   (leaf rhq
     :bind
     (("C-x C-p" . rhq-open-project-or-clone)))
@@ -2852,17 +2831,17 @@ NO-TEMPLATE is non-nil."
    `(("\\(README\\)\\|\\([Rr]eadme\\)\\.org$"
       . "Readme.org header")
      "Short description: "
-     "[[https://github.com/ROCKTAKEY/" (projectile-project-name)
+     "[[https://github.com/ROCKTAKEY/" (file-name-base (directory-file-name (project-root (project-current))))
      "][https://img.shields.io/github/tag/ROCKTAKEY/"
-     (projectile-project-name)
+     (file-name-base (directory-file-name (project-root (project-current))))
      ".svg?style=flat-square]]\n"
      "[[file:LICENSE][https://img.shields.io/github/license/ROCKTAKEY/"
-     (projectile-project-name) ".svg?style=flat-square]]\n"
-     "[[https://codecov.io/gh/ROCKTAKEY/" (projectile-project-name)
+     (file-name-base (directory-file-name (project-root (project-current)))) ".svg?style=flat-square]]\n"
+     "[[https://codecov.io/gh/ROCKTAKEY/" (file-name-base (directory-file-name (project-root (project-current))))
      "?branch=master][https://img.shields.io/codecov/c/github/ROCKTAKEY/"
-     (projectile-project-name) ".svg?style=flat-square]]\n"
-     (if (string-match "^docker-" (projectile-project-name))
-         (let ((s (substring (projectile-project-name) 7)))
+     (file-name-base (directory-file-name (project-root (project-current)))) ".svg?style=flat-square]]\n"
+     (if (string-match "^docker-" (file-name-base (directory-file-name (project-root (project-current)))))
+         (let ((s (substring (file-name-base (directory-file-name (project-root (project-current)))) 7)))
            (concat
             "[[https://cloud.docker.com/repository/docker/rocktakey/"
             s
@@ -2870,9 +2849,9 @@ NO-TEMPLATE is non-nil."
             s
             ".svg?style=flat-square]]\n"))
        (concat
-        "[[https://github.com/ROCKTAKEY/" (projectile-project-name)
+        "[[https://github.com/ROCKTAKEY/" (file-name-base (directory-file-name (project-root (project-current))))
         "/actions][https://img.shields.io/github/workflow/status/ROCKTAKEY/"
-        (projectile-project-name)
+        (file-name-base (directory-file-name (project-root (project-current))))
         "/CI/master.svg?style=flat-square]]\n"
         ))
      "* " str "\n"
@@ -2911,7 +2890,7 @@ NO-TEMPLATE is non-nil."
 
 \;; Version: 0.0.0
 \;; Package-Requires: ((emacs \"24.1\"))
-\;; URL: https://github.com/"(user-full-name) "/" (projectile-project-name) _ "\n"
+\;; URL: https://github.com/"(user-full-name) "/" (file-name-base (directory-file-name (project-root (project-current)))) _ "\n"
                   "\
 \;; This program is free software; you can redistribute it and/or modify
 \;; it under the terms of the GNU General Public License as published by
