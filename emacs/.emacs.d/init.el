@@ -567,7 +567,7 @@ how long to wait for a response before giving up."
     ((aw-leading-char-face
       . '((t (:foreground "red" :height 10.0)))))
     ((aw-mode-line-face
-      . '((t (:background "#006000" :foreground "white" :bold t :width ultra-condensed)))))
+      . '((t (:background "#006000" :foreground "white" :bold t)))))
     :global-minor-mode ace-window-display-mode))
 
 (leaf uniquify
