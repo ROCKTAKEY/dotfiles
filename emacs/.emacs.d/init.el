@@ -1988,8 +1988,8 @@ reflect the change."
        . ,(expand-file-name
            "etc/auto-save-list/.saves-"
            user-emacs-directory))
-      (auto-save-timeout . 0)
-      (auto-save-interval . 0)
+      (auto-save-timeout . 10)
+      (auto-save-interval . 500)
       ;; backup file
       (make-backup-files . t)
       (backup-directory-alist
@@ -1999,12 +1999,7 @@ reflect the change."
       (version-control .     t)
       (kept-new-versions .   5)
       (kept-old-versions .   1)
-      (delete-old-versions . t))
-    :config
-    (leaf auto-save-async
-      :ensure nil
-      :el-get ROCKTAKEY/auto-save-async
-      :global-minor-mode auto-save-async-mode))
+      (delete-old-versions . t)))
 
   (leaf savehist
     :ensure nil
