@@ -1584,11 +1584,6 @@ cases."
     :config
     (leaf edit-list
       :commands edit-list)
-    (leaf elisp-slime-nav
-      :hook
-      ((emacs-lisp-mode-hook . elisp-slime-nav-mode)
-       (lisp-interaction-mode-hook . elisp-slime-nav-mode)
-       (ielm-mode-hook . elisp-slime-nav-mode)))
     (leaf* test
       :config
       (leaf undercover)
