@@ -1941,10 +1941,15 @@ reflect the change."
      (completion-category-overrides . '((file (styles orderless-migemo basic partial-completion))
                                        (consult-location (styles orderless-migemo basic partial-completion)))))
     :config
+    ;; 1 character migemo regexp is too long
+    (defun migemo-get-pattern-3 (word)
+      (and (< (length word) 3)
+           (migemo-get-pattern word)))
+
     (orderless-define-completion-style orderless-migemo
       (orderless-matching-styles '(orderless-literal
                                    orderless-regexp
-                                   migemo-get-pattern))))
+                                   migemo-get-pattern-3))))
 
   (leaf corfu
     :global-minor-mode global-corfu-mode
