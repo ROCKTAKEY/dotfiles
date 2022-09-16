@@ -1838,78 +1838,59 @@ reflect the change."
 
 (leaf* input-method
   :config
-  (leaf ivy
-    :defvar
-    (ivy--old-re
-     ivy--regex-function
-     ivy--old-text
-     ivy-regex
-     ivy-text
-     ivy-rich-display-transformers-list
-     ivy-height-alist)
-    :custom
-    ((ivy-height . 25)
-     (completing-read-function . #'ivy-completing-read)
-     (ivy-read-action-function . #'ivy-hydra-read-action))
-    :require t
+  (leaf consult
     :bind
-    (:ivy-minibuffer-map
-     ("M-r" . my:ivy-toggle-regexp-identity))
-    :preface
-    (defun my:ivy-toggle-regexp-identity ()
-      (interactive)
-      (setq ivy--old-re nil)
-      (setq ivy--regex-function #'identity)
-      (setq ivy--old-text "")
-      (setq ivy-regex (funcall ivy--regex-function ivy-text)))
-    :config
-    (leaf ivy-hydra
-      :defun ivy-hydra-read-action)
-    (leaf smex
-      :custom
-      `(smex-save-file . ,(expand-file-name "etc/smex-items" user-emacs-directory)))
-    (leaf ivy-rich
-      :after ivy counsel
-      :require t
-      :config
-      (mapc
-       (lambda (arg) (plist-put ivy-rich-display-transformers-list arg #'identity))
-       '(ivy-switch-buffer))
-      (ivy-rich-mode +1))
-    (leaf ivy-migemo
-      :require t
-      :after migemo
+    (("C-s" . consult-line)
+     ("C-x b" . consult-buffer)
+     ("M-y" . consult-yank-from-kill-ring)
+     ("<help> a" . consult-apropos)
+     ("M-g g" . consult-goto-line)
+     ("M-g o" . consult-outline)
+     ("M-g i" . consult-imenu)
+     ("M-g I" . consult-imenu-multi)
+     ("M-g m" . consult-mark)
+     ("M-g M" . consult-global-mark)
+     ("M-s f" . consult-find)
+     ("M-@" . consult-register-load)
+     ("C-M-@" . consult-register-store))
+    :init
+    (leaf consult-ag
       :bind
-      (:ivy-minibuffer-map
-       ("M-f" . ivy-migemo-toggle-fuzzy)
-       ("M-m" . ivy-migemo-toggle-migemo))
-      :custom
-      ((ivy-re-builders-alist . '((t . ivy--regex-plus)
-                                  (swiper . ivy-migemo--regex-plus)
-                                  (counsel-find-file . ivy-migemo--regex-plus)
-                                  (counsel-recentf . ivy-migemo--regex-plus)))))
-    (leaf swiper
-      :bind ("C-s" . swiper)
-      :require t)
-    (leaf counsel
-      :bind (("<f1> f" . counsel-describe-function)
-             ("<f1> v" . counsel-describe-variable)
-             ("<f1> b" . counsel-descbinds)
-             ("<f10>" . counsel-tmm)
-             ("M-y" . my-counsel-yank-pop)
-             ("M-x" . counsel-M-x)
-             ("M-S-x" . execute-extended-command)
-             ("C-x d" . counsel-dired)
-             ("C-x b" . counsel-switch-buffer))
-      :mykie
-      (("C-x C-f" :default counsel-find-file :C-u counsel-recentf))
-      :require t
-      :preface
-      (defun my-counsel-yank-pop ()
-        (interactive)
-        (call-interactively (if (eq last-command 'yank) #'yank-pop #'counsel-yank-pop)))
-      :config
-      (setf (cdr (assq 'counsel-yank-pop ivy-height-alist)) 25)))
+      (("C-r" . consult-ag))))
+
+  (leaf consult-flycheck
+    :bind
+    (("M-g e" . consult-flycheck)))
+
+  (leaf embark
+    :bind
+    (("C-." . embark-act)
+     ("M-." . embark-dwim)
+     ("<help> B" . embark-bindings)))
+
+  (leaf embark-consult
+    :hook
+    (embark-collect-mode-hook . consult-preview-at-point-mode))
+
+  (leaf marginalia
+    :global-minor-mode marginalia-mode)
+
+  (leaf vertico
+    :global-minor-mode vertico-mode
+    :custom
+    ((vertico-count . 30)))
+
+  (leaf orderless
+    :require t
+    :custom
+    ((completion-styles . '(orderless basic))
+     (completion-category-overrides . '((file (styles orderless-migemo basic partial-completion))
+                                       (consult-location (styles orderless-migemo basic partial-completion)))))
+    :config
+    (orderless-define-completion-style orderless-migemo
+      (orderless-matching-styles '(orderless-literal
+                                   orderless-regexp
+                                   migemo-get-pattern))))
 
   (leaf corfu
     :global-minor-mode global-corfu-mode
