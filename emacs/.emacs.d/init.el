@@ -1849,11 +1849,12 @@ reflect the change."
      ("M-g M" . consult-global-mark)
      ("M-s f" . consult-find)
      ("M-@" . consult-register-load)
-     ("C-M-@" . consult-register-store))
-    :init
-    (leaf consult-ag
+     ("C-M-@" . consult-register-store)))
+
+  (leaf consult-ag
       :bind
-      (("C-r" . consult-ag))))
+      (("C-r" . consult-ag)))
+
 
   (leaf consult-flycheck
     :bind
