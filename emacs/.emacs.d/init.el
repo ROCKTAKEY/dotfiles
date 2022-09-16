@@ -513,8 +513,6 @@ how long to wait for a response before giving up."
             (rename-buffer new-name)
             (set-visited-file-name new-name)
             (set-buffer-modified-p nil))))))
-  :bind
-  ("C-x r" . rename-file-and-buffer)
   :mykie
   (("C-x C-s" :default save-buffer :C-u save-some-buffers))
   :custom
