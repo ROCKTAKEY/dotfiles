@@ -1849,7 +1849,11 @@ reflect the change."
      ("M-g M" . consult-global-mark)
      ("M-s f" . consult-find)
      ("M-@" . consult-register-load)
-     ("C-M-@" . consult-register-store)))
+     ("C-M-@" . consult-register-store))
+    :defvar
+    consult-buffer-sources
+    :config
+    (add-to-list 'consult-buffer-sources 'rhq-consult-source-project-directory))
 
   (leaf consult-ag
       :bind
@@ -2043,7 +2047,9 @@ reflect the change."
   :config
   (leaf rhq
     :bind
-    (("C-x C-p" . rhq-open-project-or-clone)))
+    (("C-x C-p" . rhq-open-project-or-clone))
+    :defvar
+    rhq-consult-source-project-directory)
 
   (leaf* git
     :config
