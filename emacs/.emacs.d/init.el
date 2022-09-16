@@ -2447,11 +2447,10 @@ reflect the change."
            "../src" (invocation-directory)))))
 
   (leaf helpful
-    :custom
-    ((counsel-describe-function-function . #'helpful-callable)
-     (counsel-describe-variable-function . #'helpful-variable))
     :bind
-    (("<f1> k" . helpful-key)))
+    (("<help> k" . helpful-key)
+     ("<help> f" . helpful-callable)
+     ("<help> v" . helpful-variable)))
 
   (leaf which-key
     :emacs>= "24.4"
