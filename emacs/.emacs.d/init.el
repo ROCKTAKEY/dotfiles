@@ -554,11 +554,18 @@ how long to wait for a response before giving up."
       (interactive)
       (swap-buffers t)))
 
-  (leaf switch-window
+  (leaf ace-window
     :bind*
-    ("C-M-o" . switch-window)
+    ("M-o" . ace-window)
     :custom
-    (switch-window-shortcut-style . 'qwerty)))
+    ((aw-keys . '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?\;))
+     (aw-dispatch-always . t))
+    :custom-face
+    ((aw-leading-char-face
+      . '((t (:foreground "red" :height 10.0)))))
+    ((aw-mode-line-face
+      . '((t (:background "#006000" :foreground "white" :bold t :width ultra-condensed)))))
+    :global-minor-mode ace-window-display-mode))
 
 (leaf uniquify
   :ensure nil
