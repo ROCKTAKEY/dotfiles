@@ -15,7 +15,6 @@
         (name 'guix-hpc-non-free)
         (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git"))
        (channel
-       (channel
         (name 'roquix)
         (url "https://github.com/ROCKTAKEY/roquix"))
        %default-channels)
