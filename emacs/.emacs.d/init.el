@@ -1843,8 +1843,11 @@ reflect the change."
      ("M-g m" . consult-mark)
      ("M-g M" . consult-global-mark)
      ("M-s f" . consult-find)
+     ("M-s k" . consult-focus-lines)
      ("M-@" . consult-register-load)
-     ("C-M-@" . consult-register-store))
+     ("C-M-@" . consult-register-store)
+     ("M-g h" . consult-org-heading)
+     ("M-g a" . consult-org-agenda))
     :defvar
     consult-buffer-sources
     :config
