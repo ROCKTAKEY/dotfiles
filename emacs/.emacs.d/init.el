@@ -654,15 +654,12 @@ how long to wait for a response before giving up."
   (leaf package-lint))
 
 (leaf paradox
-  :bind ((:package-menu-mode-map
+  :bind ((package-menu-mode-map
           ("R" . package-reinstall)))
   :preface
-  (defvar package+-map (make-sparse-keymap) "keymap for package.")
-  (global-set-key (kbd "C-x p") package+-map)
   (leaf-keys
-   (:package+-map
-    ("l" . paradox-list-packages)
-    ("r" . package-refresh-contents)))
+   (("C-x p l" . paradox-list-packages)
+    ("C-x p r" . package-refresh-contents)))
   :commands
   paradox-list-packages
   package-refresh-contents
