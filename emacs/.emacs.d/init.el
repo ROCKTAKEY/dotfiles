@@ -2049,6 +2049,7 @@ reflect the change."
 (leaf* management
   :config
   (leaf rhq
+    :require t
     :bind
     (("C-x C-p" . rhq-open-project-or-clone))
     :defvar
