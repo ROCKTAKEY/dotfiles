@@ -54,7 +54,7 @@
                 (append (list "https://substitutes.nonguix.org")
                   %default-substitute-urls))
                (authorized-keys
-                (append (list (local-file "./signing-keys/signing-key.pub"))
+                (append (list (local-file "../signing-keys/signing-key.pub"))
                   %default-authorized-guix-keys)))))))
   (bootloader
     (bootloader-configuration
