@@ -27,3 +27,5 @@ if [ -x "$(command -v rclone)" ]; then
         rclone mount ${remote}/ ${remoteDir} &
     done
 fi
+
+PATH="$HOME/.local/bin:$PATH"
