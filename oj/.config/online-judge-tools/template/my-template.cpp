@@ -285,6 +285,25 @@ void outputVector2D(std::vector<std::vector<T>> const &vv){
     }
 }
 
+template<typename T>
+auto nearest(std::vector<T> const &v, T const &target) {
+    auto r = lower_bound(v.begin(), v.end(), target);
+    auto l = r - 1;
+
+    if (r == v.end()) {
+        return std::pair{l, std::abs(*l - target)};
+    }
+    if (r == v.begin()) {
+        return std::pair{r, std::abs(*r - target)};
+    }
+
+    if(std::abs(*r - target) < std::abs(*l - target)){
+        return std::pair{r, std::abs(*r - target)};
+    } else {
+        return std::pair{l, std::abs(*l - target)};
+    }
+}
+
 using namespace std;
 
 typedef long long ll;
