@@ -129,6 +129,7 @@ public:
                         N(N), changed(false){}
 
     bool run(int start){
+        reset();
         nodes[start].value = 0;
         r({start}, N-1);
         return changed;
