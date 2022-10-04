@@ -231,7 +231,8 @@ std::istream &operator>>(std::istream &stream, llm &m){
 }
 
 
-long long constexpr inf = std::numeric_limits<long long>::max();
+template<typename T>
+T constexpr inf = std::numeric_limits<T>::max();
 
 template<typename Container>
 auto compress(Container container){
@@ -259,6 +260,29 @@ auto summarize(Container container){
         ++m[i];
     }
     return m;
+}
+
+template<typename T>
+void outputVectorHorizontal(std::vector<T> const &v){
+    for (auto &&it = v.cbegin(); it != v.cend(); ++it) {
+        std::cout << (it == v.begin() ? "" : " ") << *it;
+    }
+    std::cout << "\n";
+}
+
+template<typename T>
+void outputVectorVertical(std::vector<T> const &v){
+    for (auto &&it = v.cbegin(); it != v.cend(); ++it) {
+        std::cout << *it << "\n";
+    }
+}
+
+
+template<typename T>
+void outputVector2D(std::vector<std::vector<T>> const &vv){
+    for(auto const &v: vv){
+        outputVectorHorizontal(v);
+    }
 }
 
 using namespace std;
