@@ -1938,7 +1938,8 @@ reflect the change."
     :custom
     ((completion-styles . '(orderless basic))
      (completion-category-overrides . '((file (styles orderless-migemo basic partial-completion))
-                                       (consult-location (styles orderless-migemo basic partial-completion)))))
+                                        (consult-location (styles orderless-migemo basic partial-completion))
+                                        (consult-org-heading (styles orderless-migemo basic partial-completion)))))
     :config
     ;; 1 character migemo regexp is too long
     (defun migemo-get-pattern-3 (word)
