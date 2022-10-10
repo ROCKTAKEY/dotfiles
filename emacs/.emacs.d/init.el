@@ -1942,7 +1942,7 @@ reflect the change."
     :config
     ;; 1 character migemo regexp is too long
     (defun migemo-get-pattern-3 (word)
-      (and (< (length word) 3)
+      (and (< 3 (length word))
            (migemo-get-pattern word)))
 
     (orderless-define-completion-style orderless-migemo
