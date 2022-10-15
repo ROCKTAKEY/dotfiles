@@ -10,5 +10,11 @@
 	user = ROCKTAKEY
 [tag]
 	gpgSign = true
+[sendemail]
+	confirm = auto
+	smtpServer = smtp.gmail.com
+	smtpServerPort = 587
+	smtpEncryption = tls
+	smtpUser = rocktakey@gmail.com
 [include]
 	path = config.local
