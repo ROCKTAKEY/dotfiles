@@ -10,3 +10,5 @@
 	user = ROCKTAKEY
 [tag]
 	gpgSign = true
+[include]
+	path = config.local
