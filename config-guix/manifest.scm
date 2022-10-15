@@ -7,6 +7,7 @@
   (specification->package "cmake")
   (specification->package "gcc-toolchain@10.3.0")
   (specification->package "git")
+  (specification->package "git:send-email")
   (specification->package "glibc")
   (specification->package "gnupg")
   (specification->package "make")
