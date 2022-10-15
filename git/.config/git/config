@@ -8,7 +8,7 @@
 	name = ROCKTAKEY
 [commit]
 	gpgsign = true
-	template = /home/rocktakey/.gitmessage
+	template = ~/.config/git/message
 [github]
 	user = ROCKTAKEY
 [tag]
