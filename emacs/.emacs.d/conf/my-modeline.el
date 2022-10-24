@@ -77,6 +77,11 @@
 (set-face-attribute 'flycheck-modeline-color nil
                     :foreground my:color-modeline-flycheck-foreground
                     :background my:color-modeline-flycheck-background)
+(make-face 'flycheck-modeline-color-note)
+(set-face-attribute 'flycheck-modeline-color-note nil
+                    :foreground my:color-modeline-flycheck-foreground
+                    :background my:color-modeline-flycheck-background
+                    :bold t)
 (display-time)
 (display-battery-mode)
 
@@ -163,11 +168,12 @@
 
   ;; flycheck
   '(:eval
-    (when (and
-           (featurep 'flycheck)
-           (not
-            (memq flycheck-last-status-change
-                  '(not-checked no-checker))))
+    (cond
+     ((and
+       (featurep 'flycheck)
+       (not
+        (memq flycheck-last-status-change
+              '(not-checked no-checker))))
       (concat
        " "
        (propertize " " 'face 'flycheck-modeline-color)
@@ -191,7 +197,28 @@
           'face 'flycheck-modeline-color))
 
        (propertize " " 'face 'flycheck-modeline-color)
-       " ")))
+       " "))
+     (t
+      (concat
+       " "
+       (propertize " " 'face 'flycheck-modeline-color)
+       (let ((error (substring-no-properties (cadadr (flymake--mode-line-counter :error t))))
+             (warning (substring-no-properties (cadadr (flymake--mode-line-counter :warning t))))
+             (note (substring-no-properties (or (cadadr (flymake--mode-line-counter :note t)) "0"))))
+        (if (or error warning note)
+           (concat
+            (propertize error
+                        'face 'mode-line-error)
+            (propertize "/" 'face 'flycheck-modeline-color)
+            (propertize warning
+                        'face 'mode-line-warning)
+            (propertize "/" 'face 'flycheck-modeline-color)
+            (propertize note
+                        'face 'flycheck-modeline-color-note))
+         (propertize "-" 'face 'flycheck-modeline-color)))
+       (propertize " " 'face 'flycheck-modeline-color)
+       " "))))
+
 
   mode-line-process
   " "
