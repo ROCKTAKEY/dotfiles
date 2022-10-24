@@ -1,3 +1,5 @@
+(require 'cl-lib)
+
 ;;; Define colors
 
 (defconst my:color-major-mode                   "#5d478b")
@@ -205,7 +207,7 @@
        (let ((error (substring-no-properties (cadadr (flymake--mode-line-counter :error t))))
              (warning (substring-no-properties (cadadr (flymake--mode-line-counter :warning t))))
              (note (substring-no-properties (or (cadadr (flymake--mode-line-counter :note t)) "0"))))
-        (if (or error warning note)
+         (if (not (cl-every (apply-partially #'string= "0") (list error warning note)))
            (concat
             (propertize error
                         'face 'mode-line-error)
