@@ -237,7 +237,14 @@
                " "
                (:eval (format-mode-line (lsp-modeline--diagnostics-update-modeline)))
                " "
-               (:eval (format-mode-line (lsp-modeline--workspace-status-string)))))))))
+               (:eval (format-mode-line (lsp-modeline--workspace-status-string)))))))
+
+  '(:eval (when (and (featurep 'eglot)
+                     eglot--managed-mode)
+            (concat (format-mode-line (eglot--mode-line-format))
+                    "/"
+                    (plist-get (eglot--server-info (eglot-current-server)) :name)
+                    )))))
 
 
 ;;; Set faces

@@ -1805,8 +1805,6 @@ reflect the change."
     ((:override eldoc-schedule-timer my:eldoc-schedule-timer))
     :custom
     (eldoc-idle-delay . 1)
-    (eldoc-echo-area-use-multiline-p . t))
-
   (leaf flycheck
     :defun (global-flycheck-mode flycheck-error-message)
     :global-minor-mode global-flycheck-mode
@@ -1821,6 +1819,12 @@ reflect the change."
       . '(emacs-lisp-checkdoc
           ;; no include file
           c/c++-clang))))
+    (eldoc-echo-area-use-multiline-p . t)
+    :config
+    (leaf eldoc-box
+      :hook
+      ((eldoc-mode-hook . eldoc-box-hover-at-point-mode))))
+
 
   (leaf flyspell
     :mykie (("<f7>" :default flyspell-buffer :region flyspell-region))
