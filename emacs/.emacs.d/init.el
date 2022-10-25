@@ -863,6 +863,10 @@ cases."
   (tree-sitter-require 'tsx)
   (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-mode . tsx)))
 
+(leaf dumb-jump
+  :init
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate 100))
+
 (leaf ibuffer
   :bind ("C-x C-b" . ibuffer)
   :custom
