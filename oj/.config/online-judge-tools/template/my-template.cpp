@@ -287,7 +287,7 @@ void outputVector2D(std::vector<std::vector<T>> const &vv){
 
 template<typename T>
 auto nearest(std::vector<T> const &v, T const &target) {
-    auto r = lower_bound(v.begin(), v.end(), target);
+    auto r = std::lower_bound(v.begin(), v.end(), target);
     auto l = r - 1;
 
     if (r == v.end()) {
