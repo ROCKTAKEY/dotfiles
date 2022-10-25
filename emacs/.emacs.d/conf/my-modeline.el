@@ -208,16 +208,16 @@
              (warning (substring-no-properties (cadadr (flymake--mode-line-counter :warning t))))
              (note (substring-no-properties (or (cadadr (flymake--mode-line-counter :note t)) "0"))))
          (if (not (cl-every (apply-partially #'string= "0") (list error warning note)))
-           (concat
-            (propertize error
-                        'face 'mode-line-error)
-            (propertize "/" 'face 'flycheck-modeline-color)
-            (propertize warning
-                        'face 'mode-line-warning)
-            (propertize "/" 'face 'flycheck-modeline-color)
-            (propertize note
-                        'face 'flycheck-modeline-color-note))
-         (propertize "-" 'face 'flycheck-modeline-color)))
+             (concat
+              (propertize error
+                          'face 'mode-line-error)
+              (propertize "/" 'face 'flycheck-modeline-color)
+              (propertize warning
+                          'face 'mode-line-warning)
+              (propertize "/" 'face 'flycheck-modeline-color)
+              (propertize note
+                          'face 'flycheck-modeline-color-note))
+           (propertize "-" 'face 'flycheck-modeline-color)))
        (propertize " " 'face 'flycheck-modeline-color)
        " "))))
 
