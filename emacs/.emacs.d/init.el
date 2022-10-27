@@ -1,4 +1,7 @@
-;; (package-initialize)
+;;; init.el --- My init file
+;;; Commentary:
+;; My init file
+;;; Code:
 
 (gv-define-expander plist-get
   (lambda (do plist prop)
@@ -1009,7 +1012,7 @@ cases."
     (defun dired-various-sort-change-or-edit (&optional arg)
       "Hehe"
       (interactive "P")
-      (when dired-sort-inhibit (error "Cannot sort this dired buffer"))
+      (when dired-sort-inhibit (error "Cannot sort this Dired buffer"))
       (if arg
           (dired-sort-other (read-string "ls switches (must contain -l): "
                                          dired-actual-switches))
@@ -3177,3 +3180,7 @@ NO-TEMPLATE is non-nil."
      narrow-to-region
      list-timers
      upcase-region)))
+
+(provide 'init)
+
+;;; init.el ends here
