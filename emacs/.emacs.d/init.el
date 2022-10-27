@@ -783,78 +783,107 @@ cases."
   :bind (("C-=" . repeep))
   :global-minor-mode repeep-macro-mode)
 
-(leaf lsp-mode
-  :emacs>=  "25.1"
-  :hook ((c-mode-hook           . lsp)
-         (c++-mode-hook         . lsp)
-         (web-mode-hook         . lsp)
-         (dockerfile-mode-hook  . lsp)
-         (yaml-mode-hook        . lsp)
-         (r-mode-hook           . lsp)
-         (javascript-mode-hook  . lsp)
-         (js-mode-hook          . lsp)
-         (typescript-mode-hook  . lsp)
-         (sh-mode-hook          . lsp)
-         (common-lisp-mode-hook . lsp)
-         (yatex-mode-hook       . lsp)
-         (tex-mode-hook         . lsp)
-         (latex-mode-hook       . lsp)
-         (bibtex-mode-hook      . lsp)
-         (java-mode-hook        . lsp)
-         (clojure-mode-hook     . lsp)
-         (rust-mode-hook        . lsp))
-  :defun (lsp-register-client make-lsp-client lsp-stdio-connection)
-  :defvar (lsp--formatting-indent-alist)
+;; (leaf lsp-mode
+;;   :emacs>=  "25.1"
+;;   :hook ((c-mode-hook           . lsp)
+;;          (c++-mode-hook         . lsp)
+;;          (web-mode-hook         . lsp)
+;;          (dockerfile-mode-hook  . lsp)
+;;          (yaml-mode-hook        . lsp)
+;;          (r-mode-hook           . lsp)
+;;          (javascript-mode-hook  . lsp)
+;;          (js-mode-hook          . lsp)
+;;          (typescript-mode-hook  . lsp)
+;;          (sh-mode-hook          . lsp)
+;;          (common-lisp-mode-hook . lsp)
+;;          (yatex-mode-hook       . lsp)
+;;          (tex-mode-hook         . lsp)
+;;          (latex-mode-hook       . lsp)
+;;          (bibtex-mode-hook      . lsp)
+;;          (java-mode-hook        . lsp)
+;;          (clojure-mode-hook     . lsp)
+;;          (rust-mode-hook        . lsp))
+;;   :defun (lsp-register-client make-lsp-client lsp-stdio-connection)
+;;   :defvar (lsp--formatting-indent-alist)
+;;   :bind
+;;   (lsp-mode-map
+;;    ("M-r" . lsp-rename)
+;;    ("M-c" . lsp-execute-code-action))
+;;   :custom
+;;   `((lsp-session-file
+;;      . ,(expand-file-name
+;;          "etc/.lsp-session-v1"
+;;          user-emacs-directory))
+;;     (lsp-log-io . nil)
+;;     (lsp-log-max . nil))
+;;   :preface
+;;   ;; shut-up view-mode message on lsp-mode.
+;;   (defun ad:view-lsp (orig &rest aaa)
+;;     (if (string= (buffer-name) " *temp*")
+;;         (shut-up
+;;           (apply orig aaa))
+;;       (apply orig aaa)))
+;;   :advice (:around view-mode-enter ad:view-lsp)
+;;   :config
+;;   (add-to-list 'lsp--formatting-indent-alist '(web-mode . web-mode-code-indent-offset))
+
+;;   (leaf lsp-ui
+;;     :hook (lsp-mode-hook . lsp-ui-mode)
+;;     :bind
+;;     (:lsp-ui-mode-map
+;;      ("M-d" . lsp-ui-doc-mode))
+;;     :custom
+;;     ((lsp-ui-sideline-ignore-duplicate . t)
+;;      (lsp-ui-sideline-show-hover . t))
+;;     :custom-face
+;;     (lsp-ui-sideline-symbol-info
+;;      . '((t (:foreground "#6060dd" :background nil)))))
+
+;;   (leaf ccls
+;;     :require t
+;;     :after cc-mode)
+
+;;   (leaf lsp-latex
+;;     :require t)
+
+;;   (leaf lsp-java
+;;     :custom
+;;     `((lsp-java-project-referenced-libraries
+;;        . ["lib/**/*.jar" ,(expand-file-name "~/Fiji.app/jars/*.jar")])))
+
+;;   (leaf dap-mode
+;;     :custom
+;;     `((dap-breakpoints-file
+;;        . ,(expand-file-name "etc/.dap-breakpoints" user-emacs-directory)))))
+
+(leaf eglot
+  :hook
+  ((c-mode-hook           . eglot-ensure)
+   (c++-mode-hook         . eglot-ensure)
+   (web-mode-hook         . eglot-ensure)
+   (dockerfile-mode-hook  . eglot-ensure)
+   (yaml-mode-hook        . eglot-ensure)
+   (r-mode-hook           . eglot-ensure)
+   (javascript-mode-hook  . eglot-ensure)
+   (js-mode-hook          . eglot-ensure)
+   (typescript-mode-hook  . eglot-ensure)
+   (sh-mode-hook          . eglot-ensure)
+   (common-lisp-mode-hook . eglot-ensure)
+   (yatex-mode-hook       . eglot-ensure)
+   (tex-mode-hook         . eglot-ensure)
+   (latex-mode-hook       . eglot-ensure)
+   (bibtex-mode-hook      . eglot-ensure)
+   (java-mode-hook        . eglot-ensure)
+   (clojure-mode-hook     . eglot-ensure)
+   (rust-mode-hook        . eglot-ensure))
+  :defvar (eglot-server-programs)
   :bind
-  (lsp-mode-map
-   ("M-r" . lsp-rename)
-   ("M-c" . lsp-execute-code-action))
-  :custom
-  `((lsp-session-file
-     . ,(expand-file-name
-         "etc/.lsp-session-v1"
-         user-emacs-directory))
-    (lsp-log-io . nil)
-    (lsp-log-max . nil))
-  :preface
-  ;; shut-up view-mode message on lsp-mode.
-  (defun ad:view-lsp (orig &rest aaa)
-    (if (string= (buffer-name) " *temp*")
-        (shut-up
-          (apply orig aaa))
-      (apply orig aaa)))
-  :advice (:around view-mode-enter ad:view-lsp)
+  ((eglot-mode-map
+    ("M-r" . eglot-rename)))
   :config
-  (add-to-list 'lsp--formatting-indent-alist '(web-mode . web-mode-code-indent-offset))
-
-  (leaf lsp-ui
-    :hook (lsp-mode-hook . lsp-ui-mode)
-    :bind
-    (:lsp-ui-mode-map
-     ("M-d" . lsp-ui-doc-mode))
-    :custom
-    ((lsp-ui-sideline-ignore-duplicate . t)
-     (lsp-ui-sideline-show-hover . t))
-    :custom-face
-    (lsp-ui-sideline-symbol-info
-     . '((t (:foreground "#6060dd" :background nil)))))
-
-  (leaf ccls
-    :require t
-    :after cc-mode)
-
-  (leaf lsp-latex
-    :require t)
-
-  (leaf lsp-java
-    :custom
-    `((lsp-java-project-referenced-libraries
-       . ["lib/**/*.jar" ,(expand-file-name "~/Fiji.app/jars/*.jar")])))
-
-  (leaf dap-mode
-    :custom
-    `((dap-breakpoints-file
-       . ,(expand-file-name "etc/.dap-breakpoints" user-emacs-directory)))))
+  (setcdr (assoc '(c++-mode c-mode) eglot-server-programs)
+          (eglot-alternatives
+           '("ccls" "clangd"))))
 
 (leaf tree-sitter
   :defvar
@@ -1809,26 +1838,34 @@ reflect the change."
     ((:override eldoc-schedule-timer my:eldoc-schedule-timer))
     :custom
     (eldoc-idle-delay . 1)
-  (leaf flycheck
-    :defun (global-flycheck-mode flycheck-error-message)
-    :global-minor-mode global-flycheck-mode
-    :custom
-    (((flycheck-display-errors-function
-       . 'flycheck-display-error-messages))
-     (flycheck-idle-change-delay . 2)
-     (flycheck-check-syntax-automatically
-      . '(save idle-change new-line mode-enabled))
-     (flycheck-disabled-checkers
-      ;; too late
-      . '(emacs-lisp-checkdoc
-          ;; no include file
-          c/c++-clang))))
     (eldoc-echo-area-use-multiline-p . t)
     :config
     (leaf eldoc-box
       :hook
       ((eldoc-mode-hook . eldoc-box-hover-at-point-mode))))
 
+  ;; (leaf flycheck
+  ;;   :defun (global-flycheck-mode flycheck-error-message)
+  ;;   :global-minor-mode global-flycheck-mode
+  ;;   :custom
+  ;;   (((flycheck-display-errors-function
+  ;;      . 'flycheck-display-error-messages))
+  ;;    (flycheck-idle-change-delay . 2)
+  ;;    (flycheck-check-syntax-automatically
+  ;;     . '(save idle-change new-line mode-enabled))
+  ;;    (flycheck-disabled-checkers
+  ;;     ;; too late
+  ;;     . '(emacs-lisp-checkdoc
+  ;;         ;; no include file
+  ;;         c/c++-clang))))
+
+  (leaf flymake
+    :hook
+    ((prog-mode-hook . flymake-mode))
+    :config
+    (leaf flymake-popon
+      :global-minor-mode
+      (global-flymake-popon-mode)))
 
   (leaf flyspell
     :mykie (("<f7>" :default flyspell-buffer :region flyspell-region))
@@ -1860,7 +1897,8 @@ reflect the change."
      ("M-@" . consult-register-load)
      ("C-M-@" . consult-register-store)
      ("M-g h" . consult-org-heading)
-     ("M-g a" . consult-org-agenda))
+     ("M-g a" . consult-org-agenda)
+     (("M-g e" . consult-flymake)))
     :defvar
     consult-buffer-sources
     :config
@@ -1871,9 +1909,9 @@ reflect the change."
       (("C-r" . consult-ag)))
 
 
-  (leaf consult-flycheck
-    :bind
-    (("M-g e" . consult-flycheck)))
+  ;; (leaf consult-flycheck
+  ;;   :bind
+  ;;   (("M-g e" . consult-flycheck)))
 
   (leaf embark
     :bind
