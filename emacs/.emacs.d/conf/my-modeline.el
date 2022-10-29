@@ -135,6 +135,7 @@
 (setq-default
  mode-line-format
  (list
+  '(:eval (window-parameter (selected-window) 'ace-window-path))
   '(:eval
     (when mark-active
       (progn
