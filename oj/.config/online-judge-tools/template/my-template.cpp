@@ -262,21 +262,31 @@ auto summarize(Container container){
     return m;
 }
 
+template<typename T, typename S>
+void outputPair(std::pair<T, S> const &p, bool newline = false){
+    std::cout << "(" << p.first << ", " << p.second << ")"<< (newline ? "\n" : "");
+}
+
 template<typename T>
-void outputVectorHorizontal(std::vector<T> const &v){
+void outputGeneral(T const &x, bool newline = false){
+    std::cout << x << (newline ? "\n" : "");
+}
+
+template<typename T, typename F>
+void outputVectorHorizontal(std::vector<T> const &v, F output = outputGeneral<T>){
     for (auto &&it = v.cbegin(); it != v.cend(); ++it) {
-        std::cout << (it == v.begin() ? "" : " ") << *it;
+        std::cout << (it == v.begin() ? "" : " ");
+        output(*it, false);
     }
     std::cout << "\n";
 }
 
-template<typename T>
-void outputVectorVertical(std::vector<T> const &v){
+template<typename T, typename F>
+void outputVectorVertical(std::vector<T> const &v, F output = outputGeneral<T>){
     for (auto &&it = v.cbegin(); it != v.cend(); ++it) {
-        std::cout << *it << "\n";
+        output(*it, true);
     }
 }
-
 
 template<typename T>
 void outputVector2D(std::vector<std::vector<T>> const &vv){
