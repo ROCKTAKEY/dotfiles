@@ -1867,6 +1867,11 @@ reflect the change."
       :global-minor-mode
       (global-flymake-popon-mode)))
 
+  (leaf flymake-elisp-config
+    :global-minor-mode
+    (flymake-elisp-config-global-mode
+     flymake-elisp-config-auto-mode))
+
   (leaf flyspell
     :mykie (("<f7>" :default flyspell-buffer :region flyspell-region))
     :init
