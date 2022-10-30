@@ -244,8 +244,7 @@
                      eglot--managed-mode)
             (concat (format-mode-line (eglot--mode-line-format))
                     "/"
-                    (plist-get (eglot--server-info (eglot-current-server)) :name)
-                    )))))
+                    (plist-get (eglot--server-info (eglot-current-server)) :name))))))
 
 
 ;;; Set faces
