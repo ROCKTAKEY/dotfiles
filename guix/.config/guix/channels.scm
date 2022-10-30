@@ -15,6 +15,9 @@
         (name 'guix-hpc-non-free)
         (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git"))
        (channel
+        (name 'nvidiachannel)
+        (url "https://gitlab.com/squarerectangle/nvidiachannel"))
+       (channel
         (name 'roquix)
         (url "https://github.com/ROCKTAKEY/roquix"))
        %default-channels)
