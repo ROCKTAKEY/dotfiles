@@ -42,6 +42,16 @@ Note that some packages are defined on [[https://github.com/ROCKTAKEY/roquix][ro
   stow cookiecutter emacs git oj rhq wslg guix
 #+END_SRC
 
+** Git signing
+1. Make your own gpg key by `gpg --full-gen-key`
+2. Show your own key name by `gpg --list-keys`
+3. Add to =~/.config/git/config.local=:
+   #+begin_src conf-toml :tangle yes
+     [user]
+         signingKey = <keyname>!
+   #+end_src
+   Note that exclamation mark should be needed.
+
 ** GitHub account switching
 =ghs= is from [[https://github.com/cli/cli/issues/326#issuecomment-1039901475]].
 
