@@ -116,10 +116,23 @@ if ! shopt -oq posix; then
   fi
 fi
 
-. "$HOME/.cargo/env"
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
 
-export PATH=$PATH:~/.keg/bin
-export PATH=$PATH:/usr/local/go/bin
-export PATH=$PATH:~/go/bin
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
 
-setxkbmap -layout jp
+# Add profile by guix to environmental variable
+GUIX_PROFILE=~/.guix-profile
+. "$GUIX_PROFILE/etc/profile"
+
+# Automatically added by the Guix install script.
+if [ -n "$GUIX_ENVIRONMENT" ]; then
+    if [[ $PS1 =~ (.*)"\\$" ]]; then
+        PS1="${BASH_REMATCH[1]} [env]\\\$ "
+    fi
+fi
