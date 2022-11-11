@@ -62,34 +62,6 @@ constexpr T sigma3(T i, T n){
     return sigma2(1, n) - sigma2(1, i - 1);
 }
 
-template<size_t i>
-std::bitset<i> operator++(std::bitset<i> b, signed){
-    static_assert(i <= 64, "Cannot cast 64bit int.");
-    return b = (unsigned long long)b + 1;
-}
-
-template<size_t i>
-std::bitset<i> operator++(std::bitset<i> b){
-    static_assert(i <= 64, "Cannot cast 64bit int.");
-    auto temp = b;
-    b++;
-    return temp;
-}
-
-template<size_t i>
-std::bitset<i> operator--(std::bitset<i> b, signed){
-    static_assert(i <= 64, "Cannot cast 64bit int.");
-    return b = (unsigned long long)b - 1;
-}
-
-template<size_t i>
-std::bitset<i> operator--(std::bitset<i> b){
-    static_assert(i <= 64, "Cannot cast 64bit int.");
-    auto temp = b;
-    b--;
-    return temp;
-}
-
 struct unionFind{
     std::vector<unsigned long long> parent;
     unsigned long long n;
@@ -230,10 +202,44 @@ std::istream &operator>>(std::istream &stream, llm &m){
     return stream;
 }
 
+struct powers{
+    long long base;
+    long long max_exponent;
+    std::vector<long long> baseTo2To;
+
+    powers(long long base, long long max_exponent) : base(base), max_exponent(max_exponent), baseTo2To(max_exponent + 1){
+        baseTo2To[0] = base;
+        for (auto it = baseTo2To.begin() + 1, bef = baseTo2To.begin(); it != baseTo2To.end(); bef = it++) {
+            *it = *bef * *bef;
+        }
+    }
+
+    long long operator[](long long n){
+        return baseTo2To[n];
+    }
+
+    long long operator()(long long n){
+        long long x = 1;
+        size_t s = 0;
+        while (n != 0) {
+            assert(s <= max_exponent);
+            if (n & 1) {
+                x *= baseTo2To[s];
+            }
+            ++s;
+            n >>= 1;
+        }
+        return x;
+    }
+};
 
 template<typename T>
 T constexpr inf = std::numeric_limits<T>::max();
 
+template<typename T>
+T constexpr minf = std::numeric_limits<T>::min();
+
+// {1,1,1,4,2,2,3}->{(1,3),(4,1),(2,2),(3,1)}
 template<typename Container>
 auto compress(Container container){
     using ValueType = typename Container::value_type;
@@ -253,6 +259,7 @@ auto compress(Container container){
     return m;
 }
 
+// {1,3,2,3,2,2}->{1: 1, 2: 3, 3: 2}
 template<typename Container>
 auto summarize(Container container){
     std::unordered_map<typename Container::value_type, unsigned long long> m;
@@ -263,28 +270,25 @@ auto summarize(Container container){
 }
 
 template<typename T, typename S>
-void outputPair(std::pair<T, S> const &p, bool newline = false){
-    std::cout << "(" << p.first << ", " << p.second << ")"<< (newline ? "\n" : "");
+std::ostream &operator<<(std::ostream &stream, std::pair<T, S> const &p) {
+    stream << "(" << p.first << "," << p.second << ")" << "\n";
+    return stream;
 }
 
 template<typename T>
-void outputGeneral(T const &x, bool newline = false){
-    std::cout << x << (newline ? "\n" : "");
-}
-
-template<typename T, typename F>
-void outputVectorHorizontal(std::vector<T> const &v, F output = outputGeneral<T>){
+void outputVectorHorizontal(std::vector<T> const &v){
     for (auto &&it = v.cbegin(); it != v.cend(); ++it) {
         std::cout << (it == v.begin() ? "" : " ");
-        output(*it, false);
+        std::cout << *it;
+
     }
     std::cout << "\n";
 }
 
-template<typename T, typename F>
-void outputVectorVertical(std::vector<T> const &v, F output = outputGeneral<T>){
+template<typename T>
+void outputVectorVertical(std::vector<T> const &v){
     for (auto &&it = v.cbegin(); it != v.cend(); ++it) {
-        output(*it, true);
+        std::cout << *it << "\n";
     }
 }
 
@@ -295,6 +299,7 @@ void outputVector2D(std::vector<std::vector<T>> const &vv){
     }
 }
 
+// ({1, 3, 4, 8, 10}, 5)->(v.begin()+3, 5-4)
 template<typename T>
 auto nearest(std::vector<T> const &v, T const &target) {
     auto r = std::lower_bound(v.begin(), v.end(), target);
@@ -316,21 +321,22 @@ auto nearest(std::vector<T> const &v, T const &target) {
 
 using namespace std;
 
-typedef long long ll;
-typedef unsigned long long ull;
-typedef long double ld;
-typedef priority_queue<ll> pq;
-typedef priority_queue<ll,vector<ll>, greater<ll>> pql;
-typedef stack<ll> stk;
-typedef queue<ll> qu;
-typedef pair<ll, ll> pll;
-typedef map<ll, ll> mll;
-typedef unordered_map<ll, ll> umll;
-typedef set<ll> sll;
-typedef unordered_set<ll> usll;
-typedef vector<ll> vll;
-typedef vector<ld> vld;
-typedef vector<vector<ll>> vvll;
+using ll = long long;
+using ull = unsigned long long;
+using ld = long double;
+using pq = priority_queue<ll>;
+using pql = priority_queue<ll,vector<ll>, greater<ll>>;
+using stk = stack<ll>;
+using qll = queue<ll>;
+using pll = pair<ll, ll>;
+using mll = map<ll, ll>;
+using umll = unordered_map<ll, ll>;
+using sll = set<ll>;
+using usll = unordered_set<ll>;
+using vll = vector<ll>;
+using vld = vector<ld>;
+using vvll = vector<vector<ll>>;
+using vpll = vector<pair<ll, ll>>;
 
 signed main(void){
     cin.tie(0); ios::sync_with_stdio(false);cout<<fixed<<setprecision(10);
