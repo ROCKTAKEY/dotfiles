@@ -319,6 +319,47 @@ auto nearest(std::vector<T> const &v, T const &target) {
     }
 }
 
+class factorial{
+    std::vector<long long> fact;
+public:
+    factorial(long long m) : fact(m + 1, 1){
+        for (long long i = 1; i <= m; ++i) {
+            fact[i] = fact[i - 1] * i;
+        }
+    }
+
+    long long operator()(size_t i){
+        return fact.at(i);
+    }
+};
+
+class combination{
+    std::vector<std::vector<long long>> comb;
+
+    long long C(size_t n, size_t i){
+        assert(n < comb.size());
+        assert(0 <= i && i <= n);
+
+        if (!comb[n][i]) {
+            comb[n][i] = C(n - 1, i - 1) + C(n - 1, i);
+        }
+
+        return comb[n][i];
+    }
+
+public:
+    combination(long long m) : comb(m + 1, std::vector<long long>(m + 1, 0)){
+        for (long long n = 0; n <= m; ++n) {
+            comb[n][0] = 1;
+            comb[n][n] = 1;
+        }
+    }
+
+    long long operator()(size_t n, size_t i){
+        return C(n, i);
+    }
+};
+
 using namespace std;
 
 using ll = long long;
