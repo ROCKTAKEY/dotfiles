@@ -42,6 +42,50 @@
 (unless (package-installed-p 'leaf)
   (package-refresh-contents)
   (package-install 'leaf))
+(require 'leaf)
+
+(eval-and-compile
+  (unless (package-installed-p 'mic)
+    (package-refresh-contents)
+    (package-install 'mic))
+  (require 'mic)
+  (require 'mic-filter)
+
+  (mic-deffilter-t-to-name my-mic-filter-package-t-to-name :package)
+  (mic-deffilter-nonlist-to-list my-mic-filter-package-nonlist-to-list :package)
+  (mic-deffilter-const-append my-mic-filter-package-append-t :package '(t))
+  (mic-deffilter-ignore my-mic-filter-ignore-docs :doc)
+
+  (mic-defmic mmic* mic
+    :filters
+    '(my-mic-filter-package-nonlist-to-list
+      my-mic-filter-package-t-to-name
+      mic-filter-hydra
+      mic-filter-mykie))
+
+  (mic-defmic mmic mic
+    :filters
+    '(my-mic-filter-package-nonlist-to-list
+      my-mic-filter-package-append-t
+      my-mic-filter-package-t-to-name
+      mic-filter-hydra
+      mic-filter-mykie)))
+
+(mmic* straight
+  :eval-installation
+  ((let ((bootstrap-file
+          (concat user-emacs-directory "straight/repos/straight.el/bootstrap.el"))
+         (bootstrap-version 3))
+     (unless (file-exists-p bootstrap-file)
+       (with-current-buffer
+           (url-retrieve-synchronously
+            "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+            'silent 'inhibit-cookies)
+         (goto-char (point-max))
+         (eval-print-last-sexp)))
+     (load bootstrap-file nil 'nomessage)))
+  :custom
+  ((straight-vc-git-default-clone-depth . 1)))
 
 (eval-and-compile
   (leaf leaf
@@ -70,23 +114,6 @@
      leaf-keywords-before-require
      leaf-keywords-normalize)
     :init
-    (leaf straight
-      :ensure nil
-      :init
-      (let ((bootstrap-file
-             (concat user-emacs-directory "straight/repos/straight.el/bootstrap.el"))
-            (bootstrap-version 3))
-        (unless (file-exists-p bootstrap-file)
-          (with-current-buffer
-              (url-retrieve-synchronously
-               "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-               'silent 'inhibit-cookies)
-            (goto-char (point-max))
-            (eval-print-last-sexp)))
-        (load bootstrap-file nil 'nomessage))
-      :custom
-      (straight-vc-git-default-clone-depth . 1))
-
     (leaf el-get
       :custom ((el-get-git-shallow-clone . t)))
 
@@ -217,14 +244,21 @@
                 (lambda (elm) (leaf-normalize-list-in-list elm 'dotlistp))
                 leaf--value)))
      leaf-keywords-normalize)
+    (mic el-get
+      :custom ((el-get-git-shallow-clone . t)))
 
+    (mic hydra)
 
     (leaf-keywords-init))
+  (leaf mykie
+    :doc
+    "Fusion key bindings with prefix arguments and so on."
+    :require t)
 
   (leaf series
-      :ensure nil
-      :el-get ROCKTAKEY/series
-      :require t))
+    :ensure nil
+    :el-get ROCKTAKEY/series
+    :require t))
 
 (leaf leaf-tree
   :custom
@@ -235,128 +269,114 @@
             "\\(?:\\sw\\|\\s_\\|\\\\.\\)+")
         "\\)")))
 
-(leaf* userinfo
-  :custom
-  ((user-mail-address . "rocktakey@gmail.com"))
-  :config
-  (leaf startup
-    :ensure nil
-    :custom
-    (user-full-name . "ROCKTAKEY")))
+
+
+(defun get-wsl-user-directory ()
+  "Get Windows home directory in WSL."
+  (cl-some
+   (lambda (arg)
+     (and
+      (not
+       (cl-some
+        (apply-partially #'string= (file-name-nondirectory arg))
+        '("." ".." "All Users" "Default" "Default User" "desktop.ini" "Public")))
+      (file-accessible-directory-p arg)
+      (file-readable-p arg)
+      (file-writable-p arg)
+      arg))
+   (directory-files "/mnt/c/Users/" t)))
 
 (eval-and-compile
-  (leaf* defvar
-    :config
-    (defvar my-dropbox-directory
-      (expand-file-name
-       "Dropbox"
-       (pcase (list system-type (getenv "WSL_DISTRO_NAME"))
-         (`(windows-nt ,_) (getenv "USERPROFILE"))
-         (`(gnu/linux ,(pred identity))
-          (cl-some
-           (lambda (arg)
-             (and
-              (not
-               (cl-some
-                (apply-partially #'string= (file-name-nondirectory arg))
-                '("." ".." "All Users" "Default" "Default User" "desktop.ini" "Public")))
-              (file-accessible-directory-p arg)
-              (file-readable-p arg)
-              (file-writable-p arg)
-              arg))
-           (directory-files "/mnt/c/Users/" t)))
-         (_ (getenv "HOME")))))
-    (defvar my-org-directory
-      (expand-file-name "memo" my-dropbox-directory))
-    (defvar my-blog-directory
-      (expand-file-name (concat user-full-name "/" "blog")
-                        "~/rhq/github.com"))))
+  (defvar my-dropbox-directory
+    (expand-file-name
+     "Dropbox"
+     (cond
+      ((eq system-type 'windows-nt) (getenv "USERPROFILE"))
+      ((eq system-type 'gnu/linux)
+       (cond
+        ((getenv "WSL_DISTRO_NAME")
+         (get-wsl-user-directory))
+        (t (getenv "HOME")))))))
 
-(leaf* requirement-for-setting
-  :config
-  (leaf* macro
-    :config
-    (leaf shut-up
-      :doc
-      "Shut up all messages under `shut-up'"
-      :preface
-      (defmacro def-shut-up-advice (func)
-        "Make FUNC shut-up using advice."
-        `(defadvice ,func
-             (around ,(intern (concat (symbol-name func) "-shut-up")) activate)
-           (shut-up ad-do-it)))
-      :commands shut-up)
-    (leaf dash :require t))
+  (defvar my-org-directory
+    (expand-file-name "memo" my-dropbox-directory))
 
-  (leaf region-bindings-mode
-    :require t
-    :defun region-bindings-mode-enable
-    :config
-    (region-bindings-mode-enable))
+  (defvar my-blog-directory
+    (expand-file-name "~/rhq/github.com/ROCKTAKEY/blog")))
 
-  ;; (add-hook 'switch-buffer-functions
-  ;;           (lambda (prev cur)
-  ;;             (message "%S -> %S" (buffer-name prev) (buffer-name cur))))
-  (leaf switch-buffer-functions
-    :require t
-    :preface
-    (defvar switch-buffer-hook nil
-      "Hook which called like `switch-buffer-functions'.
-No arguments is passed.")
-    (defun run-switch-buffer-hook (_ __)
-      (run-hooks 'switch-buffer-hook))
-    :hook
-    ((switch-buffer-functions . run-switch-buffer-hook))))
+(mmic* userinfo
+  :custom
+  ((user-mail-address . "rocktakey@gmail.com")))
 
-(leaf* authority
-  ;; port:   pacage name
-  ;; host:   url
-  ;; user:   user id
-  ;; secret: passward
-  :config
-  (leaf epg
-    :custom
-    ((epg-gpg-program . "gpg")
-     (epg-pinentry-mode . 'loopback)))
-
-  (leaf pinentry
-    :if (eq system-type 'gnu/linux)
-    :config
-    (pinentry-start))
-
-  (leaf auth-source
-    :ensure nil
-    :custom
-    `((auth-sources
-       . ',(list
-            (expand-file-name "etc/authinfo.gpg"   user-emacs-directory)
-            (expand-file-name "etc/authinfo.plist" user-emacs-directory)))))
-
-  (leaf epa)
-
-  (leaf plstore
-    :mode ("\\.plist\\'" . plstore-mode)
-    :custom ((plstore-encoded . t)))
-
-  (leaf uuid
-    :commands uuid-string))
+(mmic* startup
+  :custom
+  ((user-full-name . "ROCKTAKEY")))
 
 (defgroup mine nil "My group."
   :group 'lisp)
 
-(leaf* browse/url
-  :config
-  (leaf url
-    :ensure nil
-    :defun url-do-setup
-    :custom
-    `((url-configuration-directory
-       . ,(expand-file-name
-           "etc/url/"
-           user-emacs-directory)))
-    :preface
-    (defun my:url-retrieve-synchronously (url &optional silent inhibit-cookies timeout)
-  "Retrieve URL synchronously.
+
+
+(mmic dash)
+
+(mmic region-bindings-mode
+  :autoload-noninteractive
+  (region-bindings-mode-enable)
+  :eval-after-others
+  ((region-bindings-mode-enable)))
+
+;; (add-hook 'switch-buffer-functions
+;;           (lambda (prev cur)
+;;             (message "%S -> %S" (buffer-name prev) (buffer-name cur))))
+(mmic switch-buffer-functions
+  :eval
+  ((defvar switch-buffer-hook nil
+     "Hook which called like `switch-buffer-functions'.
+No arguments is passed.")
+   (defun run-switch-buffer-hook (_ _)
+     (run-hooks 'switch-buffer-hook)))
+  :hook
+  ((switch-buffer-functions . #'run-switch-buffer-hook)))
+
+;; port:   pacage name
+;; host:   url
+;; user:   user id
+;; secret: passward
+(mmic epg
+  :custom
+  ((epg-gpg-program . "gpg")
+   (epg-pinentry-mode . 'loopback)))
+
+(mmic pinentry
+  :eval
+  ((pinentry-start)))
+
+(mmic* auth-source
+  :custom
+  ((auth-sources
+    . (list
+       (expand-file-name "etc/authinfo.gpg"   user-emacs-directory)
+       (expand-file-name "etc/authinfo.plist" user-emacs-directory)))))
+
+(mmic epa)
+
+(mmic* plstore
+  :custom ((plstore-encoded . t))
+  :eval
+  ((add-to-list 'auto-mode-alist
+                '("\\.plist\\'" . plstore-mode))))
+
+(mmic uuid
+  :autoload-noninteractive (uuid-string))
+
+(mmic* url
+  :declare-function (url-do-setup)
+  :custom
+  ((url-configuration-directory
+    . (expand-file-name "etc/url/"  user-emacs-directory)))
+  :eval
+  ((defun my:url-retrieve-synchronously (url &optional silent inhibit-cookies timeout)
+     "Retrieve URL synchronously.
 Return the buffer containing the data, or nil if there are no data
 associated with it (the case for dired, info, or mailto URLs that need
 no further processing).  URL is either a string or a parsed URL.
@@ -365,323 +385,285 @@ If SILENT is non-nil, don't do any messaging while retrieving.
 If INHIBIT-COOKIES is non-nil, refuse to store cookies.  If
 TIMEOUT is passed, it should be a number that says (in seconds)
 how long to wait for a response before giving up."
-  (url-do-setup)
+     (url-do-setup)
 
-  (let ((retrieval-done nil)
-	(start-time (current-time))
-        (url-asynchronous nil)
-        (asynch-buffer nil))
-    (setq asynch-buffer
-	  (url-retrieve url (lambda (&rest ignored)
-			      (url-debug 'retrieval "Synchronous fetching done (%S)" (current-buffer))
-			      (setq retrieval-done t
-				    asynch-buffer (current-buffer)))
-			nil silent inhibit-cookies))
-    (if (null asynch-buffer)
-        ;; We do not need to do anything, it was a mailto or something
-        ;; similar that takes processing completely outside of the URL
-        ;; package.
-        nil
-      (let ((proc (get-buffer-process asynch-buffer)))
-	;; If the access method was synchronous, `retrieval-done' should
-	;; hopefully already be set to t.  If it is nil, and `proc' is also
-	;; nil, it implies that the async process is not running in
-	;; asynch-buffer.  This happens e.g. for FTP files.  In such a case
-	;; url-file.el should probably set something like a `url-process'
-	;; buffer-local variable so we can find the exact process that we
-	;; should be waiting for.  In the mean time, we'll just wait for any
-	;; process output.
-	(while (and proc (not retrieval-done)
-                    (or (not timeout)
-			(time-less-p (time-since start-time) timeout)))
-	  (url-debug 'retrieval
-		     "Spinning in url-retrieve-synchronously: %S (%S)"
-		     retrieval-done asynch-buffer)
-          (if (buffer-local-value 'url-redirect-buffer asynch-buffer)
-              (setq proc (get-buffer-process
-                          (setq asynch-buffer
-                                (buffer-local-value 'url-redirect-buffer
-                                                    asynch-buffer))))
-            (if (and proc (memq (process-status proc)
-                                '(closed exit signal failed))
-                     ;; Make sure another process hasn't been started.
-                     (eq proc (or (get-buffer-process asynch-buffer) proc)))
-                ;; FIXME: It's not clear whether url-retrieve's callback is
-                ;; guaranteed to be called or not.  It seems that url-http
-                ;; decides sometimes consciously not to call it, so it's not
-                ;; clear that it's a bug, but even then we need to decide how
-                ;; url-http can then warn us that the download has completed.
-                ;; In the mean time, we use this here workaround.
-		;; XXX: The callback must always be called.  Any
-		;; exception is a bug that should be fixed, not worked
-		;; around.
-		(progn ;; Call delete-process so we run any sentinel now.
-		  (delete-process proc)
-		  (setq retrieval-done t)))
-            ;; We used to use `sit-for' here, but in some cases it wouldn't
-            ;; work because apparently pending keyboard input would always
-            ;; interrupt it before it got a chance to handle process input.
-            ;; `sleep-for' was tried but it lead to other forms of
-            ;; hanging.  --Stef
-            (unless (or (with-local-quit
-			  (accept-process-output proc 1))
-			(null proc))
-              ;; accept-process-output returned nil, maybe because the process
-              ;; exited (and may have been replaced with another).  If we got
-	      ;; a quit, just stop.
-	      (when quit-flag
-		(delete-process proc))
-              (setq proc (and (not quit-flag)
-			      (get-buffer-process asynch-buffer)))))))
-      asynch-buffer)))
-    :advice
-    (:override url-retrieve-synchronously my:url-retrieve-synchronously)
-    :config
-    (defun set-url-proxy (server-name)
-      "set http proxy"
-      (interactive "shttp proxy server: ")
-      (setq url-proxy-services `(("http" . ,server-name)))
-      (setenv "http_proxy" server-name)))
+     (let ((retrieval-done nil)
+	       (start-time (current-time))
+           (url-asynchronous nil)
+           (asynch-buffer nil))
+       (setq asynch-buffer
+	         (url-retrieve url (lambda (&rest ignored)
+			                     (url-debug 'retrieval "Synchronous fetching done (%S)" (current-buffer))
+			                     (setq retrieval-done t
+				                       asynch-buffer (current-buffer)))
+			               nil silent inhibit-cookies))
+       (if (null asynch-buffer)
+           ;; We do not need to do anything, it was a mailto or something
+           ;; similar that takes processing completely outside of the URL
+           ;; package.
+           nil
+         (let ((proc (get-buffer-process asynch-buffer)))
+	       ;; If the access method was synchronous, `retrieval-done' should
+	       ;; hopefully already be set to t.  If it is nil, and `proc' is also
+	       ;; nil, it implies that the async process is not running in
+	       ;; asynch-buffer.  This happens e.g. for FTP files.  In such a case
+	       ;; url-file.el should probably set something like a `url-process'
+	       ;; buffer-local variable so we can find the exact process that we
+	       ;; should be waiting for.  In the mean time, we'll just wait for any
+	       ;; process output.
+	       (while (and proc (not retrieval-done)
+                       (or (not timeout)
+			               (time-less-p (time-since start-time) timeout)))
+	         (url-debug 'retrieval
+		                "Spinning in url-retrieve-synchronously: %S (%S)"
+		                retrieval-done asynch-buffer)
+             (if (buffer-local-value 'url-redirect-buffer asynch-buffer)
+                 (setq proc (get-buffer-process
+                             (setq asynch-buffer
+                                   (buffer-local-value 'url-redirect-buffer
+                                                       asynch-buffer))))
+               (if (and proc (memq (process-status proc)
+                                   '(closed exit signal failed))
+                        ;; Make sure another process hasn't been started.
+                        (eq proc (or (get-buffer-process asynch-buffer) proc)))
+                   ;; FIXME: It's not clear whether url-retrieve's callback is
+                   ;; guaranteed to be called or not.  It seems that url-http
+                   ;; decides sometimes consciously not to call it, so it's not
+                   ;; clear that it's a bug, but even then we need to decide how
+                   ;; url-http can then warn us that the download has completed.
+                   ;; In the mean time, we use this here workaround.
+		           ;; XXX: The callback must always be called.  Any
+		           ;; exception is a bug that should be fixed, not worked
+		           ;; around.
+		           (progn ;; Call delete-process so we run any sentinel now.
+		             (delete-process proc)
+		             (setq retrieval-done t)))
+               ;; We used to use `sit-for' here, but in some cases it wouldn't
+               ;; work because apparently pending keyboard input would always
+               ;; interrupt it before it got a chance to handle process input.
+               ;; `sleep-for' was tried but it lead to other forms of
+               ;; hanging.  --Stef
+               (unless (or (with-local-quit
+			                 (accept-process-output proc 1))
+			               (null proc))
+                 ;; accept-process-output returned nil, maybe because the process
+                 ;; exited (and may have been replaced with another).  If we got
+	             ;; a quit, just stop.
+	             (when quit-flag
+		           (delete-process proc))
+                 (setq proc (and (not quit-flag)
+			                     (get-buffer-process asynch-buffer)))))))
+         asynch-buffer)))
+   (advice-add #'url-retrieve-synchronously :override #'my:url-retrieve-synchronously)
+   (defun set-url-proxy (server-name)
+     "set http proxy"
+     (interactive "shttp proxy server: ")
+     (setq url-proxy-services `(("http" . ,server-name)))
+     (setenv "http_proxy" server-name))))
 
-  (leaf eww
-    :bind
-    (:eww-mode-map
-     ("u" . eww-copy-page-url)
-     ("n" . next-line)
-     ("p" . previous-line))
-    :hook
-    ((eww-mode-hook . trailing-whitespace-off))
-    :custom
-    ((eww-search-prefix . "http://www.google.co.jp/search?q=")
-     (eww-download-directory . "~/../../downloads/"))))
+(mmic eww
+  :define-key-after-load
+  ((eww-mode-map
+    ("u" . #'eww-copy-page-url)
+    ("n" . #'next-line)
+    ("p" . #'previous-line)))
+  :autoload-interactive (eww-copy-page-url)
+  :custom
+  ((eww-search-prefix . "http://www.google.co.jp/search?q=")))
 
-(leaf* delsel
-  :global-minor-mode
-  delete-selection-mode)
+(mmic* delsel
+  :eval
+  ((delete-selection-mode)))
 
-(leaf simple
-  :ensure nil
-  :bind
-  (("C-d" . delete-forward-char)
-   ("C-x l" . toggle-truncate-lines))
-  :preface
-  (defun ad:transpose-chars (&optional arg)
-    "Same as `transpose-chars' except always use 2 chars before cursor."
-    (interactive "P")
-    (and (null arg) (forward-char -1))
-    (transpose-subr 'forward-char (prefix-numeric-value arg)))
-  :advice
-  (:override transpose-chars ad:transpose-chars)
-  :global-minor-mode
-  column-number-mode
-  line-number-mode
+(mmic* simple
+  :define-key
+  ((global-map
+    ("C-d" . #'delete-forward-char)
+    ("C-x l" . #'toggle-truncate-lines)))
+  :eval-before-all
+  ((defun ad:transpose-chars (&optional arg)
+     "Same as `transpose-chars' except always use 2 chars before cursor."
+     (interactive "P")
+     (and (null arg) (forward-char -1))
+     (transpose-subr 'forward-char (prefix-numeric-value arg)))
+   (advice-add #'transpose-chars :override #'ad:transpose-chars))
+  :eval
+  ((column-number-mode)
+   (line-number-mode))
   :custom
   ((kill-whole-line . t)
    (set-mark-command-repeat-pop . t)
    (mark-ring-max . 50))
   :hook
-  (before-save-hook . delete-trailing-whitespace))
+  ((before-save-hook . #'delete-trailing-whitespace)))
 
-(leaf cus-edit
-  :ensure nil
+(mmic* cus-edit
   :custom
-  `((custom-file . ,(expand-file-name "etc/custom.el" user-emacs-directory))))
+  ((custom-file . (expand-file-name "etc/custom.el" user-emacs-directory))))
 
-(leaf* load
-  :config
-  (setq load-prefer-newer t))
+(mmic* load
+  :custom
+  ((load-prefer-newer . t)))
 
-(leaf server
+(mmic server
   :custom
   ;; emacsclient
-  `((server-auth-dir
-     . ,(expand-file-name
-         "etc/server/"
-         user-emacs-directory)))
+  ((server-auth-dir
+    . (expand-file-name "etc/server/" user-emacs-directory)))
   :hook
-  (after-init-hook . server-start))
+  ((after-init-hook . #'server-start)))
 
-(leaf files
-  :ensure nil
-  :preface
-  (defun rename-file-and-buffer (new-name)
-    "Renames both current buffer and file it's visiting to NEW-NAME."
-    (interactive (list (read-string "New name: " (buffer-name))))
-    (let ((name (buffer-name))
-          (filename (buffer-file-name)))
-      (if (not filename)
-          (message "Buffer '%s' is not visiting a file!" name)
-        (if (get-buffer new-name)
-            (message "A buffer named '%s' already exists!" new-name)
-          (progn
-            (rename-file filename new-name 1)
-            (rename-buffer new-name)
-            (set-visited-file-name new-name)
-            (set-buffer-modified-p nil))))))
-  :mykie
-  (("C-x C-s" :default save-buffer :C-u save-some-buffers))
+(mmic* files
   :custom
-  (confirm-kill-emacs . #'y-or-n-p)
-  (require-final-newline . t)
-  (view-read-only . t))
+  ((confirm-kill-emacs . #'y-or-n-p)
+   (require-final-newline . t)
+   (view-read-only . t)))
 
-(leaf window
-  :ensure nil
-  :bind*
-  ("C-o" . other-window)
+(mmic* window
+  :define-key
+  ((global-map
+    ("C-o" . #'other-window)))
   :hydra
-  (hydra-window-resizer
-   nil
-   ("p" shrink-window "shrink")
-   ("n" enlarge-window "enlarge")
-   ("f" enlarge-window-horizontally "enlarge-horizontally")
-   ("b" shrink-window-horizontally "shrink-horizontally")
-   ;; ("k" shrink-window)
-   ;; ("j" enlarge-window)
-   ;; ("l" enlarge-window-horizontally)
-   ;; ("h" shrink-window-horizontally)
-   ("<down>" shrink-window)
-   ("<up>" enlarge-window)
-   ("<right>" enlarge-window-horizontally)
-   ("<left>" shrink-window-horizontally)
-   ("q" nil "quit"))
+  ((hydra-window-resizer
+    nil
+    ("p" shrink-window "shrink")
+    ("n" enlarge-window "enlarge")
+    ("f" enlarge-window-horizontally "enlarge-horizontally")
+    ("b" shrink-window-horizontally "shrink-horizontally")
+    ;; ("k" shrink-window)
+    ;; ("j" enlarge-window)
+    ;; ("l" enlarge-window-horizontally)
+    ;; ("h" shrink-window-horizontally)
+    ("<down>" shrink-window)
+    ("<up>" enlarge-window)
+    ("<right>" enlarge-window-horizontally)
+    ("<left>" shrink-window-horizontally)
+    ("q" nil "quit")))
   :mykie
-  ("C-w" :default hydra-window-resizer/body :region kill-region)
-  :config
-  (leaf swap-buffers
-    :defun
-    (swap-buffers)
-    :bind (("C-x w" . swap-buffers-keep-focus))
-    :preface
-    (defun swap-buffers-keep-focus ()
-      (interactive)
-      (swap-buffers t)))
+  ((global-map
+    ("C-w" :default hydra-window-resizer/body :region kill-region))))
 
-  (leaf ace-window
-    :defun
-    (aw-switch-to-window
-     aw-select)
-    :bind*
-    ("M-o" . ace-window)
-    :custom
-    ((aw-keys . '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?\;))
-     (aw-dispatch-always . t))
-    :custom-face
-    ((aw-leading-char-face
-      . '((t (:foreground "red" :height 10.0)))))
-    ((aw-mode-line-face
-      . '((t (:background "#006000" :foreground "white" :bold t)))))
-    :global-minor-mode ace-window-display-mode))
+(mmic swap-buffers
+  :declare-function
+  (swap-buffers)
+  :eval
+  ((defun swap-buffers-keep-focus ()
+     (interactive)
+     (swap-buffers t)))
+  :define-key
+  ((global-map
+    ("C-x w" . #'swap-buffers-keep-focus))))
 
-(leaf uniquify
-  :ensure nil
+(mmic ace-window
+  :define-key
+  ((global-map
+    ("M-o" . #'ace-window)))
   :custom
-  (uniquify-buffer-name-style . 'post-forward-angle-brackets)
-  (uniquify-ignore-buffers-re . "*[^*]"))
+  ((aw-keys . '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?\;))
+   (aw-dispatch-always . t))
+  :face
+  ((aw-leading-char-face
+    . ((t (:foreground "red" :height 10.0))))
+   (aw-mode-line-face
+    . ((t (:background "#006000" :foreground "white" :bold t)))))
+  :eval-after-others ((ace-window-display-mode)))
 
-(leaf keyfreq
-  :global-minor-mode
-  keyfreq-mode
-  keyfreq-autosave-mode
+(mmic* uniquify
   :custom
-  `((keyfreq-file . ,(expand-file-name "etc/emacs.keyfreq" user-emacs-directory))))
+  ((uniquify-buffer-name-style . 'post-forward-angle-brackets)
+   (uniquify-ignore-buffers-re . "*[^*]")))
 
-(leaf auto-revert
-  :ensure nil
-  :global-minor-mode
-  global-auto-revert-mode)
+(mmic keyfreq
+  :custom
+  ((keyfreq-file . (expand-file-name "etc/emacs.keyfreq" user-emacs-directory)))
+  :eval
+  ((keyfreq-mode)
+   (keyfreq-autosave-mode)))
 
-(leaf* sounds
-  :config
-  (setq ring-bell-function 'ignore))
+(mmic* auto-revert
+  :eval
+  ((global-auto-revert-mode)))
 
-(leaf startup
-  :ensure nil
+(mmic* sounds
+  :custom
+  ((ring-bell-function . #'ignore)))
+
+(mmic* startup
   :custom
   ((inhibit-startup-message . t)
    (initial-scratch-message . "")))
 
-(leaf* indent
+(mmic* indent
   :custom
   ((tab-width . 4)
    (indent-tabs-mode . nil)))
 
-(leaf* bar
-  :config
-  (leaf menu-bar
-    :ensure nil
-    :config
-    (menu-bar-mode -1))
+(mmic* menu-bar
+  :eval
+  ((menu-bar-mode -1)))
 
-  (leaf tool-bar
-    :ensure nil
-    :config
-    (tool-bar-mode -1)))
+(mmic* tool-bar
+  :eval
+  ((tool-bar-mode -1)))
 
-(leaf* scroll
+(mmic* scroll
   :custom
   ((scroll-conservatively . 35)
    (scroll-margin . 0)
-   (scroll-step . 1))
-  :config
-  (leaf scroll-bar
-    :ensure nil
-    :config
-    (scroll-bar-mode -1)))
+   (scroll-step . 1)))
 
-(leaf frame
-  :ensure nil
+(mmic* scroll-bar
+  :eval
+  ((scroll-bar-mode -1)))
+
+(mmic* frame
   :custom
   ((blink-cursor-blinks . 0)
    (frame-title-format
     . '(global-mode-string
         (:eval (if (buffer-file-name)
                    "%f" "%b")))))
-  :config
-  (global-set-key (kbd "C-z") nil))
+  :define-key
+  ((global-map
+    ("C-z" . nil))))
 
-(leaf* time
+(mmic* time
   :custom
-  (display-time-day-and-date . t)
-  (display-time-format . "%Y-%m-%d %a %-H:%M")
-  (display-time-default-load-average . nil)
-  (system-time-locale . "C"))
+  ((display-time-day-and-date . t)
+   (display-time-format . "%Y-%m-%d %a %-H:%M")
+   (display-time-default-load-average . nil)
+   (system-time-locale . "C")))
 
-(leaf* c-source-vars
+(mmic* c-source-vars
   :custom
-  (create-lockfiles . nil))
+  ((create-lockfiles . nil)))
 
-(leaf* lisp
+(mmic* lisp
   :custom
   ((max-lisp-eval-depth . 5000)
-   (max-specpdl-size . 5000))
-  :config
-  (leaf package-lint))
+   (max-specpdl-size . 5000)))
 
-(leaf paradox
-  :bind ((package-menu-mode-map
-          ("R" . package-reinstall)))
-  :preface
-  (leaf-keys
-   (("C-x p l" . paradox-list-packages)
-    ("C-x p r" . package-refresh-contents)))
-  :commands
-  paradox-list-packages
-  package-refresh-contents
+(mmic package-lint)
+
+(mmic paradox
+  :define-key
+  ((package-menu-mode-map
+    ("R" . #'package-reinstall))
+   (global-map
+    ("C-x p l" . #'paradox-list-packages)
+    ("C-x p r" . #'package-refresh-contents)))
   :custom
   ((paradox-execute-asynchronously . nil)
    (paradox-automatically-star . nil)
    (paradox-column-width-version . 13)
    (paradox-display-star-count . nil)
    (paradox-github-token . t))
-  :config
-  (paradox-enable))
+  :eval-after-others
+  ((paradox-enable)))
 
-(leaf async
-  :defun
-  my-async-variables-noprops
-  :preface
-  (defun my-async-variables-noprops (sequence)
+(mmic async
+  :eval
+  ((defun my-async-variables-noprops (sequence)
     "Remove text properties in SEQUENCE.
 
 Argument SEQUENCE may be a list or a string, if anything else it
@@ -697,91 +679,77 @@ cases."
                     if (stringp elm)
                     collect (substring-no-properties elm)
                     else collect (my-async-variables-noprops elm)))
-          (t sequence)))
+          (t sequence))))
   :custom
   ((async-variables-noprops-function . #'my-async-variables-noprops)))
 
-(leaf multi-compile
-  :bind
-  ((:c-mode-map
-    :package cc-mode
-    ("C-c c" . multi-compile-run))
-   (:c++-mode-map
-    :package cc-mode
-    ("C-c c" . multi-compile-run))
-   (:typescript-mode-map
-    :package typescript-mode
-    ("C-c c" . multi-compile-run)))
+(mmic multi-compile
+  :define-key-with-feature
+  ((cc-mode
+    (c-mode-map
+     ("C-c c" . #'multi-compile-run))
+    (c++-mode-map
+     ("C-c c" . #'multi-compile-run)))
+   (typescript-mode
+    (typescript-mode-map
+     ("C-c c" . #'multi-compile-run))))
   :custom
-  `((multi-compile-history-file
-     . ,(expand-file-name
-         "etc/multi-compile.cache"
-         user-emacs-directory))
-    (multi-compile-alist
-     . '(
-         ;; %make-dir is directory which includes Makefile
-         ;; (See `multi-compile-template')
-         (c-mode . (("plain" . "gcc -o %file-sans -Wall %path")
-                    ("make this" . "make %file-sans")))
-         (c++-mode
-          . (("compile with debug info" .
-              ,(concat
-                "g++ -g3 -O0  %path -Wall -Wnon-virtual-dtor"
-                " -Woverloaded-virtual -std=c++17"))
-             ("compile plane" .
-              ,(concat
-                "g++ -o %file-sans %path -O2 -Wall "
-                "-Wnon-virtual-dtor -Woverloaded-virtual -std=c++17"))
-             ("make" .
-              "make --no-print-directory -C %make-dir")
-             ("atcoder" . "g++ -g3 -std=gnu++17 -Wall -Wextra -O0 %path -fsanitize=address -fsanitize=undefined")))
-         (typescript-mode
-          . (("plain" .
-              "tsc %path"))))))
-  :preface
-  (defvar before-multi-compile-hook nil)
-  (defun ad:multi-compile-run ()
-    (run-hooks 'before-multi-compile-hook))
-  :advice
-  ((:before multi-compile-run ad:multi-compile-run))
+  ((multi-compile-history-file
+    . (expand-file-name "etc/multi-compile.cache" user-emacs-directory))
+   (multi-compile-alist
+    . '(
+        ;; %make-dir is directory which includes Makefile
+        ;; (See `multi-compile-template')
+        (c-mode . (("plain" . "gcc -o %file-sans -Wall %path")
+                   ("make this" . "make %file-sans")))
+        (c++-mode
+         . (("compile with debug info" .
+             ,(concat
+               "g++ -g3 -O0  %path -Wall -Wnon-virtual-dtor"
+               " -Woverloaded-virtual -std=c++17"))
+            ("compile plane" .
+             ,(concat
+               "g++ -o %file-sans %path -O2 -Wall "
+               "-Wnon-virtual-dtor -Woverloaded-virtual -std=c++17"))
+            ("make" .
+             "make --no-print-directory -C %make-dir")
+            ("atcoder" . "g++ -g3 -std=gnu++17 -Wall -Wextra -O0 %path -fsanitize=address -fsanitize=undefined")))
+        (typescript-mode
+         . (("plain" .
+             "tsc %path"))))))
   :hook
-  ((before-multi-compile-hook . save-buffer))
-  :defvar multi-compile-template
-  :config
-  (add-to-list
-   'multi-compile-template
-   '("%proj" . (project-root (project-current)))))
+  ((before-multi-compile-hook . #'save-buffer))
+  :defvar-noninitial
+  (multi-compile-template)
+  :eval
+  ((defvar before-multi-compile-hook nil)
+   (defun ad:multi-compile-run ()
+     (run-hooks 'before-multi-compile-hook))
+   (advice-add #'multi-compile-run :before #'ad:multi-compile-run))
+  :eval-after-load
+  ((add-to-list
+    'multi-compile-template
+    '("%proj" . (project-root (project-current))))))
 
-(leaf imenu
-  :ensure nil
-  :defun lsp-ui-imenu
-  :defvar lsp-mode
+(mmic imenu
   :custom
-  (imenu-auto-rescan . t)
-  :preface
-  (defun my-imenu ()
-    (interactive)
-    (call-interactively
-     (if (and (functionp #'lsp-ui-imenu)
-              lsp-mode)
-         #'lsp-ui-imenu
-       #'imenu-list)))
-  :bind (("M-i" . my-imenu))
-  :config
-  (leaf imenu-list
-    :custom
-    (imenu-list-position . 'left)
-    :custom-face
-    (imenu-list-entry-face
-     . '((t (:width condensed :height 120))))
-    (imenu-list-entry-subalist-face-0
-     . '((t (:width expanded :height 130))))))
+  ((imenu-auto-rescan . t)))
 
-(leaf repeep
-  :ensure nil
-  :el-get ROCKTAKEY/repeep
-  :bind (("C-=" . repeep))
-  :global-minor-mode repeep-macro-mode)
+(mmic imenu-list
+  :custom
+  ((imenu-list-position . 'left))
+  :face
+  ((imenu-list-entry-face
+    . '((t (:width condensed :height 120))))
+   (imenu-list-entry-subalist-face-0
+    . '((t (:width expanded :height 130))))))
+
+(mmic repeep
+  :define-key
+  ((global-map
+    ("C-=" . #'repeep)))
+  :eval
+  ((repeep-macro-mode)))
 
 ;; (leaf lsp-mode
 ;;   :emacs>=  "25.1"
@@ -856,340 +824,185 @@ cases."
 ;;     `((dap-breakpoints-file
 ;;        . ,(expand-file-name "etc/.dap-breakpoints" user-emacs-directory)))))
 
-(leaf eglot
+(mmic eglot
   :hook
-  ((c-mode-hook           . eglot-ensure)
-   (c++-mode-hook         . eglot-ensure)
-   (web-mode-hook         . eglot-ensure)
-   (dockerfile-mode-hook  . eglot-ensure)
-   (yaml-mode-hook        . eglot-ensure)
-   (r-mode-hook           . eglot-ensure)
-   (javascript-mode-hook  . eglot-ensure)
-   (js-mode-hook          . eglot-ensure)
-   (typescript-mode-hook  . eglot-ensure)
-   (sh-mode-hook          . eglot-ensure)
-   (common-lisp-mode-hook . eglot-ensure)
-   (yatex-mode-hook       . eglot-ensure)
-   (tex-mode-hook         . eglot-ensure)
-   (latex-mode-hook       . eglot-ensure)
-   (bibtex-mode-hook      . eglot-ensure)
-   (java-mode-hook        . eglot-ensure)
-   (clojure-mode-hook     . eglot-ensure)
-   (rust-mode-hook        . eglot-ensure))
-  :defvar (eglot-server-programs)
-  :bind
+  ((c-mode-hook           . #'eglot-ensure)
+   (c++-mode-hook         . #'eglot-ensure)
+   (web-mode-hook         . #'eglot-ensure)
+   (dockerfile-mode-hook  . #'eglot-ensure)
+   (yaml-mode-hook        . #'eglot-ensure)
+   (r-mode-hook           . #'eglot-ensure)
+   (javascript-mode-hook  . #'eglot-ensure)
+   (js-mode-hook          . #'eglot-ensure)
+   (typescript-mode-hook  . #'eglot-ensure)
+   (sh-mode-hook          . #'eglot-ensure)
+   (common-lisp-mode-hook . #'eglot-ensure)
+   (yatex-mode-hook       . #'eglot-ensure)
+   (tex-mode-hook         . #'eglot-ensure)
+   (latex-mode-hook       . #'eglot-ensure)
+   (bibtex-mode-hook      . #'eglot-ensure)
+   (java-mode-hook        . #'eglot-ensure)
+   (clojure-mode-hook     . #'eglot-ensure)
+   (rust-mode-hook        . #'eglot-ensure))
+  :defvar-noninitial (eglot-server-programs)
+  :define-key-after-load
   ((eglot-mode-map
-    ("M-r" . eglot-rename)))
-  :config
-  (setcdr (assoc '(c++-mode c-mode) eglot-server-programs)
-          (eglot-alternatives
-           '("ccls" "clangd"))))
+    ("M-r" . #'eglot-rename)))
+  :eval-after-load
+  ((setcdr (assoc '(c++-mode c-mode) eglot-server-programs)
+           (eglot-alternatives
+            '("ccls" "clangd")))))
 
-(leaf tree-sitter
-  :defvar
-  tree-sitter-major-mode-language-alist
-  :ensure tree-sitter-langs
-  :require tree-sitter-langs
-  :global-minor-mode global-tree-sitter-mode
-  :hook ((tree-sitter-after-on-hook . tree-sitter-hl-mode))
-  :config
-  (tree-sitter-require 'tsx)
-  (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-mode . tsx)))
+(mmic tree-sitter
+  :package tree-sitter-langs
+  :defvar-noninitial
+  (tree-sitter-major-mode-language-alist)
+  :hook ((tree-sitter-after-on-hook . #'tree-sitter-hl-mode))
+  :eval
+  ((global-tree-sitter-mode)
+   (tree-sitter-require 'tsx)
+   (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-mode . tsx))))
 
-(leaf dumb-jump
-  :init
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate 100))
+(mmic dumb-jump
+  :eval
+  ((add-hook 'xref-backend-functions #'dumb-jump-xref-activate 100)))
 
-(leaf ibuffer
-  :bind ("C-x C-b" . ibuffer)
+(mmic ibuffer
+  :define-key
+  ((global-map
+    ("C-x C-b" . #'ibuffer)))
   :custom
-  (ibuffer-formats
-   . '((mark  vc-status-mini " "
-              (name 18 18 :left :elide)
-              " "
-              (size 9 -1 :right)
-              "  "
-              (mode 16 16 :left :elide)
-              " "
-              (vc-status 16 16 :left)
-              " "
-              filename-and-process)))
-  :config
-  (leaf ibuffer-vc
-    :commands ibuffer-vc-set-filter-groups-by-vc-root
-    :defvar
-    ibuffer-sorting-mode
-    :defun ibuffer-do-sort-by-alphabetic
-    :preface
-    ;; Sort by repository
-    (defun my-ibuffer-hook ()
-      (ibuffer-vc-set-filter-groups-by-vc-root)
-      (unless (eq ibuffer-sorting-mode 'alphabetic)
-        (ibuffer-do-sort-by-alphabetic)))
-    :hook
-    (ibuffer-hook . my-ibuffer-hook)))
+  ((ibuffer-formats
+    . '((mark  vc-status-mini " "
+               (name 18 18 :left :elide)
+               " "
+               (size 9 -1 :right)
+               "  "
+               (mode 16 16 :left :elide)
+               " "
+               (vc-status 16 16 :left)
+               " "
+               filename-and-process)))))
 
-(leaf quickrun
-  :config
-  (quickrun-add-command "c++/g++/c++17"
-    '((:command . "g++")
-      (:exec    . ("%c -std=c++17 %o -o %e %s -g3 -O0"
-                   "%e %a"))
-      (:remove  . ("%e"))
-      (:description . "Compile C++ file with g++ -std=c++17 and execute"))
-    :default "c++"))
+(mmic ibuffer-vc
+  :eval
+  (
+   ;; Sort by repository
+   (defun my-ibuffer-hook ()
+     (ibuffer-vc-set-filter-groups-by-vc-root)
+     (unless (eq ibuffer-sorting-mode 'alphabetic)
+       (ibuffer-do-sort-by-alphabetic))))
+  :hook
+  ((ibuffer-hook . #'my-ibuffer-hook)))
 
-(leaf npm)
+(mmic quickrun
+  :eval
+  ((quickrun-add-command "c++/g++/c++17"
+     '((:command . "g++")
+       (:exec    . ("%c -std=c++17 %o -o %e %s -g3 -O0"
+                    "%e %a"))
+       (:remove  . ("%e"))
+       (:description . "Compile C++ file with g++ -std=c++17 and execute"))
+     :default "c++")))
 
-(leaf* major-mode
-  :config
-  (leaf* biology
-    :config
-    (leaf pdb-mode
-      :mode (("\\.pdb\\'" . pdb-mode))))
+(mmic npm)
 
-  (leaf cask-mode)
+(mmic cask-mode)
 
-  (leaf csv-mode)
+(mmic csv-mode)
 
-  (leaf markdown-mode)
+(mmic markdown-mode)
 
-  (leaf cc-mode
-    :ensure nil
-    :defun c-lineup-math my:c-statement-cont
-    :mode ((".*/include/c\\+\\+/.*" . c++-mode))
-    :custom
-    ((c-basic-offset . 4)
-     (c-default-style . "bsd"))
-    :config
-    (defun my:c-statement-cont (cons)
-      (if (string=
-           (let ((start (save-excursion
-                          (goto-char (cdr cons))
-                          (beginning-of-line-text)
-                          (point))))
-             (buffer-substring-no-properties start (+ start 6)))
-           "return")
-          7
-        (c-lineup-math cons)))
-    (c-set-offset 'statement-cont #'my:c-statement-cont)
-    (leaf modern-cpp-font-lock
-      :hook (c++-mode-hook . modern-c++-font-lock-mode))
-    (leaf clang-format+
-      :hook
-      (c++-mode-hook . clang-format+-mode)))
+(mmic cc-mode
+  :custom
+  ((c-basic-offset . 4)
+   (c-default-style . "bsd"))
+  :eval
+  ((defun my:c-statement-cont (cons)
+     (if (string=
+          (let ((start (save-excursion
+                         (goto-char (cdr cons))
+                         (beginning-of-line-text)
+                         (point))))
+            (buffer-substring-no-properties start (+ start 6)))
+          "return")
+         7
+       (c-lineup-math cons)))
+   (c-set-offset 'statement-cont #'my:c-statement-cont)
+   (add-to-list 'auto-mode-alist '(".*/include/c\\+\\+/.*" . c++-mode))))
 
-  (leaf* common-lisp
-    :config
-    (leaf slime
-      :hook
-      ((lisp-mode-hook . slime-mode)
-       (lisp-mode-hook . slime-autodoc-mode))
-      :custom ((inferior-lisp-program . "ros run"))
-      :config
-      (slime-setup '(slime-repl slime-fancy slime-banner slime-autodoc))))
+(mmic modern-cpp-font-lock
+  :hook ((c++-mode-hook . #'modern-c++-font-lock-mode)))
 
-  (leaf* scheme
-    :config
-    (leaf geiser
-      :config
-      (leaf geiser-guile)))
+(mmic clang-format+
+  :hook
+  ((c++-mode-hook . #'clang-format+-mode)))
 
-  (leaf dired
-    :ensure nil
-    :defun
-    (dired-various-sort-change
-     dired-convert-coding-system)
-    :preface
-    (defun dired-open-in-accordance-with-situation ()
-      (interactive)
-      (cond
-       ((string-match "\\(?:\\.\\.?\\)"
-                      (format "%s" (thing-at-point 'filename)))
-        (dired-find-alternate-file))
-       ((file-directory-p (dired-get-filename))
-        (dired-find-alternate-file))
-       (t
-        (dired-find-file))))
-    (defvar dired-various-sort-type
-      '(("S" . "size")
-        ("X" . "extension")
-        ("v" . "version")
-        ("t" . "date")
-        ("" . "name")))
-    (defun dired-various-sort-change (sort-type-alist &optional prior-pair)
-      (when (eq major-mode 'dired-mode)
-        (let* (case-fold-search
-               get-next
-               (options (mapconcat 'car sort-type-alist ""))
-               (opt-desc-pair
-                (or prior-pair
-                    (catch 'found
-                      (dolist (pair sort-type-alist)
-                        (when get-next (throw 'found pair))
-                        (setq get-next
-                              (string-match (car pair) dired-actual-switches)))
-                      (car sort-type-alist)))))
-          (setq dired-actual-switches
-                (concat "-l"
-                        (replace-regexp-in-string
-                         (concat "[l" options "-]") ""
-                         dired-actual-switches)
-                        (car opt-desc-pair)))
-          (setq mode-name (concat "Dired by " (cdr opt-desc-pair)))
-          (force-mode-line-update)
-          (revert-buffer))))
-    (defun dired-various-sort-change-or-edit (&optional arg)
-      "Hehe"
-      (interactive "P")
-      (when dired-sort-inhibit (error "Cannot sort this Dired buffer"))
-      (if arg
-          (dired-sort-other (read-string "ls switches (must contain -l): "
-                                         dired-actual-switches))
-        (dired-various-sort-change dired-various-sort-type)))
-    :bind
-    ((dired-mode-map
-      ("w"   . wdired-change-to-wdired-mode)
-      ("e"   . wdired-change-to-wdired-mode)
-      ("s"   . dired-various-sort-change-or-edit)
-      ("TAB" . dired-hide-details-mode)))
-    :commands
-    (dired-find-alternate-file
-     dired-get-filename
-     dired-log
-     dired-make-relative
-     dired-map-over-marks-check
-     dired-get-marked-files
-     dired-sort-other)
-    :custom ((ls-lisp-dirs-first . t))
-    :config
-    (put 'dired-find-alternate-file 'disabled nil)
+(mmic slime
+  :hook
+  ((lisp-mode-hook . #'slime-mode)
+   (lisp-mode-hook . #'slime-autodoc-mode))
+  :custom ((inferior-lisp-program . "ros run"))
+  :eval
+  ((slime-setup '(slime-repl slime-fancy slime-banner slime-autodoc))))
 
-    (defvar dired-default-file-coding-system nil
-      "*Default coding system for converting file (s).")
-    (defvar dired-file-coding-system 'no-conversion)
+(mmic geiser)
 
-    (defun dired-convert-coding-system ()
-      (let ((file (dired-get-filename))
-            (coding-system-for-write dired-file-coding-system)
-            failure)
-        (condition-case err
-            (with-temp-buffer
-              (insert-file-contents file)
-              (write-region (point-min) (point-max) file))
-          (error (setq failure err)))
-        (if (not failure)
-            nil
-          (dired-log "convert coding system error for %s:\n%s\n" file failure)
-          (dired-make-relative file))))
+(mmic geiser-guile)
 
-    (defun dired-do-convert-coding-system (coding-system &optional arg)
-      "Convert file (s) in specified coding system."
-      (interactive
-       (list (let ((default (or dired-default-file-coding-system
-                                buffer-file-coding-system)))
-               (read-coding-system
-                (format "Coding system for converting file (s) (default, %s): "
-                        default)
-                default))
-             current-prefix-arg))
-      (check-coding-system coding-system)
-      (setq dired-file-coding-system coding-system)
-      (dired-map-over-marks-check
-       (function dired-convert-coding-system) arg 'convert-coding-system t))
-    ;;   )
-    (defun my-dired-process-marked-file (fn)
-      "Run function FN on each file marked in dired."
-      (interactive)
-      (let* ( (marked-files (dired-get-marked-files)) )
-        (mapc (lambda (filename)
-                (let (mybuffer)
-                  (find-file filename)
-                  ;;process
-                  (funcall fn)
-                  ;;exit
-                  (save-buffer)
-                  (kill-buffer mybuffer)))
-              marked-files)))
+(mmic* dired
+  :define-key
+  ((dired-mode-map
+    ("TAB" . #'dired-hide-details-mode)))
+  :custom
+  ((ls-lisp-dirs-first . t)
+   (dired-dwim-target . t))
+  :eval
+  ((put 'dired-find-alternate-file 'disabled nil)))
 
-    (leaf dired-aux
-      :ensure nil
-      :bind
-      ((:dired-mode-map
-        ("T" . dired-do-convert-coding-system))))
+(mmic dired-filter)
 
-    (leaf dired-filter
-      :after dired
-      (define-key dired-mode-map (kbd "/") dired-filter-map))
-    (leaf diredfl
-      :global-minor-mode
-      diredfl-global-mode)
-    (leaf dired-git-info
-      :bind
-      (dired-mode-map
-       ("G" . dired-git-info-mode))))
+(mmic diredfl
+  :eval
+  ((diredfl-global-mode)))
 
-  (leaf dockerfile-mode)
+(mmic dired-git-info
+  :hook
+  ((dired-after-readin-hook . #'dired-git-info-auto-enable))
+  :custom
+  ((dgi-auto-hide-details-p . nil)))
 
-  (leaf ess
-    :config
-    (leaf ess-r-mode
-      :ensure nil
-      :commands ess-r-mode
-      :defvar ess-r-mode-map
-      :config
-      (leaf ess-R-data-view
-        :mykie
-        (:ess-r-mode-map
-         :package ess-r-mode
-         ("C-c v" :default ess-R-dv-ctable :C-u ess-R-dv-pprint)))
-      (leaf inlineR
-        :bind
-        ((:ess-r-mode-map
-          :package ess-r-mode
-          ("C-c i" . inlineR-insert-tag)))
-        :defvar inlineR-re-funcname
-        :config
-        (setq inlineR-re-funcname (concat inlineR-re-funcname "\\|gg.*")))
-      (leaf uimage
-        :bind
-        ((:ess-r-mode-map
-          :package ess-r-mode
-          ("C-c C-i" . uimage-mode)))))
-    (leaf e2wm-R
-      :config
-      (defun ess-create-temp-buffer (buffer-name)
-        (generate-new-buffer buffer-name))))
+(mmic dockerfile-mode)
 
-  (leaf org
-    :ensure t org-contrib
-    :commands (org-capture
-               org-metaright
-               org-metaleft
-               org-metadown
-               org-metaup
-               org-meta-return
-               org-cycle)
-    :defun org-up-element org-element-at-point org-element-property
-    :custom
-    `((org-agenda-sticky . t)
-      (org-directory . my-org-directory)
-      (org-log-done . 'time)
-      (org-default-notes-file . ,(expand-file-name "inbox.org" my-org-directory))
-      (org-agenda-files . '(,my-org-directory))
-      (org-todo-keywords
-       . '((sequence "TODO(t)" "WAIT(w)" "|" "OBSOLETED(o)" "DONE(d)")))
-      (org-capture-templates
-       . '(("n" "Note" entry (file org-default-notes-file)
-            "** %?\n   %i\n   %a\n   %U")
-           ("t" "Todo" entry (file org-default-notes-file)
-            "** TODO %?\n   %i\n   %a\n   %U")
-           ("b" "Bug"  entry (file org-default-notes-file)
-            "** TODO :bug: %?\n   %i\n   %a\n   %U")
-           ("m" "Medicine notebook" entry
-            (file+headline ,(expand-file-name "medicine.org" my-org-directory)
-                           "notebook")
-            "** %u
+(leaf org
+  :ensure t org-contrib
+  :commands (org-capture
+             org-metaright
+             org-metaleft
+             org-metadown
+             org-metaup
+             org-meta-return
+             org-cycle)
+  :defun org-up-element org-element-at-point org-element-property
+  :custom
+  `((org-agenda-sticky . t)
+    (org-directory . my-org-directory)
+    (org-log-done . 'time)
+    (org-default-notes-file . ,(expand-file-name "inbox.org" my-org-directory))
+    (org-agenda-files . '(,my-org-directory))
+    (org-todo-keywords
+     . '((sequence "TODO(t)" "WAIT(w)" "|" "OBSOLETED(o)" "DONE(d)")))
+    (org-capture-templates
+     . '(("n" "Note" entry (file org-default-notes-file)
+          "** %?\n   %i\n   %a\n   %U")
+         ("t" "Todo" entry (file org-default-notes-file)
+          "** TODO %?\n   %i\n   %a\n   %U")
+         ("b" "Bug"  entry (file org-default-notes-file)
+          "** TODO :bug: %?\n   %i\n   %a\n   %U")
+         ("m" "Medicine notebook" entry
+          (file+headline ,(expand-file-name "medicine.org" my-org-directory)
+                         "notebook")
+          "** %u
    disease   :: %?
    hospital  ::
    doctor    ::
@@ -1198,608 +1011,608 @@ cases."
    symptom   ::
 
 ")
-           ("D" "Blog Diary" entry
-            (file ,(expand-file-name "org/diary.org" my-blog-directory))
-            "\
+         ("D" "Blog Diary" entry
+          (file ,(expand-file-name "org/diary.org" my-blog-directory))
+          "\
 * TODO %?
   :PROPERTIES:
   :EXPORT_FILE_NAME: %(format \"%s-%s\" (format-time-string \"%Y\") (uuid-string))
   :END:
 ")
-           ("I" "Blog Information Science" entry
-            (file ,(expand-file-name "org/information-science.org" my-blog-directory))
-            "\
+         ("I" "Blog Information Science" entry
+          (file ,(expand-file-name "org/information-science.org" my-blog-directory))
+          "\
 * TODO %?
   :PROPERTIES:
   :EXPORT_FILE_NAME: %(format \"%s-%s\" (format-time-string \"%Y\") (uuid-string))
   :END:
 ")
-           ("B" "Blog Medicine/Biology" entry
-            (file ,(expand-file-name "org/medicine-biology.org" my-blog-directory))
-            "\
+         ("B" "Blog Medicine/Biology" entry
+          (file ,(expand-file-name "org/medicine-biology.org" my-blog-directory))
+          "\
 * TODO %?
   :PROPERTIES:
   :EXPORT_FILE_NAME: %(format \"%s-%s\" (format-time-string \"%Y\") (uuid-string))
   :END:
 ")
-           ("P" "Blog Physics" entry
-            (file ,(expand-file-name "org/physics.org" my-blog-directory))
-            "\
+         ("P" "Blog Physics" entry
+          (file ,(expand-file-name "org/physics.org" my-blog-directory))
+          "\
 * TODO %?
   :PROPERTIES:
   :EXPORT_FILE_NAME: %(format \"%s-%s\" (format-time-string \"%Y\") (uuid-string))
   :END:
 ")
-           ("M" "Blog Mathematics" entry
-            (file ,(expand-file-name "org/mathematics.org" my-blog-directory))
-            "\
+         ("M" "Blog Mathematics" entry
+          (file ,(expand-file-name "org/mathematics.org" my-blog-directory))
+          "\
 * TODO %?
   :PROPERTIES:
   :EXPORT_FILE_NAME: %(format \"%s-%s\" (format-time-string \"%Y\") (uuid-string))
   :END:
 ")
-           ))
-      (org-blackfriday--org-element-string
-       . '((table . "Table")
-           (figure . "Figure")
-           (src-block . "Code"))))
+         ))
+    (org-blackfriday--org-element-string
+     . '((table . "Table")
+         (figure . "Figure")
+         (src-block . "Code"))))
 
-    ;; Replace "@&" with "&" in .org file when export to HTML.
-    ;;  You can write "@&#x7c;" if you'd like to write "|".
-    :preface
-    (defun my:org-export-html-hook ()
-      (perform-replace "@&amp;" "&" nil nil nil))
-    (defun my:org-save-all-org-buffers (&rest _)
-      (org-save-all-org-buffers))
-    :hook
-    ((org-export-html-final-hook . my:org-export-html-hook)
-     (org-trigger-hook . my:org-save-all-org-buffers)
-     (org-clock-in-hook . org-save-all-org-buffers)
-     (org-clock-out-hook . org-save-all-org-buffers)
-     (org-clock-cancel-hook . org-save-all-org-buffers))
+  ;; Replace "@&" with "&" in .org file when export to HTML.
+  ;;  You can write "@&#x7c;" if you'd like to write "|".
+  :preface
+  (defun my:org-export-html-hook ()
+    (perform-replace "@&amp;" "&" nil nil nil))
+  (defun my:org-save-all-org-buffers (&rest _)
+    (org-save-all-org-buffers))
+  :hook
+  ((org-export-html-final-hook . my:org-export-html-hook)
+   (org-trigger-hook . my:org-save-all-org-buffers)
+   (org-clock-in-hook . org-save-all-org-buffers)
+   (org-clock-out-hook . org-save-all-org-buffers)
+   (org-clock-cancel-hook . org-save-all-org-buffers))
+  :bind
+  (("M-q" . org-capture)
+   (:org-mode-map
+    ("C-M-f" . org-metaright)
+    ("C-M-b" . org-metaleft)
+    ("C-M-p" . org-metadown)
+    ("C-M-n" . org-metaup)
+    ("C-M-<non-convert>" . org-meta-return)
+    ("<windows>" . org-cycle)))
+  :init
+  (leaf org-agenda
+    :ensure nil
     :bind
-    (("M-q" . org-capture)
-     (:org-mode-map
-      ("C-M-f" . org-metaright)
-      ("C-M-b" . org-metaleft)
-      ("C-M-p" . org-metadown)
-      ("C-M-n" . org-metaup)
-      ("C-M-<non-convert>" . org-meta-return)
-      ("<windows>" . org-cycle)))
+    (("C-c a" . org-agenda))
+    :custom
+    (org-agenda-prefix-format
+     . '((agenda . " %i %-12:c%?-12t% s %(let ((state (ignore-errors (org-get-todo-state)))) (if state (propertize state 'face (org-get-todo-face state)) \"\")) %b")
+         (todo . " %i %-12:c %T  %(let ((state (ignore-errors (org-get-todo-state)))) (if state (propertize state 'face (org-get-todo-face state)) \"\")) %b")
+         (tags . " %i %-12:c %T")
+         (search . " %i %-12:c")))
+    :preface
+    (defun my:org-agenda-color-todo-state (&optional _)
+      (remove-overlays)
+      (let ((start 0) ov)
+        (mapc
+         (lambda (arg)
+           (let ((regexp (car arg))
+                 (face (cdr arg)))
+             (save-excursion
+               (goto-char (point-min))
+               (while (string-match regexp (buffer-string) start)
+                 (setq ov (make-overlay (1+ (match-beginning 0)) (1+ (match-end 0))))
+                 (overlay-put ov 'face face)
+                 (setq start (match-end 0)))
+               (setq start 0))))
+         '(("\\_<\\(TODO\\|WAIT\\)\\_>" . org-todo)
+           ("\\_<\\(DONE\\|OBSOLETED\\)\\_>" . org-done)))
+        (save-excursion
+          (goto-char (point-min))
+          (while (string-match
+                  "\\(TODO\\|WAIT\\|DONE\\|OBSOLETED\\)[^\n]*?\\(\\1 \\)[^\n]*$"
+                  (buffer-string) start)
+            (setq ov (make-overlay (1+ (match-beginning 2)) (1+ (match-end 2))))
+            (overlay-put ov 'display "")
+            (setq start (match-end 0)))
+          (setq start 0))))
+    :hook
+    ((org-agenda-finalize-hook . my:org-agenda-color-todo-state))
+    :advice
+    (:after org-agenda-todo my:org-agenda-color-todo-state))
+
+  (leaf org-readme
+    :ensure nil
+    :el-get
+    emacsmirror:yaoddmuse emacsmirror:header2 emacsmirror:lib-requires
+    vapniks/org-readme
+    :depends http-post-simple)
+
+  (leaf org-appear
+    :hook
+    ((org-mode-hook . org-appear-mode))
+    :custom
+    ((org-appear-autolinks . t)
+     (org-appear-autosubmarkers . t)
+     (org-appear-autoentities . t)
+     (org-appear-autokeywords . t)
+     (org-appear-inside-latex . t)))
+
+  :config
+  (defun my-org-netlify (str)
+    (concat
+     (save-restriction
+       (widen)
+       (save-excursion
+         (while (ignore-errors (org-up-element) t))
+         (let* ((entry (org-element-at-point)))
+           (org-element-property :EXPORT_FILE_NAME entry))))
+     "/" str))
+
+  (leaf org-eldoc
+    :ensure nil
+    :commands (org-eldoc-get-breadcrumb
+               org-eldoc-get-src-header
+               org-eldoc-get-src-lang)
+    :hook
+    (org-mode-hook . eldoc-mode))
+
+  (leaf org-id
+    :ensure nil
+    :custom
+    `((org-id-locations-file
+       . ,(expand-file-name
+           "etc/.org-id-locations"
+           user-emacs-directory))))
+
+  (leaf gcal
+    :ensure nil
+    :el-get misohena/gcal
+    :defvar (gcal-access-token)
+    :defer t
+    :custom
+    `((gcal-token-file . ,(expand-file-name "etc/.gcal-token"
+                                            user-emacs-directory))
+      (gcal-org-pushed-events-file
+       . ,(expand-file-name ".gcal-org-pushed-events"
+                            my-org-directory))
+      (gcal-org-header-separator . "->")
+      (gcal-org-include-parents-header-maximum . t)
+      (gcal-org-allowed-timestamp-prefix . '(nil "SCHEDULED" "DEADLINE"))
+      (gcal-org-summary-prefix-ts-prefix-alist
+       . '(("SCHEDULED" . "S:")
+           ("DEADLINE" . "D:")
+           (nil . ""))))
+    :preface
+    (defvar my:gcal-mailaddress)
+    :pl-post-custom
+    (gcal-client-id
+     gcal-client-secret
+     my:gcal-mailaddress)
     :init
-    (leaf org-agenda
+    (leaf gcal-org
       :ensure nil
-      :bind
-      (("C-c a" . org-agenda))
-      :custom
-      (org-agenda-prefix-format
-       . '((agenda . " %i %-12:c%?-12t% s %(let ((state (ignore-errors (org-get-todo-state)))) (if state (propertize state 'face (org-get-todo-face state)) \"\")) %b")
-           (todo . " %i %-12:c %T  %(let ((state (ignore-errors (org-get-todo-state)))) (if state (propertize state 'face (org-get-todo-face state)) \"\")) %b")
-           (tags . " %i %-12:c %T")
-           (search . " %i %-12:c")))
+      :commands
+      (gcal-org-push-file
+       my:gcal-org-push-all-file
+       my:gcal-org-push-file)
       :preface
-      (defun my:org-agenda-color-todo-state (&optional _)
-        (remove-overlays)
-        (let ((start 0) ov)
-          (mapc
-           (lambda (arg)
-             (let ((regexp (car arg))
-                   (face (cdr arg)))
-               (save-excursion
-                 (goto-char (point-min))
-                 (while (string-match regexp (buffer-string) start)
-                   (setq ov (make-overlay (1+ (match-beginning 0)) (1+ (match-end 0))))
-                   (overlay-put ov 'face face)
-                   (setq start (match-end 0)))
-                 (setq start 0))))
-           '(("\\_<\\(TODO\\|WAIT\\)\\_>" . org-todo)
-             ("\\_<\\(DONE\\|OBSOLETED\\)\\_>" . org-done)))
-          (save-excursion
-            (goto-char (point-min))
-            (while (string-match
-                    "\\(TODO\\|WAIT\\|DONE\\|OBSOLETED\\)[^\n]*?\\(\\1 \\)[^\n]*$"
-                    (buffer-string) start)
-              (setq ov (make-overlay (1+ (match-beginning 2)) (1+ (match-end 2))))
-              (overlay-put ov 'display "")
-              (setq start (match-end 0)))
-            (setq start 0))))
-      :hook
-      ((org-agenda-finalize-hook . my:org-agenda-color-todo-state))
-      :advice
-      (:after org-agenda-todo my:org-agenda-color-todo-state))
+      (defun my:gcal-org-push-all-file ()
+        (interactive)
+        (mapcar
+         (apply-partially #'gcal-org-push-file my:gcal-mailaddress)
+         (cl-remove-if-not
+          (apply-partially #'string-match "/[^./][^/]*\\.org$")
+          (directory-files my-org-directory t))))
+      (defun my:gcal-org-push-file (file)
+        (interactive
+         (list
+          (read-file-name
+           "Org file: " my-org-directory nil t nil
+           (apply-partially #'string-match "^[^\\./][^/]*\\.org$"))))
+        (condition-case nil
+            (gcal-org-push-file my:gcal-mailaddress file)
+          (error
+           (setq gcal-access-token nil)
+           (gcal-org-push-file my:gcal-mailaddress file))))))
 
-    (leaf org-readme
-      :ensure nil
-      :el-get
-      emacsmirror:yaoddmuse emacsmirror:header2 emacsmirror:lib-requires
-      vapniks/org-readme
-      :depends http-post-simple)
+  (leaf ox-hugo
+    :after org
+    :custom
+    ((org-hugo-auto-set-lastmod . t)
+     (org-hugo-link-desc-insert-type . t))))
 
-    (leaf org-appear
-      :hook
-      ((org-mode-hook . org-appear-mode))
-      :custom
-      ((org-appear-autolinks . t)
-       (org-appear-autosubmarkers . t)
-       (org-appear-autoentities . t)
-       (org-appear-autokeywords . t)
-       (org-appear-inside-latex . t)))
+(leaf* TeX
+  :config
+  (defun replace-to-comma ()
+    (interactive)
+    (save-excursion
+      (goto-char (point-min))
+      (while (search-forward "、")
+        (replace-match  ", "))))
+  (defun to-comma-hook ()
+    (add-hook 'before-save-hook 'replace-to-comma nil t))
 
+  (leaf tex-mode
+    :defer t
+    :custom
+    ((tex-command . "platex --synctex=1")
+     (tex-run-command . "platex")
+     (latex-run-command . "platex")))
+
+  (leaf bibtex
+    :defer t
+    :custom
+    (bibtex-command . "pbibtex"))
+
+  (leaf yatex
+    :mode ("\\.tex\\'" . yatex-mode)
+    :defun
+    YaTeX-typeset-menu
+    :preface
+    (defun ad:yatex-typeseting-sentinel (_ arg)
+      (when (string= arg "finished\n")
+        (ignore-errors
+          (with-current-buffer
+              (if (string-match-p "\\.pdf$" (buffer-file-name))
+                  (current-buffer)
+                (find-buffer-visiting
+                 (YaTeX-get-preview-file-name "dvipdfmx")))
+            (revert-buffer nil t)))))
+    (defun YaTeX-typeset-pdf (arg)
+      (interactive "P")
+      (YaTeX-typeset-menu arg ?d))
+    :advice
+    (:after YaTeX-typeset-sentinel ad:yatex-typeseting-sentinel)
+    :bind ((:YaTeX-prefix-map
+            ("v" . yatex-open-dvi-with-emacs))
+           (:YaTeX-mode-map
+            ("C-c C-c" . YaTeX-typeset-pdf)))
+    :custom
+    `((YaTeX-user-completion-table
+       . ,(expand-file-name "etc/.yatexrc" user-emacs-directory))
+      ;; https://oku.edu.mie-u.ac.jp/~okumura/texfaq/qa/52930.html
+      (YaTeX-latex-message-code . 'utf-8))
+    :defun
+    YaTeX-get-preview-file-name
     :config
-    (defun my-org-netlify (str)
-      (concat
-       (save-restriction
-         (widen)
-         (save-excursion
-           (while (ignore-errors (org-up-element) t))
-           (let* ((entry (org-element-at-point)))
-             (org-element-property :EXPORT_FILE_NAME entry))))
-       "/" str))
-
-    (leaf org-eldoc
-      :ensure nil
-      :commands (org-eldoc-get-breadcrumb
-                 org-eldoc-get-src-header
-                 org-eldoc-get-src-lang)
-      :hook
-      (org-mode-hook . eldoc-mode))
-
-    (leaf org-id
-      :ensure nil
-      :custom
-      `((org-id-locations-file
-         . ,(expand-file-name
-             "etc/.org-id-locations"
-             user-emacs-directory))))
-
-    (leaf gcal
-      :ensure nil
-      :el-get misohena/gcal
-      :defvar (gcal-access-token)
-      :defer t
-      :custom
-      `((gcal-token-file . ,(expand-file-name "etc/.gcal-token"
-                                              user-emacs-directory))
-        (gcal-org-pushed-events-file
-         . ,(expand-file-name ".gcal-org-pushed-events"
-                              my-org-directory))
-        (gcal-org-header-separator . "->")
-        (gcal-org-include-parents-header-maximum . t)
-        (gcal-org-allowed-timestamp-prefix . '(nil "SCHEDULED" "DEADLINE"))
-        (gcal-org-summary-prefix-ts-prefix-alist
-         . '(("SCHEDULED" . "S:")
-             ("DEADLINE" . "D:")
-             (nil . ""))))
-      :preface
-      (defvar my:gcal-mailaddress)
-      :pl-post-custom
-      (gcal-client-id
-       gcal-client-secret
-       my:gcal-mailaddress)
-      :init
-      (leaf gcal-org
-        :ensure nil
-        :commands
-        (gcal-org-push-file
-         my:gcal-org-push-all-file
-         my:gcal-org-push-file)
-        :preface
-        (defun my:gcal-org-push-all-file ()
-          (interactive)
-          (mapcar
-           (apply-partially #'gcal-org-push-file my:gcal-mailaddress)
-           (cl-remove-if-not
-            (apply-partially #'string-match "/[^./][^/]*\\.org$")
-            (directory-files my-org-directory t))))
-        (defun my:gcal-org-push-file (file)
-          (interactive
-           (list
-            (read-file-name
-             "Org file: " my-org-directory nil t nil
-             (apply-partially #'string-match "^[^\\./][^/]*\\.org$"))))
-          (condition-case nil
-              (gcal-org-push-file my:gcal-mailaddress file)
-            (error
-             (setq gcal-access-token nil)
-             (gcal-org-push-file my:gcal-mailaddress file))))))
-
-    (leaf ox-hugo
-      :after org
-      :custom
-      ((org-hugo-auto-set-lastmod . t)
-       (org-hugo-link-desc-insert-type . t))))
-
-  (leaf* TeX
-    :config
-    (defun replace-to-comma ()
+    (defun yatex-open-dvi-with-emacs ()
+      "Preview current dvi file."
       (interactive)
-      (save-excursion
-        (goto-char (point-min))
-        (while (search-forward "、")
-          (replace-match  ", "))))
-    (defun to-comma-hook ()
-      (add-hook 'before-save-hook 'replace-to-comma nil t))
+      (find-file-other-window
+       (YaTeX-get-preview-file-name))))
 
-    (leaf tex-mode
-      :defer t
-      :custom
-      ((tex-command . "platex --synctex=1")
-       (tex-run-command . "platex")
-       (latex-run-command . "platex")))
+  (leaf latex-math-preview
+    :defun YaTeX-in-math-mode-p
+    :bind (:YaTeX-prefix-map
+           :package yatex
+           ("p" . latex-math-preview-expression))
+    :custom
+    (latex-math-preview-in-math-mode-p-func . #'YaTeX-in-math-mode-p)
+    (latex-math-preview-tex-to-png-for-preview . '(platex dvipng))
+    (latex-math-preview-image-foreground-color . "black")
+    (latex-math-preview-image-background-color . "white"))
 
-    (leaf bibtex
-      :defer t
-      :custom
-      (bibtex-command . "pbibtex"))
-
-    (leaf yatex
-      :mode ("\\.tex\\'" . yatex-mode)
-      :defun
-      YaTeX-typeset-menu
-      :preface
-      (defun ad:yatex-typeseting-sentinel (_ arg)
-        (when (string= arg "finished\n")
-          (ignore-errors
-            (with-current-buffer
-                (if (string-match-p "\\.pdf$" (buffer-file-name))
-                    (current-buffer)
-                  (find-buffer-visiting
-                   (YaTeX-get-preview-file-name "dvipdfmx")))
-              (revert-buffer nil t)))))
-      (defun YaTeX-typeset-pdf (arg)
-        (interactive "P")
-        (YaTeX-typeset-menu arg ?d))
-      :advice
-      (:after YaTeX-typeset-sentinel ad:yatex-typeseting-sentinel)
-      :bind ((:YaTeX-prefix-map
-              ("v" . yatex-open-dvi-with-emacs))
-             (:YaTeX-mode-map
-              ("C-c C-c" . YaTeX-typeset-pdf)))
-      :custom
-      `((YaTeX-user-completion-table
-         . ,(expand-file-name "etc/.yatexrc" user-emacs-directory))
-        ;; https://oku.edu.mie-u.ac.jp/~okumura/texfaq/qa/52930.html
-        (YaTeX-latex-message-code . 'utf-8))
-      :defun
-      YaTeX-get-preview-file-name
-      :config
-      (defun yatex-open-dvi-with-emacs ()
-        "Preview current dvi file."
-        (interactive)
-        (find-file-other-window
-         (YaTeX-get-preview-file-name))))
-
-    (leaf latex-math-preview
-      :defun YaTeX-in-math-mode-p
-      :bind (:YaTeX-prefix-map
-             :package yatex
-             ("p" . latex-math-preview-expression))
-      :custom
-      (latex-math-preview-in-math-mode-p-func . #'YaTeX-in-math-mode-p)
-      (latex-math-preview-tex-to-png-for-preview . '(platex dvipng))
-      (latex-math-preview-image-foreground-color . "black")
-      (latex-math-preview-image-background-color . "white"))
-
-    (leaf magic-latex-buffer
-      :hook (latex-mode-hook . magic-latex-buffer)
-      :custom
-      ((magic-latex-enable-block-highlight . t)
-       (magic-latex-enable-suscript        . t)
-       (magic-latex-enable-pretty-symbols  . t)
-       (magic-latex-enable-block-align     . nil)
-       (magic-latex-enable-inline-image    . t)
-       (magic-latex-enable-minibuffer-echo . nil))
-      :defvar ml/arrow-symbols
-      :config
-      (add-to-list 'ml/arrow-symbols '("\\\\Longrightarrow\\>" . "⇒"))
-      (add-to-list 'ml/arrow-symbols '("\\\\Longlefttarrow\\>" . "⇐"))
-      (add-to-list 'ml/arrow-symbols '("\\\\Longleftrightarrow\\>" . "⇔"))
-      (add-to-list 'ml/arrow-symbols '("\\\\longmapsto\\>" . "↦")))
-    ;; C-c v open pdf
-    ;; C-c p view math directly
-
-    ;; (leaf xenops
-    ;;   :hook (yatex-mode-hook . xenops-mode))
-
-    (leaf reftex
-      :hook
-      ((latex-mode-hook . turn-on-reftex)
-       (yatex-mode-hook . turn-on-reftex))
-      :require reftex-ref
-      :ensure auctex
-      :defun
-      (reftex-access-scan-info
-       reftex-offer-label-menu)
-      :custom
-      `((reftex-default-bibliography
-         . ',(list (expand-file-name
-                    "texmf/bibtex/bib/mine.bib"
-                    (pcase system-type
-                      (`windows-nt (getenv "USERPROFILE"))
-                      (_ (getenv "HOME")))))))
-      :preface
-      (defun my:eqref ()
-        (interactive)
-        (require 'tex)
-        (reftex-access-scan-info current-prefix-arg)
-        (insert
-         (format "\\eref{%s}" (nth 0 (car (reftex-offer-label-menu "e"))))))
-      (defun my:tabref ()
-        (interactive)
-        (require 'tex)
-        (reftex-access-scan-info current-prefix-arg)
-        (insert
-         (format "\\tabref{%s}" (nth 0 (car (reftex-offer-label-menu "t"))))))
-      (defun my:figref ()
-        (interactive)
-        (require 'tex)
-        (reftex-access-scan-info current-prefix-arg)
-        (insert
-         (format "\\figref{%s}" (nth 0 (car (reftex-offer-label-menu "f"))))))
-      (defun my:secref ()
-        (interactive)
-        (require 'tex)
-        (reftex-access-scan-info current-prefix-arg)
-        (insert
-         (format "\\ref{%s}" (nth 0 (car (reftex-offer-label-menu "s"))))))
-      :hydra
-      (hydra-yatex-ref
-       (:color blue)
-       "\\ref"
-       ("e" my:eqref "equation")
-       ("t" my:tabref "table")
-       ("f" my:figref "figure")
-       ("s" my:secref "section"))
-      :bind
-      (:reftex-mode-map
-       ("C-c C-r" . hydra-yatex-ref/body))))
-
-  (leaf* pdf
+  (leaf magic-latex-buffer
+    :hook (latex-mode-hook . magic-latex-buffer)
+    :custom
+    ((magic-latex-enable-block-highlight . t)
+     (magic-latex-enable-suscript        . t)
+     (magic-latex-enable-pretty-symbols  . t)
+     (magic-latex-enable-block-align     . nil)
+     (magic-latex-enable-inline-image    . t)
+     (magic-latex-enable-minibuffer-echo . nil))
+    :defvar ml/arrow-symbols
     :config
-    (leaf doc-view
-      :ensure nil
-      :defer t
-      :preface
-      (defun ad:doc-view-revert-buffer (orig &rest args)
-        (let ((undo-outer-limit 0))
-          (apply orig args)))
-      :advice
-      (:around doc-view-revert-buffer ad:doc-view-revert-buffer)
-      :hook (doc-view-mode . buffer-disable-undo))
-    (leaf pdf-tools
-      :if (eq system-type 'gnu/linux)
-      :mode ("\\.pdf\\'" . pdf-view-mode)))
+    (add-to-list 'ml/arrow-symbols '("\\\\Longrightarrow\\>" . "⇒"))
+    (add-to-list 'ml/arrow-symbols '("\\\\Longlefttarrow\\>" . "⇐"))
+    (add-to-list 'ml/arrow-symbols '("\\\\Longleftrightarrow\\>" . "⇔"))
+    (add-to-list 'ml/arrow-symbols '("\\\\longmapsto\\>" . "↦")))
+  ;; C-c v open pdf
+  ;; C-c p view math directly
 
-  (leaf* web
-    :config
-    (leaf prettier
-      :global-minor-mode
-      global-prettier-mode)
+  ;; (leaf xenops
+  ;;   :hook (yatex-mode-hook . xenops-mode))
 
-    (leaf eslintd-fix
-      :hook
-      ((web-mode . eslintd-fix-mode)))
+  (leaf reftex
+    :hook
+    ((latex-mode-hook . turn-on-reftex)
+     (yatex-mode-hook . turn-on-reftex))
+    :require reftex-ref
+    :ensure auctex
+    :defun
+    (reftex-access-scan-info
+     reftex-offer-label-menu)
+    :custom
+    `((reftex-default-bibliography
+       . ',(list (expand-file-name
+                  "texmf/bibtex/bib/mine.bib"
+                  (pcase system-type
+                    (`windows-nt (getenv "USERPROFILE"))
+                    (_ (getenv "HOME")))))))
+    :preface
+    (defun my:eqref ()
+      (interactive)
+      (require 'tex)
+      (reftex-access-scan-info current-prefix-arg)
+      (insert
+       (format "\\eref{%s}" (nth 0 (car (reftex-offer-label-menu "e"))))))
+    (defun my:tabref ()
+      (interactive)
+      (require 'tex)
+      (reftex-access-scan-info current-prefix-arg)
+      (insert
+       (format "\\tabref{%s}" (nth 0 (car (reftex-offer-label-menu "t"))))))
+    (defun my:figref ()
+      (interactive)
+      (require 'tex)
+      (reftex-access-scan-info current-prefix-arg)
+      (insert
+       (format "\\figref{%s}" (nth 0 (car (reftex-offer-label-menu "f"))))))
+    (defun my:secref ()
+      (interactive)
+      (require 'tex)
+      (reftex-access-scan-info current-prefix-arg)
+      (insert
+       (format "\\ref{%s}" (nth 0 (car (reftex-offer-label-menu "s"))))))
+    :hydra
+    (hydra-yatex-ref
+     (:color blue)
+     "\\ref"
+     ("e" my:eqref "equation")
+     ("t" my:tabref "table")
+     ("f" my:figref "figure")
+     ("s" my:secref "section"))
+    :bind
+    (:reftex-mode-map
+     ("C-c C-r" . hydra-yatex-ref/body))))
 
-    (leaf web-mode
-      :mode (("\\.phtml\\'"     . web-mode)
-             ("\\.tpl\\.php\\'" . web-mode)
-             ("\\.[agj]sp\\'"   . web-mode)
-             ("\\.as[cp]x\\'"   . web-mode)
-             ("\\.erb\\'"       . web-mode)
-             ("\\.mustache\\'"  . web-mode)
-             ("\\.djhtml\\'"    . web-mode)
-             ("\\.html?\\'"     . web-mode))
-      :custom
-      (web-mode-enable-auto-closing . t)
-      (web-mode-enable-auto-pairing . t)
-      (web-mode-enable-block-face .   t)
-      (web-mode-enable-part-face .    t)
-      (web-mode-enable-current-column-highlight . t)
-      (web-mode-code-indent-offset . 2)
-      (web-mode-markup-indent-offset . 2))
-
-    (leaf js
-      :custom
-      ((js-indent-level . 2)))
-
-    (leaf typescript-mode
-      :mode
-      (("\\.tsx\\'" . typescript-mode)))
-
-    (leaf css-mode
-      :custom
-      ((css-indent-offset . 2))))
-
-  (leaf elisp-mode
+(leaf* pdf
+  :config
+  (leaf doc-view
     :ensure nil
     :defer t
-    :config
-    (leaf edit-list
-      :commands edit-list)
-    (leaf* test
-      :config
-      (leaf undercover)
-      (leaf cursor-test))
-    :bind
-    ("C-<f1>" . elisp-slime-nav-describe-elisp-thing-at-point)
-    :mykie
-    ("<f12>" :default eval-buffer :region eval-region))
-
-  (leaf lisp-mode
-    :ensure nil
     :preface
-    (defun my:byte-compile-this ()
-      "byte-compile opened file."
-      (interactive)
-      (byte-compile-file (buffer-file-name)))
+    (defun ad:doc-view-revert-buffer (orig &rest args)
+      (let ((undo-outer-limit 0))
+        (apply orig args)))
+    :advice
+    (:around doc-view-revert-buffer ad:doc-view-revert-buffer)
+    :hook (doc-view-mode . buffer-disable-undo))
+  (leaf pdf-tools
+    :if (eq system-type 'gnu/linux)
+    :mode ("\\.pdf\\'" . pdf-view-mode)))
+
+(leaf* web
+  :config
+  (leaf prettier
+    :global-minor-mode
+    global-prettier-mode)
+
+  (leaf eslintd-fix
+    :hook
+    ((web-mode . eslintd-fix-mode)))
+
+  (leaf web-mode
+    :mode (("\\.phtml\\'"     . web-mode)
+           ("\\.tpl\\.php\\'" . web-mode)
+           ("\\.[agj]sp\\'"   . web-mode)
+           ("\\.as[cp]x\\'"   . web-mode)
+           ("\\.erb\\'"       . web-mode)
+           ("\\.mustache\\'"  . web-mode)
+           ("\\.djhtml\\'"    . web-mode)
+           ("\\.html?\\'"     . web-mode))
+    :custom
+    (web-mode-enable-auto-closing . t)
+    (web-mode-enable-auto-pairing . t)
+    (web-mode-enable-block-face .   t)
+    (web-mode-enable-part-face .    t)
+    (web-mode-enable-current-column-highlight . t)
+    (web-mode-code-indent-offset . 2)
+    (web-mode-markup-indent-offset . 2))
+
+  (leaf js
+    :custom
+    ((js-indent-level . 2)))
+
+  (leaf typescript-mode
+    :mode
+    (("\\.tsx\\'" . typescript-mode)))
+
+  (leaf css-mode
+    :custom
+    ((css-indent-offset . 2))))
+
+(leaf elisp-mode
+  :ensure nil
+  :defer t
+  :config
+  (leaf edit-list
+    :commands edit-list)
+  (leaf* test
+    :config
+    (leaf undercover)
+    (leaf cursor-test))
+  :bind
+  ("C-<f1>" . elisp-slime-nav-describe-elisp-thing-at-point)
+  :mykie
+  ("<f12>" :default eval-buffer :region eval-region))
+
+(leaf lisp-mode
+  :ensure nil
+  :preface
+  (defun my:byte-compile-this ()
+    "byte-compile opened file."
+    (interactive)
+    (byte-compile-file (buffer-file-name)))
+  :defun
+  byte-compile-file
+  :bind
+  (:emacs-lisp-mode-map
+   ("C-c c" . my:byte-compile-this)
+   ("C-c l" . toggle-let-astah)
+   ("M-d"  . edebug-defun))
+  (:lisp-interaction-mode-map
+   ("M-d" . edebug-defun)))
+
+(leaf clojure-mode)
+
+(leaf rust-mode)
+
+(leaf visual-basic-mode
+  :ensure nil
+  :el-get emacsmirror:visual-basic-mode)
+
+(leaf yaml-mode
+  :mode
+  (("\\.clang-format" . yaml-mode)))
+
+(leaf qml-mode
+  :mode
+  (("\\.qbs\\'" . qml-mode)))
+
+(leaf keg-mode)
+
+(leaf* gdb
+  :custom
+  (gud-gdb-command-name . "gdb"))
+
+(leaf* shell
+  :config
+  (leaf coterm
+    :global-minor-mode
+    coterm-mode)
+
+  (leaf comint
+    :ensure nil
+    :custom
+    (comint-scroll-show-maximum-output . t)
+    :custom-face
+    (comint-highlight-prompt '((t (:foreground "#00ff00")))))
+
+  (leaf ansi-color
+    :ensure nil
     :defun
-    byte-compile-file
-    :bind
-    (:emacs-lisp-mode-map
-     ("C-c c" . my:byte-compile-this)
-     ("C-c l" . toggle-let-astah)
-     ("M-d"  . edebug-defun))
-    (:lisp-interaction-mode-map
-     ("M-d" . edebug-defun)))
-
-  (leaf clojure-mode)
-
-  (leaf rust-mode)
-
-  (leaf visual-basic-mode
-    :ensure nil
-    :el-get emacsmirror:visual-basic-mode)
-
-  (leaf yaml-mode
-    :mode
-    (("\\.clang-format" . yaml-mode)))
-
-  (leaf qml-mode
-    :mode
-    (("\\.qbs\\'" . qml-mode)))
-
-  (leaf keg-mode)
-
-  (leaf* gdb
-    :custom
-    (gud-gdb-command-name . "gdb"))
-
-  (leaf* shell
+    ansi-color-apply-on-region
+    :defvar
+    compilation-filter-start
     :config
-    (leaf coterm
-      :global-minor-mode
-      coterm-mode)
+    ;; https://stackoverflow.com/questions/13397737/ansi-coloring-in-compilation-mode
+    (defun my-colorize-compilation-buffer ()
+      (when (provided-mode-derived-p major-mode 'compilation-mode)
+        (let ((inhibit-read-only t))
+          (ansi-color-apply-on-region compilation-filter-start (point-max)))))
+    :hook
+    (compilation-filter-hook . my-colorize-compilation-buffer))
 
-    (leaf comint
-      :ensure nil
-      :custom
-      (comint-scroll-show-maximum-output . t)
-      :custom-face
-      (comint-highlight-prompt '((t (:foreground "#00ff00")))))
+  (leaf ccc
+    :commands ccc-set-buffer-local-cursor-color)
+  (defun hook:shell// ()
+    ""
+    (face-remap-set-base 'default :background "black" :foreground "gray")
+    (ccc-set-buffer-local-cursor-color "gray")
+    ;; (ccc-set-buffer-local-background-color "white")
+    (display-line-numbers-mode -1))
+  (defalias 'hook:eshell// 'hook:shell//)
 
-    (leaf ansi-color
-      :ensure nil
-      :defun
-      ansi-color-apply-on-region
-      :defvar
-      compilation-filter-start
-      :config
-      ;; https://stackoverflow.com/questions/13397737/ansi-coloring-in-compilation-mode
-      (defun my-colorize-compilation-buffer ()
-        (when (provided-mode-derived-p major-mode 'compilation-mode)
-          (let ((inhibit-read-only t))
-            (ansi-color-apply-on-region compilation-filter-start (point-max)))))
-      :hook
-      (compilation-filter-hook . my-colorize-compilation-buffer))
-
-    (leaf ccc
-      :commands ccc-set-buffer-local-cursor-color)
-    (defun hook:shell// ()
-      ""
-      (face-remap-set-base 'default :background "black" :foreground "gray")
-      (ccc-set-buffer-local-cursor-color "gray")
-      ;; (ccc-set-buffer-local-background-color "white")
-      (display-line-numbers-mode -1))
-    (defalias 'hook:eshell// 'hook:shell//)
-
-    (leaf eshell
-      :custom
-      `(eshell-directory-name
-        . ,(expand-file-name
-            "etc/eshell"
-            user-emacs-directory))
-      :custom-face
-      ((eshell-prompt . '((t (:foreground "#00ff00")))))
-      :defun
-      eshell-printn
-      :config
-      (defun eshell/e (arg)
-        (eshell-printn
-         (pp-to-string (eval (if (listp arg) arg (read (format "%s" arg))))))
-        nil)
-      :hook
-      (eshell-mode-hook . hook:eshell//))
-
-    (leaf shell
-      :preface
-      (defun hook:shell-mode-coding ()
-        (pcase system-type
-          (`windows-nt
-           (set-process-coding-system (get-buffer-process (current-buffer)) 'utf-8-dos 'utf-8-dos))
-          (_ (set-process-coding-system (get-buffer-process (current-buffer)) 'utf-8-unix 'utf-8-unix))))
-      :hook
-      ((shell-mode-hook . hook:shell-mode-coding)
-       (shell-mode-hook . hook:eshell//))))
-
-  (leaf cmake-mode)
-
-  (leaf newsticker
+  (leaf eshell
     :custom
-    `(newsticker-dir
+    `(eshell-directory-name
       . ,(expand-file-name
-          "etc/newsticker/"
-          user-emacs-directory)))
-
-  (leaf ahk-mode
-    :preface
-    (defun hook:ahk-mode-set-buffer-coding-system ()
-      (setq buffer-file-coding-system 'utf-8-with-signature))
-    :hook (ahk-mode-hook . hook:ahk-mode-set-buffer-coding-system))
-
-  (leaf* communication-tool
+          "etc/eshell"
+          user-emacs-directory))
+    :custom-face
+    ((eshell-prompt . '((t (:foreground "#00ff00")))))
+    :defun
+    eshell-printn
     :config
-    (leaf twittering-mode
-      :commands (twittering-pop)
-      :defun (twittering-get-buffer-list twittering-mode)
-      :custom
-      `((twittering-use-master-password . t)
-        (twittering-private-info-file
-         . ,(expand-file-name "etc/twittering-mode.gpg" user-emacs-directory))
-        (twittering-account-authorization . 'authorized)
-        (twittering-status-format
-         . ,(concat
-             "%FACE[my:for-gray-face]{%RT{   \0xf079 Retweeted by %S\n"
-             "}}%i %S %FACE[my:for-deepgray-face]{@%s     %@ }\n %T \n"
-             "%FACE[my:for-gray-face]{%FACE[bold]{"
-             "\0xf079 %FIELD[%s]{retweet_count}  ♡ %FIELD[%s]{favorite_count}}}\n"
-             " -------------------------------------------")))
-      :custom-face
-      ((twittering-username-face . '((t (:bold t))))
-       (twittering-uri-face . '((t ("DeepSkyBlue3")))))
-      :preface
-      (defface my:for-gray-face
-        '((t (:foreground "gray50")))
-        "")
-      (defface my:for-deepgray-face
-        '((t (:foreground "gray40")))
-        "")
-      :hook
-      (twittering-mode-hook . twittering-icon-mode)
-      :bind
-      (:twittering-mode-map
-       ("<" . my-beginning-of-buffer)
-       (">" . my-end-of-buffer)
-       ("F" . twittering-favorite))
-      :config
-      (defun twittering-pop ()
-        (interactive)
-        (if (twittering-get-buffer-list)
-            (display-buffer ":home")
-          (let ((cb (buffer-name)))
-            (twittering-mode)
-            (switch-to-buffer cb)
-            (display-buffer ":home")))))
+    (defun eshell/e (arg)
+      (eshell-printn
+       (pp-to-string (eval (if (listp arg) arg (read (format "%s" arg))))))
+      nil)
+    :hook
+    (eshell-mode-hook . hook:eshell//))
 
-    (leaf wanderlust
-      :config
-      (leaf wl                         ;Wanderlust (mailer)
-        :ensure nil
-        :custom
-        `((wl-init-file
-           . ,(expand-file-name "etc/.wl" user-emacs-directory))
-          (wl-folders-file
-           . ,(expand-file-name "etc/.folders" user-emacs-directory))
-          (elmo-imap4-default-authenticate-type . 'clear))))))
+  (leaf shell
+    :preface
+    (defun hook:shell-mode-coding ()
+      (pcase system-type
+        (`windows-nt
+         (set-process-coding-system (get-buffer-process (current-buffer)) 'utf-8-dos 'utf-8-dos))
+        (_ (set-process-coding-system (get-buffer-process (current-buffer)) 'utf-8-unix 'utf-8-unix))))
+    :hook
+    ((shell-mode-hook . hook:shell-mode-coding)
+     (shell-mode-hook . hook:eshell//))))
+
+(leaf cmake-mode)
+
+(leaf newsticker
+  :custom
+  `(newsticker-dir
+    . ,(expand-file-name
+        "etc/newsticker/"
+        user-emacs-directory)))
+
+(leaf ahk-mode
+  :preface
+  (defun hook:ahk-mode-set-buffer-coding-system ()
+    (setq buffer-file-coding-system 'utf-8-with-signature))
+  :hook (ahk-mode-hook . hook:ahk-mode-set-buffer-coding-system))
+
+(leaf* communication-tool
+  :config
+  (leaf twittering-mode
+    :commands (twittering-pop)
+    :defun (twittering-get-buffer-list twittering-mode)
+    :custom
+    `((twittering-use-master-password . t)
+      (twittering-private-info-file
+       . ,(expand-file-name "etc/twittering-mode.gpg" user-emacs-directory))
+      (twittering-account-authorization . 'authorized)
+      (twittering-status-format
+       . ,(concat
+           "%FACE[my:for-gray-face]{%RT{   \0xf079 Retweeted by %S\n"
+           "}}%i %S %FACE[my:for-deepgray-face]{@%s     %@ }\n %T \n"
+           "%FACE[my:for-gray-face]{%FACE[bold]{"
+           "\0xf079 %FIELD[%s]{retweet_count}  ♡ %FIELD[%s]{favorite_count}}}\n"
+           " -------------------------------------------")))
+    :custom-face
+    ((twittering-username-face . '((t (:bold t))))
+     (twittering-uri-face . '((t ("DeepSkyBlue3")))))
+    :preface
+    (defface my:for-gray-face
+      '((t (:foreground "gray50")))
+      "")
+    (defface my:for-deepgray-face
+      '((t (:foreground "gray40")))
+      "")
+    :hook
+    (twittering-mode-hook . twittering-icon-mode)
+    :bind
+    (:twittering-mode-map
+     ("<" . my-beginning-of-buffer)
+     (">" . my-end-of-buffer)
+     ("F" . twittering-favorite))
+    :config
+    (defun twittering-pop ()
+      (interactive)
+      (if (twittering-get-buffer-list)
+          (display-buffer ":home")
+        (let ((cb (buffer-name)))
+          (twittering-mode)
+          (switch-to-buffer cb)
+          (display-buffer ":home")))))
+
+  (leaf wanderlust
+    :config
+    (leaf wl                         ;Wanderlust (mailer)
+      :ensure nil
+      :custom
+      `((wl-init-file
+         . ,(expand-file-name "etc/.wl" user-emacs-directory))
+        (wl-folders-file
+         . ,(expand-file-name "etc/.folders" user-emacs-directory))
+        (elmo-imap4-default-authenticate-type . 'clear)))))
 
 (leaf editorconfig
   :global-minor-mode editorconfig-mode)
@@ -2007,13 +1820,11 @@ reflect the change."
                                    migemo-get-pattern-3))))
 
   (leaf corfu
-    :global-minor-mode global-corfu-mode
+    :global-minor-mode
+    (global-corfu-mode corfu-popupinfo-mode)
     :custom
     (corfu-auto . t)
     :config
-    (leaf corfu-doc
-      :hook
-      (corfu-mode-hook . corfu-doc-mode))
     (leaf kind-icon
       :custom
       (kind-icon-default-face . 'corfu-default)))
@@ -2550,39 +2361,29 @@ reflect the change."
   (add-to-list 'Info-directory-list
                (expand-file-name "../share/info/" invocation-directory)))
 
-(leaf google-translate
-  :defun
-  google-translate-translate
-  :preface
-  (defvar google-translate-english-chars "[:ascii:]"
-    "Regexp which matches English")
-  (defun google-translate-enja-or-jaen (&optional string)
-    "Translate region or sentence by Google."
-    (interactive)
-    (setq string
-          (cond ((stringp string) string)
-                (current-prefix-arg
-                 (read-string "Google Translate: "))
-                ((use-region-p)
-                 (buffer-substring (region-beginning) (region-end)))
-                (t
-                 (save-excursion
-                   (let (s)
-                     (forward-char 1)
-                     (backward-sentence)
-                     (setq s (point))
-                     (forward-sentence)
-                     (buffer-substring s (point)))))))
-    (let* ((asciip (string-match
-                    (format "\\`[%s]+\\'" google-translate-english-chars)
-                    string)))
-      (run-at-time 0.1 nil #'deactivate-mark)
-      (google-translate-translate
-       (if asciip "en" "ja")
-       (if asciip "ja" "en")
-       string)))
-  :bind
-  ("C-c t" . google-translate-enja-or-jaen))
+(defcustom my-deepl-api-key nil
+  "My DeepL API key.")
+
+;; (leaf* mine
+;;   :ensure nil
+;;   :pl-custom
+;;   (my-deepl-api-key))
+
+(leaf go-translate
+  :defun (gts-translator gts-prompt-picker gts-deepl-engine gts-buffer-render gts-current-or-selection-texter)
+  :defvar (gts-default-translator)
+  :custom
+  ((gts-translate-list . '(("en" "ja") ("ja" "en"))))
+  :config
+  (customize-set-variable
+   'gts-default-translator
+   (gts-translator
+    :picker (gts-prompt-picker :texter (gts-current-or-selection-texter))
+    :engines
+    (list
+     (gts-deepl-engine :auth-key my-deepl-api-key :pro nil))
+    :render
+    (gts-buffer-render))))
 
 (leaf* japanese
   :config
