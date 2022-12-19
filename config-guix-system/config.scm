@@ -4,11 +4,17 @@
 (use-modules (gnu)
              (gnu services syncthing)
              (nongnu packages linux)
-             (nongnu system linux-initrd))
+             (nongnu system linux-initrd)
+             (nongnu packages nvidia)
+             (nongnu services nvidia))
 (use-service-modules desktop networking ssh xorg docker virtualization)
 
 (operating-system
  (kernel linux)
+ (kernel-loadable-modules (list nvidia-module))
+ (kernel-arguments (append
+                    '("modprobe.blacklist=nouveau")
+                    %default-kernel-arguments))
  (initrd microcode-initrd)
  (firmware (list linux-firmware))
 
@@ -43,12 +49,16 @@
                   (syncthing-configuration (user "rocktakey")))
          (set-xorg-configuration
           (xorg-configuration
-           (keyboard-layout keyboard-layout)))
+           (keyboard-layout keyboard-layout)
+           (modules (cons* nvidia-driver
+                           %default-xorg-modules))
+           (drivers '("nvidia"))))
          (service docker-service-type)
          (service libvirt-service-type
                   (libvirt-configuration
                    (unix-sock-group "libvirt")))
-         (service virtlog-service-type))
+         (service virtlog-service-type)
+         (service nvidia-service-type))
    (modify-services %desktop-services
                     (guix-service-type config => (guix-configuration
                                                   (inherit config)
