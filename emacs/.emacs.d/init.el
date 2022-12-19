@@ -522,7 +522,8 @@ how long to wait for a response before giving up."
 (mmic* window
   :define-key
   ((global-map
-    ("C-o" . #'other-window)))
+    ("C-o" . #'other-window)
+    ("C-x 9" . #'split-window-3)))
   :hydra
   ((hydra-window-resizer
     nil
@@ -541,7 +542,13 @@ how long to wait for a response before giving up."
     ("q" nil "quit")))
   :mykie
   ((global-map
-    ("C-w" :default hydra-window-resizer/body :region kill-region))))
+    ("C-w" :default hydra-window-resizer/body :region kill-region)))
+  :eval
+  ((defun split-window-3 ()
+     (interactive)
+     (split-window-right)
+     (split-window-right)
+     (balance-windows))))
 
 (mmic swap-buffers
   :declare-function
