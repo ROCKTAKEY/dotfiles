@@ -3,6 +3,7 @@
 
 (use-modules (gnu)
              (gnu services syncthing)
+             (gnu packages gnome)
              (nongnu packages linux)
              (nongnu system linux-initrd))
 (use-service-modules desktop networking ssh xorg docker virtualization)
@@ -66,7 +67,15 @@
                      config => (gdm-configuration
                                 (gnome-shell-assets
                                  (list (specification->package "font-google-noto")
-                                       (specification->package "adwaita-icon-theme"))))))))
+                                       (specification->package "adwaita-icon-theme")))))
+                    (network-manager-service-type
+                     config =>
+                     (network-manager-configuration
+                      (inherit config)
+                      (vpn-plugins (list
+                                    network-manager-openvpn
+                                    network-manager-vpnc
+                                    network-manager-openconnect)))))))
  (bootloader
   (bootloader-configuration
    (bootloader grub-bootloader)
