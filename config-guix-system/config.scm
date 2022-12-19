@@ -5,7 +5,7 @@
              (gnu services syncthing)
              (nongnu packages linux)
              (nongnu system linux-initrd))
-(use-service-modules desktop networking ssh xorg docker)
+(use-service-modules desktop networking ssh xorg docker virtualization)
 
 (operating-system
  (kernel linux)
@@ -26,7 +26,7 @@
                 (group "users")
                 (home-directory "/home/rocktakey")
                 (supplementary-groups
-                 '("wheel" "netdev" "audio" "video" "docker")))
+                 '("wheel" "netdev" "audio" "video" "docker" "kvm" "libvirt")))
                %base-user-accounts))
  (packages
   (append
@@ -44,7 +44,11 @@
          (set-xorg-configuration
           (xorg-configuration
            (keyboard-layout keyboard-layout)))
-         (service docker-service-type))
+         (service docker-service-type)
+         (service libvirt-service-type
+                  (libvirt-configuration
+                   (unix-sock-group "libvirt")))
+         (service virtlog-service-type))
    (modify-services %desktop-services
                     (guix-service-type config => (guix-configuration
                                                   (inherit config)
