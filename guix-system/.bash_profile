@@ -29,3 +29,5 @@ if [ -x "$(command -v rclone)" ]; then
 fi
 
 PATH="$HOME/.local/bin:$PATH"
+
+export PATH=~/.npm-global/bin:$PATH
