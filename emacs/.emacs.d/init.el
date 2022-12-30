@@ -60,6 +60,7 @@
     :filters
     '(my-mic-filter-package-nonlist-to-list
       my-mic-filter-package-t-to-name
+      mic-filter-define-key-general
       mic-filter-hydra
       mic-filter-mykie))
 
@@ -68,6 +69,7 @@
     '(my-mic-filter-package-nonlist-to-list
       my-mic-filter-package-append-t
       my-mic-filter-package-t-to-name
+      mic-filter-define-key-general
       mic-filter-hydra
       mic-filter-mykie)))
 
@@ -520,9 +522,11 @@ how long to wait for a response before giving up."
    (view-read-only . t)))
 
 (mmic* window
+  :define-key-general
+  ((override
+    ("C-o" . #'other-window)))
   :define-key
   ((global-map
-    ("C-o" . #'other-window)
     ("C-x 9" . #'split-window-3)))
   :hydra
   ((hydra-window-resizer
