@@ -271,6 +271,8 @@
             "\\(?:\\sw\\|\\s_\\|\\\\.\\)+")
         "\\)")))
 
+(mmic general)
+
 
 
 (defun get-wsl-user-directory ()
