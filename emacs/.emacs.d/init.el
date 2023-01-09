@@ -980,6 +980,8 @@ cases."
   ((diredfl-global-mode)))
 
 (mmic dired-git-info
+  :declare-function
+  (dired-git-info-auto-enable)
   :hook
   ((dired-after-readin-hook . #'dired-git-info-auto-enable))
   :custom
@@ -987,35 +989,39 @@ cases."
 
 (mmic dockerfile-mode)
 
-(leaf org
-  :ensure t org-contrib
-  :commands (org-capture
-             org-metaright
-             org-metaleft
-             org-metadown
-             org-metaup
-             org-meta-return
-             org-cycle)
-  :defun org-up-element org-element-at-point org-element-property
+(mmic org
+  :package org-contrib
+  :declare-function
+  (org-capture
+   org-metaright
+   org-metaleft
+   org-metadown
+   org-metaup
+   org-meta-return
+   org-cycle
+   org-up-element
+   org-element-at-point
+   org-element-property
+   org-save-all-org-buffers)
   :custom
-  `((org-agenda-sticky . t)
-    (org-directory . my-org-directory)
-    (org-log-done . 'time)
-    (org-default-notes-file . ,(expand-file-name "inbox.org" my-org-directory))
-    (org-agenda-files . '(,my-org-directory))
-    (org-todo-keywords
-     . '((sequence "TODO(t)" "WAIT(w)" "|" "OBSOLETED(o)" "DONE(d)")))
-    (org-capture-templates
-     . '(("n" "Note" entry (file org-default-notes-file)
-          "** %?\n   %i\n   %a\n   %U")
-         ("t" "Todo" entry (file org-default-notes-file)
-          "** TODO %?\n   %i\n   %a\n   %U")
-         ("b" "Bug"  entry (file org-default-notes-file)
-          "** TODO :bug: %?\n   %i\n   %a\n   %U")
-         ("m" "Medicine notebook" entry
-          (file+headline ,(expand-file-name "medicine.org" my-org-directory)
-                         "notebook")
-          "** %u
+  ((org-agenda-sticky . t)
+   (org-directory . my-org-directory)
+   (org-log-done . 'time)
+   (org-default-notes-file . (expand-file-name "inbox.org" my-org-directory))
+   (org-agenda-files . '(,my-org-directory))
+   (org-todo-keywords
+    . '((sequence "TODO(t)" "WAIT(w)" "|" "OBSOLETED(o)" "DONE(d)")))
+   (org-capture-templates
+    . '(("n" "Note" entry (file org-default-notes-file)
+         "** %?\n   %i\n   %a\n   %U")
+        ("t" "Todo" entry (file org-default-notes-file)
+         "** TODO %?\n   %i\n   %a\n   %U")
+        ("b" "Bug"  entry (file org-default-notes-file)
+         "** TODO :bug: %?\n   %i\n   %a\n   %U")
+        ("m" "Medicine notebook" entry
+         (file+headline ,(expand-file-name "medicine.org" my-org-directory)
+                        "notebook")
+         "** %u
    disease   :: %?
    hospital  ::
    doctor    ::
@@ -1024,361 +1030,256 @@ cases."
    symptom   ::
 
 ")
-         ("D" "Blog Diary" entry
-          (file ,(expand-file-name "org/diary.org" my-blog-directory))
-          "\
+        ("D" "Blog Diary" entry
+         (file ,(expand-file-name "org/diary.org" my-blog-directory))
+         "\
 * TODO %?
   :PROPERTIES:
   :EXPORT_FILE_NAME: %(format \"%s-%s\" (format-time-string \"%Y\") (uuid-string))
   :END:
 ")
-         ("I" "Blog Information Science" entry
-          (file ,(expand-file-name "org/information-science.org" my-blog-directory))
-          "\
+        ("I" "Blog Information Science" entry
+         (file ,(expand-file-name "org/information-science.org" my-blog-directory))
+         "\
 * TODO %?
   :PROPERTIES:
   :EXPORT_FILE_NAME: %(format \"%s-%s\" (format-time-string \"%Y\") (uuid-string))
   :END:
 ")
-         ("B" "Blog Medicine/Biology" entry
-          (file ,(expand-file-name "org/medicine-biology.org" my-blog-directory))
-          "\
+        ("B" "Blog Medicine/Biology" entry
+         (file ,(expand-file-name "org/medicine-biology.org" my-blog-directory))
+         "\
 * TODO %?
   :PROPERTIES:
   :EXPORT_FILE_NAME: %(format \"%s-%s\" (format-time-string \"%Y\") (uuid-string))
   :END:
 ")
-         ("P" "Blog Physics" entry
-          (file ,(expand-file-name "org/physics.org" my-blog-directory))
-          "\
+        ("P" "Blog Physics" entry
+         (file ,(expand-file-name "org/physics.org" my-blog-directory))
+         "\
 * TODO %?
   :PROPERTIES:
   :EXPORT_FILE_NAME: %(format \"%s-%s\" (format-time-string \"%Y\") (uuid-string))
   :END:
 ")
-         ("M" "Blog Mathematics" entry
-          (file ,(expand-file-name "org/mathematics.org" my-blog-directory))
-          "\
+        ("M" "Blog Mathematics" entry
+         (file ,(expand-file-name "org/mathematics.org" my-blog-directory))
+         "\
 * TODO %?
   :PROPERTIES:
   :EXPORT_FILE_NAME: %(format \"%s-%s\" (format-time-string \"%Y\") (uuid-string))
   :END:
 ")
-         ))
-    (org-blackfriday--org-element-string
-     . '((table . "Table")
-         (figure . "Figure")
-         (src-block . "Code"))))
-
-  ;; Replace "@&" with "&" in .org file when export to HTML.
-  ;;  You can write "@&#x7c;" if you'd like to write "|".
-  :preface
-  (defun my:org-export-html-hook ()
-    (perform-replace "@&amp;" "&" nil nil nil))
-  (defun my:org-save-all-org-buffers (&rest _)
-    (org-save-all-org-buffers))
+        ))
+   (org-blackfriday--org-element-string
+    . '((table . "Table")
+        (figure . "Figure")
+        (src-block . "Code"))))
   :hook
-  ((org-export-html-final-hook . my:org-export-html-hook)
-   (org-trigger-hook . my:org-save-all-org-buffers)
-   (org-clock-in-hook . org-save-all-org-buffers)
-   (org-clock-out-hook . org-save-all-org-buffers)
-   (org-clock-cancel-hook . org-save-all-org-buffers))
-  :bind
-  (("M-q" . org-capture)
-   (:org-mode-map
-    ("C-M-f" . org-metaright)
-    ("C-M-b" . org-metaleft)
-    ("C-M-p" . org-metadown)
-    ("C-M-n" . org-metaup)
-    ("C-M-<non-convert>" . org-meta-return)
-    ("<windows>" . org-cycle)))
-  :init
-  (leaf org-agenda
-    :ensure nil
-    :bind
-    (("C-c a" . org-agenda))
-    :custom
-    (org-agenda-prefix-format
-     . '((agenda . " %i %-12:c%?-12t% s %(let ((state (ignore-errors (org-get-todo-state)))) (if state (propertize state 'face (org-get-todo-face state)) \"\")) %b")
-         (todo . " %i %-12:c %T  %(let ((state (ignore-errors (org-get-todo-state)))) (if state (propertize state 'face (org-get-todo-face state)) \"\")) %b")
-         (tags . " %i %-12:c %T")
-         (search . " %i %-12:c")))
-    :preface
-    (defun my:org-agenda-color-todo-state (&optional _)
-      (remove-overlays)
-      (let ((start 0) ov)
-        (mapc
-         (lambda (arg)
-           (let ((regexp (car arg))
-                 (face (cdr arg)))
-             (save-excursion
-               (goto-char (point-min))
-               (while (string-match regexp (buffer-string) start)
-                 (setq ov (make-overlay (1+ (match-beginning 0)) (1+ (match-end 0))))
-                 (overlay-put ov 'face face)
-                 (setq start (match-end 0)))
-               (setq start 0))))
-         '(("\\_<\\(TODO\\|WAIT\\)\\_>" . org-todo)
-           ("\\_<\\(DONE\\|OBSOLETED\\)\\_>" . org-done)))
-        (save-excursion
-          (goto-char (point-min))
-          (while (string-match
-                  "\\(TODO\\|WAIT\\|DONE\\|OBSOLETED\\)[^\n]*?\\(\\1 \\)[^\n]*$"
-                  (buffer-string) start)
-            (setq ov (make-overlay (1+ (match-beginning 2)) (1+ (match-end 2))))
-            (overlay-put ov 'display "")
-            (setq start (match-end 0)))
-          (setq start 0))))
-    :hook
-    ((org-agenda-finalize-hook . my:org-agenda-color-todo-state))
-    :advice
-    (:after org-agenda-todo my:org-agenda-color-todo-state))
+  ((org-clock-in-hook . #'org-save-all-org-buffers)
+   (org-clock-out-hook . #'org-save-all-org-buffers)
+   (org-clock-cancel-hook . #'org-save-all-org-buffers))
+  :define-key
+  ((global-map
+    ("M-q" . #'org-capture)))
+  :define-key-after-load
+  ((org-mode-map
+    ("C-M-f" . #'org-metaright)
+    ("C-M-b" . #'org-metaleft)
+    ("C-M-p" . #'org-metadown)
+    ("C-M-n" . #'org-metaup)
+    ("C-M-<non-convert>" . #'org-meta-return)
+    ("<windows>" . #'org-cycle)))
+  )
 
-  (leaf org-readme
-    :ensure nil
-    :el-get
-    emacsmirror:yaoddmuse emacsmirror:header2 emacsmirror:lib-requires
-    vapniks/org-readme
-    :depends http-post-simple)
+(mmic* org-agenda
+  :define-key
+  ((global-map
+    ("C-c a" . #'org-agenda)))
+  :custom
+  ((org-agenda-prefix-format
+    . '((agenda . " %i %-12:c%?-12t% s %(let ((state (ignore-errors (org-get-todo-state)))) (if state (propertize state 'face (org-get-todo-face state)) \"\")) %b")
+        (todo . " %i %-12:c %T  %(let ((state (ignore-errors (org-get-todo-state)))) (if state (propertize state 'face (org-get-todo-face state)) \"\")) %b")
+        (tags . " %i %-12:c %T")
+        (search . " %i %-12:c"))))
+  :eval
+  ((defun my:org-agenda-color-todo-state (&optional _)
+    (remove-overlays)
+    (let ((start 0) ov)
+      (mapc
+       (lambda (arg)
+         (let ((regexp (car arg))
+               (face (cdr arg)))
+           (save-excursion
+             (goto-char (point-min))
+             (while (string-match regexp (buffer-string) start)
+               (setq ov (make-overlay (1+ (match-beginning 0)) (1+ (match-end 0))))
+               (overlay-put ov 'face face)
+               (setq start (match-end 0)))
+             (setq start 0))))
+       '(("\\_<\\(TODO\\|WAIT\\)\\_>" . org-todo)
+         ("\\_<\\(DONE\\|OBSOLETED\\)\\_>" . org-done)))
+      (save-excursion
+        (goto-char (point-min))
+        (while (string-match
+                "\\(TODO\\|WAIT\\|DONE\\|OBSOLETED\\)[^\n]*?\\(\\1 \\)[^\n]*$"
+                (buffer-string) start)
+          (setq ov (make-overlay (1+ (match-beginning 2)) (1+ (match-end 2))))
+          (overlay-put ov 'display "")
+          (setq start (match-end 0)))
+        (setq start 0)))))
+  :eval-after-load
+  ((advice-add #'org-agenda-todo :after #'my:org-agenda-color-todo-state))
+  :hook
+  ((org-agenda-finalize-hook . #'my:org-agenda-color-todo-state)))
 
-  (leaf org-appear
-    :hook
-    ((org-mode-hook . org-appear-mode))
-    :custom
-    ((org-appear-autolinks . t)
-     (org-appear-autosubmarkers . t)
-     (org-appear-autoentities . t)
-     (org-appear-autokeywords . t)
-     (org-appear-inside-latex . t)))
+(mmic org-commentary)
 
-  :config
-  (defun my-org-netlify (str)
-    (concat
-     (save-restriction
-       (widen)
-       (save-excursion
-         (while (ignore-errors (org-up-element) t))
-         (let* ((entry (org-element-at-point)))
-           (org-element-property :EXPORT_FILE_NAME entry))))
-     "/" str))
+(mmic org-appear
+  :hook
+  ((org-mode-hook . #'org-appear-mode))
+  :custom
+  ((org-appear-autolinks . t)
+   (org-appear-autosubmarkers . t)
+   (org-appear-autoentities . t)
+   (org-appear-autokeywords . t)
+   (org-appear-inside-latex . t)))
 
-  (leaf org-eldoc
-    :ensure nil
-    :commands (org-eldoc-get-breadcrumb
-               org-eldoc-get-src-header
-               org-eldoc-get-src-lang)
-    :hook
-    (org-mode-hook . eldoc-mode))
+(defun my-org-netlify (str)
+  (concat
+   (save-restriction
+     (widen)
+     (save-excursion
+       (while (ignore-errors (org-up-element) t))
+       (let* ((entry (org-element-at-point)))
+         (org-element-property :EXPORT_FILE_NAME entry))))
+   "/" str))
 
-  (leaf org-id
-    :ensure nil
-    :custom
-    `((org-id-locations-file
-       . ,(expand-file-name
-           "etc/.org-id-locations"
-           user-emacs-directory))))
+(mmic* org-eldoc
+  :hook
+  ((org-mode-hook . #'eldoc-mode)))
 
-  (leaf gcal
-    :ensure nil
-    :el-get misohena/gcal
-    :defvar (gcal-access-token)
-    :defer t
-    :custom
-    `((gcal-token-file . ,(expand-file-name "etc/.gcal-token"
-                                            user-emacs-directory))
-      (gcal-org-pushed-events-file
-       . ,(expand-file-name ".gcal-org-pushed-events"
-                            my-org-directory))
-      (gcal-org-header-separator . "->")
-      (gcal-org-include-parents-header-maximum . t)
-      (gcal-org-allowed-timestamp-prefix . '(nil "SCHEDULED" "DEADLINE"))
-      (gcal-org-summary-prefix-ts-prefix-alist
-       . '(("SCHEDULED" . "S:")
-           ("DEADLINE" . "D:")
-           (nil . ""))))
-    :preface
-    (defvar my:gcal-mailaddress)
-    :pl-post-custom
-    (gcal-client-id
-     gcal-client-secret
-     my:gcal-mailaddress)
-    :init
-    (leaf gcal-org
-      :ensure nil
-      :commands
-      (gcal-org-push-file
-       my:gcal-org-push-all-file
-       my:gcal-org-push-file)
-      :preface
-      (defun my:gcal-org-push-all-file ()
-        (interactive)
-        (mapcar
-         (apply-partially #'gcal-org-push-file my:gcal-mailaddress)
-         (cl-remove-if-not
-          (apply-partially #'string-match "/[^./][^/]*\\.org$")
-          (directory-files my-org-directory t))))
-      (defun my:gcal-org-push-file (file)
-        (interactive
-         (list
-          (read-file-name
-           "Org file: " my-org-directory nil t nil
-           (apply-partially #'string-match "^[^\\./][^/]*\\.org$"))))
-        (condition-case nil
-            (gcal-org-push-file my:gcal-mailaddress file)
-          (error
-           (setq gcal-access-token nil)
-           (gcal-org-push-file my:gcal-mailaddress file))))))
+(mmic* org-id
+  :custom
+  ((org-id-locations-file
+    . (expand-file-name
+       "etc/.org-id-locations"
+       user-emacs-directory))))
 
-  (leaf ox-hugo
-    :after org
-    :custom
-    ((org-hugo-auto-set-lastmod . t)
-     (org-hugo-link-desc-insert-type . t))))
+(mmic ox-hugo
+  :custom
+  ((org-hugo-auto-set-lastmod . t)
+   (org-hugo-link-desc-insert-type . t)))
 
-(leaf* TeX
-  :config
-  (defun replace-to-comma ()
+(defun replace-to-comma ()
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (search-forward "、")
+      (replace-match  ", "))))
+
+(defun to-comma-hook ()
+  (add-hook 'before-save-hook #'replace-to-comma nil t))
+
+(mmic tex-mode
+  :custom
+  ((tex-command . "platex --synctex=1")
+   (tex-run-command . "platex")
+   (latex-run-command . "platex")))
+
+(mmic bibtex
+  :custom
+  ((bibtex-command . "pbibtex")))
+
+(mmic yatex
+  :declare-function
+  (YaTeX-typeset-menu
+   YaTeX-get-preview-file-name)
+  :define-key-after-load
+  ((YaTeX-prefix-map
+    ("v" . #'yatex-open-dvi-with-emacs))
+   (YaTeX-mode-map
+    ("C-c C-c" . #'YaTeX-typeset-pdf)))
+  :custom
+  ((YaTeX-user-completion-table
+    . (expand-file-name "etc/.yatexrc" user-emacs-directory))
+   ;; https://oku.edu.mie-u.ac.jp/~okumura/texfaq/qa/52930.html
+   (YaTeX-latex-message-code . 'utf-8))
+  :eval
+  ((add-to-list 'auto-mode-alist
+                '("\\.tex\\'" . yatex-mode))
+   (defun ad:yatex-typeseting-sentinel (_ arg)
+     (when (string= arg "finished\n")
+       (ignore-errors
+         (with-current-buffer
+             (if (string-match-p "\\.pdf$" (buffer-file-name))
+                 (current-buffer)
+               (find-buffer-visiting
+                (YaTeX-get-preview-file-name "dvipdfmx")))
+           (revert-buffer nil t)))))
+   (defun YaTeX-typeset-pdf (arg)
+     (interactive "P")
+     (YaTeX-typeset-menu arg ?d))
+   (defun yatex-open-dvi-with-emacs ()
+     "Preview current dvi file."
+     (interactive)
+     (find-file-other-window
+      (YaTeX-get-preview-file-name))))
+  :eval-after-load
+  ((advice-add #'YaTeX-typeset-sentinel :after #'ad:yatex-typeseting-sentinel)))
+
+(leaf reftex
+  :hook
+  ((latex-mode-hook . turn-on-reftex)
+   (yatex-mode-hook . turn-on-reftex))
+  :require reftex-ref
+  :ensure auctex
+  :defun
+  (reftex-access-scan-info
+   reftex-offer-label-menu)
+  :custom
+  `((reftex-default-bibliography
+     . ',(list (expand-file-name
+                "texmf/bibtex/bib/mine.bib"
+                (pcase system-type
+                  (`windows-nt (getenv "USERPROFILE"))
+                  (_ (getenv "HOME")))))))
+  :preface
+  (defun my:eqref ()
     (interactive)
-    (save-excursion
-      (goto-char (point-min))
-      (while (search-forward "、")
-        (replace-match  ", "))))
-  (defun to-comma-hook ()
-    (add-hook 'before-save-hook 'replace-to-comma nil t))
-
-  (leaf tex-mode
-    :defer t
-    :custom
-    ((tex-command . "platex --synctex=1")
-     (tex-run-command . "platex")
-     (latex-run-command . "platex")))
-
-  (leaf bibtex
-    :defer t
-    :custom
-    (bibtex-command . "pbibtex"))
-
-  (leaf yatex
-    :mode ("\\.tex\\'" . yatex-mode)
-    :defun
-    YaTeX-typeset-menu
-    :preface
-    (defun ad:yatex-typeseting-sentinel (_ arg)
-      (when (string= arg "finished\n")
-        (ignore-errors
-          (with-current-buffer
-              (if (string-match-p "\\.pdf$" (buffer-file-name))
-                  (current-buffer)
-                (find-buffer-visiting
-                 (YaTeX-get-preview-file-name "dvipdfmx")))
-            (revert-buffer nil t)))))
-    (defun YaTeX-typeset-pdf (arg)
-      (interactive "P")
-      (YaTeX-typeset-menu arg ?d))
-    :advice
-    (:after YaTeX-typeset-sentinel ad:yatex-typeseting-sentinel)
-    :bind ((:YaTeX-prefix-map
-            ("v" . yatex-open-dvi-with-emacs))
-           (:YaTeX-mode-map
-            ("C-c C-c" . YaTeX-typeset-pdf)))
-    :custom
-    `((YaTeX-user-completion-table
-       . ,(expand-file-name "etc/.yatexrc" user-emacs-directory))
-      ;; https://oku.edu.mie-u.ac.jp/~okumura/texfaq/qa/52930.html
-      (YaTeX-latex-message-code . 'utf-8))
-    :defun
-    YaTeX-get-preview-file-name
-    :config
-    (defun yatex-open-dvi-with-emacs ()
-      "Preview current dvi file."
-      (interactive)
-      (find-file-other-window
-       (YaTeX-get-preview-file-name))))
-
-  (leaf latex-math-preview
-    :defun YaTeX-in-math-mode-p
-    :bind (:YaTeX-prefix-map
-           :package yatex
-           ("p" . latex-math-preview-expression))
-    :custom
-    (latex-math-preview-in-math-mode-p-func . #'YaTeX-in-math-mode-p)
-    (latex-math-preview-tex-to-png-for-preview . '(platex dvipng))
-    (latex-math-preview-image-foreground-color . "black")
-    (latex-math-preview-image-background-color . "white"))
-
-  (leaf magic-latex-buffer
-    :hook (latex-mode-hook . magic-latex-buffer)
-    :custom
-    ((magic-latex-enable-block-highlight . t)
-     (magic-latex-enable-suscript        . t)
-     (magic-latex-enable-pretty-symbols  . t)
-     (magic-latex-enable-block-align     . nil)
-     (magic-latex-enable-inline-image    . t)
-     (magic-latex-enable-minibuffer-echo . nil))
-    :defvar ml/arrow-symbols
-    :config
-    (add-to-list 'ml/arrow-symbols '("\\\\Longrightarrow\\>" . "⇒"))
-    (add-to-list 'ml/arrow-symbols '("\\\\Longlefttarrow\\>" . "⇐"))
-    (add-to-list 'ml/arrow-symbols '("\\\\Longleftrightarrow\\>" . "⇔"))
-    (add-to-list 'ml/arrow-symbols '("\\\\longmapsto\\>" . "↦")))
-  ;; C-c v open pdf
-  ;; C-c p view math directly
-
-  ;; (leaf xenops
-  ;;   :hook (yatex-mode-hook . xenops-mode))
-
-  (leaf reftex
-    :hook
-    ((latex-mode-hook . turn-on-reftex)
-     (yatex-mode-hook . turn-on-reftex))
-    :require reftex-ref
-    :ensure auctex
-    :defun
-    (reftex-access-scan-info
-     reftex-offer-label-menu)
-    :custom
-    `((reftex-default-bibliography
-       . ',(list (expand-file-name
-                  "texmf/bibtex/bib/mine.bib"
-                  (pcase system-type
-                    (`windows-nt (getenv "USERPROFILE"))
-                    (_ (getenv "HOME")))))))
-    :preface
-    (defun my:eqref ()
-      (interactive)
-      (require 'tex)
-      (reftex-access-scan-info current-prefix-arg)
-      (insert
-       (format "\\eref{%s}" (nth 0 (car (reftex-offer-label-menu "e"))))))
-    (defun my:tabref ()
-      (interactive)
-      (require 'tex)
-      (reftex-access-scan-info current-prefix-arg)
-      (insert
-       (format "\\tabref{%s}" (nth 0 (car (reftex-offer-label-menu "t"))))))
-    (defun my:figref ()
-      (interactive)
-      (require 'tex)
-      (reftex-access-scan-info current-prefix-arg)
-      (insert
-       (format "\\figref{%s}" (nth 0 (car (reftex-offer-label-menu "f"))))))
-    (defun my:secref ()
-      (interactive)
-      (require 'tex)
-      (reftex-access-scan-info current-prefix-arg)
-      (insert
-       (format "\\ref{%s}" (nth 0 (car (reftex-offer-label-menu "s"))))))
-    :hydra
-    (hydra-yatex-ref
-     (:color blue)
-     "\\ref"
-     ("e" my:eqref "equation")
-     ("t" my:tabref "table")
-     ("f" my:figref "figure")
-     ("s" my:secref "section"))
-    :bind
-    (:reftex-mode-map
-     ("C-c C-r" . hydra-yatex-ref/body))))
+    (require 'tex)
+    (reftex-access-scan-info current-prefix-arg)
+    (insert
+     (format "\\eref{%s}" (nth 0 (car (reftex-offer-label-menu "e"))))))
+  (defun my:tabref ()
+    (interactive)
+    (require 'tex)
+    (reftex-access-scan-info current-prefix-arg)
+    (insert
+     (format "\\tabref{%s}" (nth 0 (car (reftex-offer-label-menu "t"))))))
+  (defun my:figref ()
+    (interactive)
+    (require 'tex)
+    (reftex-access-scan-info current-prefix-arg)
+    (insert
+     (format "\\figref{%s}" (nth 0 (car (reftex-offer-label-menu "f"))))))
+  (defun my:secref ()
+    (interactive)
+    (require 'tex)
+    (reftex-access-scan-info current-prefix-arg)
+    (insert
+     (format "\\ref{%s}" (nth 0 (car (reftex-offer-label-menu "s"))))))
+  :hydra
+  (hydra-yatex-ref
+   (:color blue)
+   "\\ref"
+   ("e" my:eqref "equation")
+   ("t" my:tabref "table")
+   ("f" my:figref "figure")
+   ("s" my:secref "section"))
+  :bind
+  (:reftex-mode-map
+   ("C-c C-r" . hydra-yatex-ref/body)))
 
 (leaf* pdf
   :config
