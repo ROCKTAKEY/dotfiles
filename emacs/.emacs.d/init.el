@@ -56,7 +56,7 @@
   (mic-deffilter-const-append my-mic-filter-package-append-t :package '(t))
   (mic-deffilter-nonlist-to-list my-mic-filter-require-nonlist-to-list :require)
   (mic-deffilter-t-to-name my-mic-filter-require-t-to-name :require)
-    (mic-deffilter-ignore my-mic-filter-ignore-docs :doc)
+  (mic-deffilter-ignore my-mic-filter-ignore-docs :doc)
 
   (mic-defmic mmic* mic
     :filters
@@ -261,11 +261,6 @@
   (leaf mykie
     :doc
     "Fusion key bindings with prefix arguments and so on."
-    :require t)
-
-  (leaf series
-    :ensure nil
-    :el-get ROCKTAKEY/series
     :require t))
 
 (leaf leaf-tree
@@ -1476,15 +1471,10 @@ cases."
     ("C-M-@" . #'consult-register-store)
     ("M-g h" . #'consult-org-heading)
     ("M-g a" . #'consult-org-agenda)
-    ("M-g e" . #'consult-flymake)))
+    ("M-g e" . #'consult-flymake)
+    ("C-r" . #'consult-ripgrep)))
   :eval-after-load
-  (add-to-list 'consult-buffer-sources 'rhq-consult-source-project-directory))
-
-(mmic consult-ag
-  :define-key
-  ((global-map
-    ("C-r" . #'consult-ag))))
-
+  ((add-to-list 'consult-buffer-sources 'rhq-consult-source-project-directory)))
 
 ;; (leaf consult-flycheck
 ;;   :bind
@@ -1689,408 +1679,363 @@ cases."
     . (expand-file-name "etc/forge-database.sqlite"
                         user-emacs-directory))))
 
-(leaf* move
-  :bind
-  (("C-a" . series-home)
-   ("C-e" . series-end)
-   (:prog-mode-map
-    :package prog-mode
-    ("C-a" . series-home-prog)
-    ("C-e" . series-end-prog))
-   (:eww-mode-map
-    :package eww
-    ("a" . series-home-prog)
-    ("e" . series-end-prog))
-   (:org-mode-map
-    :package org
-    ("C-a" . series-home-org)
-    ("C-e" . series-end-org)))
-  :config
-  (defun forward-to-not-comment ()
-    (interactive)
-    (beginning-of-line)
-    (forward-char (string-match
-                   (concat "[ \t]*\\(\\(" (regexp-quote comment-start) ".*?$\\)\\|$\\)")
-                   (buffer-substring (point-at-bol) (point-at-eol)))))
+(mmic series
+  :require t
+  :define-key-after-load
+  ((global-map
+    ("C-a" . #'series-home)
+    ("C-e" . #'series-end)))
+  :define-key-with-feature
+  ((prog-mode
+    (prog-mode-map
+     ("C-a" . #'series-home-prog)
+     ("C-e" . #'series-end-prog)))
+   (eww
+    (eww-mode-map
+     ("a" . #'series-home-prog)
+     ("e" . #'series-end-prog)))
+   (org
+    (org-mode-map
+     ("C-a" . #'series-home-org)
+     ("C-e" . #'series-end-org))))
+  :eval
+  ((defun forward-to-not-comment ()
+     (interactive)
+     (beginning-of-line)
+     (forward-char (string-match
+                    (concat "[ \t]*\\(\\(" (regexp-quote comment-start) ".*?$\\)\\|$\\)")
+                    (buffer-substring (point-at-bol) (point-at-eol)))))
 
-  (defun forward-to-not-whitespace ()
-    (interactive)
-    (beginning-of-line)
-    (forward-char
-     (string-match
-      (concat "[ \t]*$") (buffer-substring (point-at-bol) (point-at-eol)))))
+   (defun forward-to-not-whitespace ()
+     (interactive)
+     (beginning-of-line)
+     (forward-char
+      (string-match
+       (concat "[ \t]*$") (buffer-substring (point-at-bol) (point-at-eol))))))
+  :eval-after-load
+  ((series-defun series-home
+     back-to-indentation
+     beginning-of-line
+     beginning-of-buffer
+     series-return)
+   (series-defun series-end
+     forward-to-not-whitespace
+     end-of-line
+     end-of-buffer
+     series-return)
+   (series-defun series-home-prog
+     back-to-indentation
+     beginning-of-line
+     beginning-of-defun
+     beginning-of-buffer
+     series-return)
+   (series-defun series-end-prog
+     forward-to-not-comment
+     end-of-line end-of-defun
+     end-of-buffer
+     series-defun)
+   (series-defun series-home-org
+     back-to-indentation
+     org-beginning-of-line
+     beginning-of-buffer
+     series-return)
+   (series-defun series-end-org
+     org-end-of-line
+     end-of-buffer
+     series-return)))
 
-  (series-defun series-home
-    back-to-indentation
-    beginning-of-line
-    beginning-of-buffer
-    series-return)
-  (series-defun series-end
-    forward-to-not-whitespace
-    end-of-line
-    end-of-buffer
-    series-return)
-  (series-defun series-home-prog
-    back-to-indentation
-    beginning-of-line
-    beginning-of-defun
-    beginning-of-buffer
-    series-return)
-  (series-defun series-end-prog
-    forward-to-not-comment
-    end-of-line end-of-defun
-    end-of-buffer
-    series-defun)
-  (series-defun series-home-org
-    back-to-indentation
-    org-beginning-of-line
-    beginning-of-buffer
-    series-return)
-  (series-defun series-end-org
-    org-end-of-line
-    end-of-buffer
-    series-return)
+(mmic bm
+  :require t
+  :custom
+  ((bm-repository-file
+    . (expand-file-name "etc/.bm-repository" user-emacs-directory))
+   (bm-buffer-persistence . t))
+  :define-key-general
+  ((override
+    ("C-M-n" . #'bm-next)
+    ("C-M-p" . #'bm-previous)))
+  :face
+  ((bm-persistent-face
+    . ((((class grayscale) (background light)) (:background "DimGray"))
+       (((class grayscale) (background dark))  (:background "LightGray"))
+       (((class color)     (background light)) (:foreground nil :background "#090960"))
+       (((class color)     (background dark))  (:foreground nil :background "#090960")))))
+  :hook
+  ((after-init-hook . #'bm-repository-load)
+   (find-file-hook  . #'bm-buffer-restore)
+   (after-revert-hook . #'bm-buffer-restore)
+   (kill-buffer-hook . #'bm-buffer-save)
+   (after-save-hook . #'bm-buffer-save)
+   (vc-before-checkin-hook . #'bm-buffer-save)
+   (kill-emacs-hook . #'bm-buffer-save)
+   (find-file-hook .  #'bm-buffer-restore)
+   (kill-buffer-hook . #'bm-buffer-save)
+   (after-save-hook . #'bm-buffer-save)
+   (after-revert-hook . #'bm-buffer-restore)
+   (vc-before-checkin-hook . #'bm-buffer-save)))
 
+(mmic ace-jump-mode
+  :define-key
+  ((global-map
+    ("C-:" . #'ace-jump-char-mode)))
+  :custom
+  ((ace-jump-mode-move-keys
+    . (append "asdfghjkl;:qwertyuiopzxcvbnm,." nil)))
+  :eval-after-load
+  ((defun ace-jump-char-mode-migemo (query-char)
+     "AceJump char mode"
+     (interactive (list (read-char "Query Char:")))
+     (if ace-jump-current-mode (ace-jump-done))
 
-  (leaf bm
-    :custom
-    `((bm-repository-file
-       . ,(expand-file-name "etc/.bm-repository" user-emacs-directory))
-      (bm-buffer-persistence . t))
-    :bind
-    (("M-SPC" . bm-toggle)
-     ("C-\\" . bm-toggle))
-    :bind*
-    (("C-M-n" . bm-next)
-     ("C-M-p" . bm-previous))
-    :custom-face
-    (bm-persistent-face
-     . '((((class grayscale) (background light)) (:background "DimGray"))
-         (((class grayscale) (background dark))  (:background "LightGray"))
-         (((class color)     (background light)) (:foreground nil :background "#090960"))
-         (((class color)     (background dark))  (:foreground nil :background "#090960"))))
-    :hook
-    ((after-init-hook        . bm-repository-load)
-     (find-file-hook         . bm-buffer-restore)
-     (after-revert-hook      . bm-buffer-restore)
-     (kill-buffer-hook       . bm-buffer-save)
-     (after-save-hook        . bm-buffer-save)
-     (vc-before-checkin-hook . bm-buffer-save)
-     (kill-emacs-hook        . bm-buffer-save)
-     (find-file-hook        .  bm-buffer-restore)
-     (kill-buffer-hook       . bm-buffer-save)
-     (after-save-hook        . bm-buffer-save)
-     (after-revert-hook      . bm-buffer-restore)
-     (vc-before-checkin-hook . bm-buffer-save)))
+     (if (eq (ace-jump-char-category query-char) 'other)
+         (error "[AceJump] Non-printable character"))
 
-  (leaf* ace/avy
-    :config
-    (leaf ace-jump-mode
-      :bind
-      (("C-:" . ace-jump-char-mode))
-      :custom
-      `((ace-jump-mode-move-keys
-         . ',(append "asdfghjkl;:qwertyuiopzxcvbnm,." nil)))
-      :config
-      (defun ace-jump-char-mode-migemo (query-char)
-        "AceJump char mode"
-        (interactive (list (read-char "Query Char:")))
-        (if ace-jump-current-mode (ace-jump-done))
+     (setq ace-jump-query-char query-char)
+     (setq ace-jump-current-mode 'ace-jump-char-mode)
+     (ace-jump-do
+      (if (require 'migemo nil t)
+          (let ((result (migemo-get-pattern (make-string 1 query-char))))
+            (if (string-empty-p result)
+                (regexp-quote (make-string 1 query-char))
+              result))
+        (regexp-quote (make-string 1 query-char)))))
+   (advice-add #'ace-jump-char-mode :override #'ace-jump-char-mode-migemo)))
 
-        (if (eq (ace-jump-char-category query-char) 'other)
-            (error "[AceJump] Non-printable character"))
+(mmic ace-link
+  :define-key-with-feature
+  ((info
+    (Info-mode-map
+     (":" . #'ace-link-info)))
+   (help-mode
+    (help-mode-map
+     (":" . #'ace-link-help)))
+   (eww
+    (eww-link-keymap
+     (":" . #'ace-link-eww))
+    (eww-mode-map
+     ( ":" . #'ace-link-eww)))
+   (org
+    (org-mode-map
+     ("C-c M-:" . #'ace-link-org)))))
 
-        (setq ace-jump-query-char query-char)
-        (setq ace-jump-current-mode 'ace-jump-char-mode)
-        (ace-jump-do
-         (if (require 'migemo nil t)
-             (let ((result (migemo-get-pattern (make-string 1 query-char))))
-               (if (string-empty-p result)
-                   (regexp-quote (make-string 1 query-char))
-                 result))
-           (regexp-quote (make-string 1 query-char)))))
-      (advice-add #'ace-jump-char-mode :override #'ace-jump-char-mode-migemo))
+(defun copy-all ()
+  (interactive)
+  (kill-ring-save (point-min) (point-max))
+  (message "Copy all."))
 
-    (leaf ace-jump-zap
-      :bind (("M-z" . ace-jump-zap-to-char)))
-
-    (leaf ace-link
-      :bind
-      (:Info-mode-map
-       :package info
-       (":" . ace-link-info))
-      (:help-mode-map
-       :package help-mode
-       (":" . ace-link-help))
-      (:eww-link-keymap
-       :package eww
-       (":" . ace-link-eww))
-      (:eww-mode-map
-       :package eww
-       ( ":" . ace-link-eww))
-      (:org-mode-map
-       :package org
-       ("C-c M-:" . ace-link-org))))
-
-  (leaf* search
-    :config
-    (leaf ag
-      :bind ("C-r" . ag-regexp)
-      :custom
-      ((ag-arguments . '("--smart-case" "--stats" "-z"))))))
-
-(leaf* edit
-  :preface
-  (defun copy-all ()
-    (interactive)
-    (kill-ring-save (point-min) (point-max))
-    (message "Copy all."))
-  (defun comment-line ()
-    "Make the line comment."
-    (interactive)
-    (save-excursion
-      (beginning-of-line)
-      (set-mark (point))
-      (end-of-line)
-      (comment-or-uncomment-region (region-beginning) (region-end))))
-  :bind
-  (("C-M-w" . copy-all))
+(mmic* newcomment
   :mykie
-  (:prog-mode-map
-   ("M-;" :default comment-dwim :C-u comment-line))
-  :config
-  (define-key key-translation-map (kbd "C-h") (kbd "DEL"))
+  ((prog-mode-map
+    ("M-;" :default comment-dwim :C-u comment-line)))
+  :eval
+  ((defun comment-line ()
+     "Make the line comment."
+     (interactive)
+     (save-excursion
+       (beginning-of-line)
+       (set-mark (point))
+       (end-of-line)
+       (comment-or-uncomment-region (region-beginning) (region-end))))))
 
-  (leaf browse-kill-ring)
 
-  (leaf* parenthesis
-    :config
-    (leaf smartparens
-      :require t
-      :defun
-      (sp--looking-back-p
-       sp-local-pair)
-      :bind
-      ((smartparens-strict-mode-map
-        ("C-S-h" . sp-splice-sexp)
-        ("C-S-i" . sp-forward-slurp-sexp)
-        ("C-S-o" . sp-forward-barf-sexp)
-        ("M-I" . sp-backward-slurp-sexp)
-        ("M-O" . sp-backward-barf-sexp)
-        ("M-s r" . sp-rewrap-sexp)
-        ("C-M-d" . sp-delete-symbol)))
-      :global-minor-mode
-      (show-smartparens-global-mode
-       smartparens-global-strict-mode)
-      :custom
-      ((sp-highlight-pair-overlay . nil)
-       (sp-base-key-bindings . 'sp))
-      :config
-      (require 'smartparens-config)
+(mmic* key-translation
+  :define-key
+  ((key-translation-map
+    ("C-h" . (kbd "DEL")))))
 
-      ;; https://github.com/Fuco1/smartparens/issues/823
-      ;; Allow ES6 arrow '=>' in react-mode
-      (defun sp-after-equals-p (_id action _context)
-        (when (memq action '(insert navigate))
-          (sp--looking-back-p "=>" 2)))
+(mmic puni
+  :define-key
+  ((puni-mode-map
+    ("C-S-h" . #'puni-splice)
+    ("C-S-i" . #'puni-slurp-forward)
+    ("C-S-o" . #'puni-barf-forward)
+    ("M-I" . #'puni-slurp-backward)
+    ("M-O" . #'puni-barf-backward)))
 
-      (defun sp-after-equals-skip (ms mb _me)
-        (when (string= ms ">")
-          (save-excursion
-            (goto-char mb)
-            (sp--looking-back-p "=" 1))))
+  :eval
+  ((puni-global-mode)))
 
-      (sp-local-pair '(web-mode react-mode) "<" nil
-                     :unless '(:add sp-after-equals-p)
-                     :skip-match 'sp-after-equals-skip))
+(mmic elec-pair
+  :eval
+  ((electric-pair-mode)))
 
-    (leaf rainbow-delimiters
-      :hook ((lisp-mode-hook       . rainbow-delimiters-mode)
-             (emacs-lisp-mode-hook . rainbow-delimiters-mode)
-             (c-mode-common-hook   . rainbow-delimiters-mode))
-      :custom-face
-      (rainbow-delimiters-unmatched-face
-       . '((t (:foreground "#ff0000" :bold t :underline t))))
-      (rainbow-delimiters-depth-1-face . '((t (:foreground "#bbffff"))))
-      (rainbow-delimiters-depth-2-face . '((t (:foreground "#ffbbff"))))
-      (rainbow-delimiters-depth-3-face . '((t (:foreground "#ffffaa"))))
-      (rainbow-delimiters-depth-4-face . '((t (:foreground "#aaddaa"))))
-      (rainbow-delimiters-depth-5-face . '((t (:foreground "#ff55ff"))))
-      (rainbow-delimiters-depth-6-face . '((t (:foreground "#09d999"))))
-      (rainbow-delimiters-depth-7-face . '((t (:foreground "#ff6666"))))
-      (rainbow-delimiters-depth-8-face . '((t (:foreground "#66ff66"))))
-      (rainbow-delimiters-depth-9-face . '((t (:foreground "#6666ff"))))))
+(mmic smartparens
+  :require t
+  :define-key
+  ((puni-mode-map
+    ("M-s r" . #'sp-rewrap-sexp)
+    ("C-M-d" . #'sp-delete-symbol)))
+  :custom
+  ((sp-highlight-pair-overlay . nil)
+   (sp-base-key-bindings . 'sp)))
 
-  (leaf smart-newline
-    :global-minor-mode
-    :hook
-    ((prog-mode-hook           . smart-newline-mode)
-     (text-mode-hook           . smart-newline-mode)
-     (makefile-mode-hook       . smart-newline-mode-off)
-     (makefile-gmake-mode-hook . smart-newline-mode-off)
-     (yaml-mode-hook           . smart-newline-mode-off))
-    :preface
-    (defun smart-newline-mode-off ()
-      (smart-newline-mode -1)))
+(mmic rainbow-delimiters
+  :hook ((lisp-mode-hook . #'rainbow-delimiters-mode)
+         (emacs-lisp-mode-hook . #'rainbow-delimiters-mode)
+         (c-mode-common-hook . #'rainbow-delimiters-mode))
+  :face
+  ((rainbow-delimiters-unmatched-face
+    . ((t (:foreground "#ff0000" :bold t :underline t))))
+   (rainbow-delimiters-depth-1-face . ((t (:foreground "#bbffff"))))
+   (rainbow-delimiters-depth-2-face . ((t (:foreground "#ffbbff"))))
+   (rainbow-delimiters-depth-3-face . ((t (:foreground "#ffffaa"))))
+   (rainbow-delimiters-depth-4-face . ((t (:foreground "#aaddaa"))))
+   (rainbow-delimiters-depth-5-face . ((t (:foreground "#ff55ff"))))
+   (rainbow-delimiters-depth-6-face . ((t (:foreground "#09d999"))))
+   (rainbow-delimiters-depth-7-face . ((t (:foreground "#ff6666"))))
+   (rainbow-delimiters-depth-8-face . ((t (:foreground "#66ff66"))))
+   (rainbow-delimiters-depth-9-face . ((t (:foreground "#6666ff"))))))
 
-  (leaf electric-operator
-    :hook ((c-mode-common-hook . electric-operator-mode)
-           (typescript-mode-hook . electric-operator-mode)
-           (ess-r-mode-hook . electric-operator-mode)))
+(mmic smart-newline
+  :hook
+  ((prog-mode-hook . #'smart-newline-mode)
+   (text-mode-hook . #'smart-newline-mode)
+   (makefile-mode-hook . #'smart-newline-mode-off)
+   (makefile-gmake-mode-hook . #'smart-newline-mode-off)
+   (yaml-mode-hook . #'smart-newline-mode-off))
+  :eval
+  ((defun smart-newline-mode-off ()
+     (smart-newline-mode -1))))
 
-  (leaf align
-    :ensure nil
-    :bind
-    ("C-x a" . align-regexp))
+(mmic electric-operator
+  :hook ((c-mode-common-hook . #'electric-operator-mode)
+         (typescript-mode-hook . #'electric-operator-mode)
+         (ess-r-mode-hook . #'electric-operator-mode)))
 
-  (leaf expand-region
-    :bind
-    (:region-bindings-mode-map
-     :package region-bindings-mode
-     ("M-SPC" . er/contract-region)
-     ("C-SPC" . er/expand-region)))
+(mmic expand-region
+  :define-key-with-feature
+  ((region-bindings-mode
+    (region-bindings-mode-map
+     ("C-SPC" . #'er/expand-region)))))
 
-  (leaf visual-regexp
-    :bind (("C-c r" . vr/query-replace)))
+(mmic visual-regexp
+  :define-key
+  ((global-map
+    ("C-c r" . #'vr/query-replace))))
 
-  (leaf grugru
-    :custom
-    `((grugru-edit-save-file . ,(expand-file-name ".grugru" user-emacs-directory)))
-    :bind
-    (("C-;" . grugru)
-     ("<C-tab>" . grugru))
-    :require t
-    :global-minor-mode grugru-highlight-mode
-    :config
-    (grugru-default-setup)
-    (grugru-edit-load))
+(mmic grugru
+  :custom
+  ((grugru-edit-save-file . (expand-file-name ".grugru" user-emacs-directory)))
+  :define-key
+  ((global-map
+    ("C-;" . #'grugru)
+    ("<C-tab>" . #'grugru)))
+  :require t
+  :eval
+  ((grugru-highlight-mode)
+   (grugru-default-setup)
+   (grugru-edit-load)))
 
-  (leaf* undo
-    :custom
-    ((undo-outer-limit . nil))
-    :config
-    (leaf winner
-      :ensure nil
-      :commands
-      (winner-mode
-       winner-undo
-       winner-redo)
-      :global-minor-mode
-      winner-mode)
+(mmic* undo
+  :custom
+  ((undo-outer-limit . nil)))
 
-    (leaf undo-tree
-      :commands undo-tree-mode
-      :defvar undo-tree-mode
-      :custom
-      ((undo-tree-auto-save-history . nil))
-      :hydra
-      (hydra-undo
-       (:hint nil :color pink :foreign-keys 'nil
-              :pre (unless undo-tree-mode (undo-tree-mode)))
-       "
-   ^Undo^         ^Winner^
+(mmic winner
+  :eval
+  ((winner-mode)))
+
+(mmic undo-tree
+  :custom
+  ((undo-tree-auto-save-history . nil))
+  :hydra
+  ((hydra-undo
+    (:hint nil :color pink :foreign-keys 'nil
+           :pre (unless undo-tree-mode (undo-tree-mode)))
+    "
+ ^Undo^         ^Winner^
 ^^^^^^^^------------------------------------
-   _u_,_C-/_: undo      _<left>_:  undo
+ _u_,_C-/_: undo      _<left>_:  undo
 
-   _r_: redo          ^^_<right>_: redo
+ _r_: redo          ^^_<right>_: redo
 
 "
-       ("u" undo-tree-undo)
-       ("C-/" undo-tree-undo)
-       ("M-u" undo-tree-undo)
-       ("r" undo-tree-redo)
-       ("q" nil "quit")
-       ("t" undo-tree-visualize "visualize tree" :exit t)
-       ("<left>" winner-undo)
-       ("<right>" winner-redo))
-      :bind
-      ((("C-x u" . hydra-undo/undo-tree-undo)
-        ("M-u" . hydra-undo/undo-tree-undo)
-        (:undo-tree-map
-         ("C-x u" . hydra-undo/undo-tree-undo)
-         ("C-/" . hydra-undo/undo-tree-undo))))
-      :global-minor-mode
-      global-undo-tree-mode)))
+    ("u" undo-tree-undo)
+    ("C-/" undo-tree-undo)
+    ("M-u" undo-tree-undo)
+    ("r" undo-tree-redo)
+    ("q" nil "quit")
+    ("t" undo-tree-visualize "visualize tree" :exit t)
+    ("<left>" winner-undo)
+    ("<right>" winner-redo)))
+  :define-key
+  ((global-map
+    ("C-x u" . #'hydra-undo/undo-tree-undo)
+    ("M-u" . #'hydra-undo/undo-tree-undo)))
+  :define-key-after-load
+  ((undo-tree-map
+    ("C-x u" . #'hydra-undo/undo-tree-undo)
+    ("C-/" . #'hydra-undo/undo-tree-undo)))
+  :eval
+  ((global-undo-tree-mode)))
 
-(leaf* help
-  :bind
-  (("<f1> h" . nil))
-  :custom-face
-  (help-argument-name . '((t (:bold t :italic t))))
-  :config
-  (leaf find-func
-    :ensure nil
-    :custom
-    `((find-function-C-source-directory
-       . ,(expand-file-name
-           "../src" (invocation-directory)))))
+(mmic* mule-cmds
+  :define-key
+  ((global-map
+    ("<help> h" . nil))))
 
-  (leaf helpful
-    :bind
-    (("<help> k" . helpful-key)
-     ("<help> f" . helpful-callable)
-     ("<help> v" . helpful-variable)))
+(mmic* faces
+  :face
+  ((help-argument-name . ((t (:bold t :italic t))))))
 
-  (leaf which-key
-    :emacs>= "24.4"
-    :require t
-    :global-minor-mode
-    which-key-mode
-    :config
-    (which-key-setup-side-window-bottom)
-    :custom
-    (which-key-idle-delay . 1)))
+(mmic find-func
+  :custom
+  ((find-function-C-source-directory
+    . (expand-file-name
+       "../src" (invocation-directory)))))
 
-(leaf info
-  :ensure nil
-  :init
-  (straight-use-package
-   '(emacs-ja
-     :host github
-     :repo "ayatakesi/ayatakesi.github.io"
-     :files ("emacs/26.1/emacs-ja.info")))
+(mmic helpful
+  :define-key
+  ((global-map
+    ("<help> k" . #'helpful-key)
+    ("<help> f" . #'helpful-callable)
+    ("<help> v" . #'helpful-variable))))
 
-  (straight-use-package
-   '(org-ja
-     :host github
-     :repo "org-mode-doc-ja/org-ja"
-     :files ("docs/org-ja")))
+(mmic which-key
+  :custom
+  ((which-key-idle-delay . 1))
+  :eval
+  ((which-key-mode)
+   (which-key-setup-side-window-bottom)))
 
-  (straight-use-package
-   '(yatex
-     :host github
-     :repo "emacsmirror/yatex"
-     :files
-     ("docs/*")))
-  (straight-use-package
-   '(magit-ja
-     :host github
-     :repo "kuma35/magit-docs-ja"
-     :files ("Documentation/docs-ja/*")))
+(straight-use-package
+ '(emacs-ja
+   :host github
+   :repo "ayatakesi/ayatakesi.github.io"
+   :files ("emacs/26.1/emacs-ja.info")))
 
-  :defer t
-  :preface
-  ;; http://rubikitch.com/2016/07/06/emacs245-manual-ja/
-  (defun Info-find-node--info-ja (orig-fn filename &rest args)
-    (apply orig-fn
-           (pcase filename
-             ("emacs" "emacs245-ja")
-             (_ filename))
-           args))
-  (defun Info-find-node--info-ja (orig-fn filename &rest args)
-    (apply orig-fn
-           (pcase filename
-             ("emacs" "emacs-ja")
-             (_ filename))
-           args))
-  :advice
-  (:around Info-find-node Info-find-node--info-ja)
-  :config
-  (add-to-list 'Info-directory-list "~/info/")
-  (add-to-list 'Info-directory-list
-               (expand-file-name "info/" user-emacs-directory))
-  (add-to-list 'Info-directory-list
-               (expand-file-name "../share/info/" invocation-directory)))
+(straight-use-package
+ '(org-ja
+   :host github
+   :repo "org-mode-doc-ja/org-ja"
+   :files ("docs/org-ja")))
+(straight-use-package
+ '(yatex
+   :host github
+   :repo "emacsmirror/yatex"
+   :files
+   ("docs/*")))
+(straight-use-package
+ '(magit-ja
+   :host github
+   :repo "kuma35/magit-docs-ja"
+   :files ("Documentation/docs-ja/*")))
+
+(mmic info
+  :eval
+  ((defvar my-Info-substitute
+     '(("emacs" . "emacs-ja")
+       ("org" . "org-ja")
+       ("magit" . "magit.ja")
+       ("magit-section" . "magit-section.ja")))
+   (defun Info-find-node--info-ja (args)
+     (let ((filename (car args))
+           (rest (cdr args)))
+       (cons
+        (alist-get filename my-Info-substitute filename nil #'string=)
+        rest)))
+   (advice-add #'Info-find-node :filter-args #'Info-find-node--info-ja)
+   (add-to-list 'Info-directory-list
+                (expand-file-name "info/" user-emacs-directory))))
 
 (defcustom my-deepl-api-key nil
   "My DeepL API key.")
@@ -2100,184 +2045,135 @@ cases."
 ;;   :pl-custom
 ;;   (my-deepl-api-key))
 
-(leaf go-translate
-  :defun (gts-translator gts-prompt-picker gts-deepl-engine gts-buffer-render gts-current-or-selection-texter)
-  :defvar (gts-default-translator)
+(mmic go-translate
   :custom
   ((gts-translate-list . '(("en" "ja") ("ja" "en"))))
-  :config
-  (customize-set-variable
-   'gts-default-translator
-   (gts-translator
-    :picker (gts-prompt-picker :texter (gts-current-or-selection-texter))
-    :engines
-    (list
-     (gts-deepl-engine :auth-key my-deepl-api-key :pro nil))
-    :render
-    (gts-buffer-render))))
+  :custom-after-load
+  ((my-deepl-api-key . nil)
+   (gts-default-translator
+    . (gts-translator
+       :picker (gts-prompt-picker :texter (gts-current-or-selection-texter))
+       :engines
+       (list
+        (gts-deepl-engine :auth-key my-deepl-api-key :pro nil))
+       :render
+       (gts-buffer-render)))))
 
-(leaf* japanese
-  :config
-  (set-language-environment "Japanese")
+(set-language-environment "Japanese")
 
-  (leaf kkc
-    :ensure nil
-    :custom
-    `((kkc-init-file-name
-       . ,(expand-file-name
-           "etc/kkcrc" user-emacs-directory))))
-
-  (eval-when-compile
-    (defvar my:jisyo-path (expand-file-name "dicts" user-emacs-directory)))
-  (leaf ddskk
-    :config
-    (leaf skk
-      :ensure nil
-      :bind* (("C-j" . skk-mode))
-      :bind
-      (:skk-j-mode-map
-       ("\\" . self-insert-command)
-       ("$"  . self-insert-command))
-      :defvar skk-mode skk-rom-kana-rule-list
-      :preface
-      (defun skk-yatex-hook ()
-        (make-local-variable 'skk-j-mode-map)
-        (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar))
-      :custom
-      `(
-        ;; Jisyo
-        (skk-jisyo-code . 'utf-16le-with-signature-dos)
-        (skk-inhibit-ja-dic-search . t)
-        (skk-large-jisyo
-         . ',(if (locate-file "skk-dict.txt" (list my:jisyo-path))
-                 `(,(locate-file "skk-dict.txt" (list my:jisyo-path))
-                   . sjis)
-               (cons (expand-file-name "SKK-JISYO.L" my:jisyo-path) 'euc-jp)))
-        (skk-extra-jisyo-file-list
-         . ',(append
-              (mapcar
-               (lambda (arg) nil nil
-                 (let
-                     ((file (expand-file-name
-                             (if (consp arg) (car arg) arg) my:jisyo-path))
-                      (coding-system (cdr-safe arg)))
-                   (if (file-exists-p file)
-                       (if coding-system
-                           (list (cons file coding-system))
-                         (list file))
-                     nil)))
-               '(("skk-kana.txt" . sjis)
-                 ("ddskk_medical_dic.txt" . euc-jp)))))
-        (skk-itaiji-jisyo
-         . ',(cons (expand-file-name "SKK-JISYO.itaiji" my:jisyo-path) 'euc-jp))
-        (skk-jisyo
-         . ,(expand-file-name "etc/.skk-jisyo" user-emacs-directory))
-        ;; annotation
-        (skk-show-annotation . t)
-        (skk-annotation-delay . 3)
-        ;; Azik
-        (skk-use-azik . t)
-        ;; Candidates
-        (skk-show-inline . 'vertical)
-        (skk-show-candidates-always-pop-to-buffer . nil)
-        ;; Dynamic complete
-        (skk-dcomp-activate . t)
-        (skk-dcomp-multiple-activate . t)
-        ;; Input/Output
-        (skk-egg-like-newline . t)
-        (skk-henkan-strict-okuri-precedence . t)
-        (skk-sticky-key . ,(kbd
-                            (pcase system-type
-                              (`windows-nt "<non-convert>")
-                              (_ "<muhenkan>"))))
-        (skk-search-katakana . t)
-        (skk-japanese-message-and-error . t)
-        )
-      :custom-face
-      (
-       (skk-dcomp-multiple-face
-        . '((t (:foreground "black" :background "gray" :bold nil))))
-       (skk-dcomp-multiple-trailing-face
-        . '((t (:foreground "white" :bold nil))))
-       (skk-dcomp-multiple-selected-face
-        . '((t (:foreground "white" :background "steel blue" :bold nil))))
-
-       (skk-dcomp-face . '((t (:foreground "#dfdfdf")))))
-      :hook
-      ((skk-mode-hook . skk-yatex-hook))
-      :config
-      ;; Download Jisyo
-      (unless (file-exists-p my:jisyo-path)
-        (skk-get my:jisyo-path))
-
-      (add-to-list 'skk-rom-kana-rule-list '("z:" nil (":" . ":")) t)))
-
-  (leaf jaword
-    :global-minor-mode
-    global-jaword-mode)
-
-  (leaf migemo
-    :defun migemo-init
-    :require t
-    :custom
-    `((migemo-command . "cmigemo")
-      (migemo-options . '("-q" "--emacs"))
-      ;; Set your installed path
-      (migemo-dictionary
-       . ,(pcase system-type
-            (`windows-nt
-             (expand-file-name
-              "dict/utf-8/migemo-dict"
-              (file-name-directory (locate-file "cmigemo.exe" exec-path))))
-            (_ (cl-some (lambda (arg) (when (file-exists-p arg) (expand-file-name arg)))
-                        '("/usr/share/cmigemo/utf-8/migemo-dict"
-                          "~/.guix-profile/share/migemo/utf-8/migemo-dict")))))
-      (migemo-user-dictionary . nil)
-      (migemo-regex-dictionary . nil)
-      (migemo-coding-system . 'utf-8))
-    :config
-    (migemo-init)))
-
-(leaf open-junk-file
-  :bind(("C-x s" . open-junk-file))
+(mmic* kkc
   :custom
-  `(open-junk-file-format
-    . ,(expand-file-name
-        "junk/%Y-%m-%d-%H%M%S."
-        (getenv "HOME"))))
+  ((kkc-init-file-name
+    . (expand-file-name
+       "etc/kkcrc" user-emacs-directory))))
 
-(leaf* competitive-programming
-  :config
-  (leaf online-judge
-    :ensure nil
-    :el-get ROCKTAKEY/emacs-online-judge
-    :custom
-    `((online-judge-directories
-       . `,(list
-            (expand-file-name "~/../../atcoder"))))
-    :require t)
-  (leaf oj
-    :custom
-    `((oj-home-dir . ,(expand-file-name "oj" "~"))
-      (oj-default-online-judge . 'atcoder))
-    :preface
-    (define-key global-map (kbd "C-x j") (make-sparse-keymap))
-    :bind
-    (("C-x j t" . oj-test)
-     ("C-x j s" . oj-submit)
-     ("C-x j n" . oj-next)
-     ("C-x j p" . oj-prev)
-     ("C-x j P" . oj-prepare))))
+(mmic* skk
+  :package ddskk
+  :define-key-after-load
+  ((skk-j-mode-map
+    ("\\" . #'self-insert-command)
+    ("$"  . #'self-insert-command)))
+  :hook
+  ((skk-mode-hook . #'skk-yatex-hook))
+  :eval
+  ((defun skk-yatex-hook ()
+     (when (eq major-mode 'YaTeX-mode)
+       (make-local-variable 'skk-j-mode-map)
+       (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar))))
+  :custom
+  ((skk-inhibit-ja-dic-search . t)
+   (skk-jisyo
+    . (expand-file-name "etc/.skk-jisyo" user-emacs-directory))
+   ;; annotation
+   (skk-show-annotation . t)
+   (skk-annotation-delay . 3)
+   ;; Azik
+   (skk-use-azik . t)
+   ;; Candidates
+   (skk-show-inline . 'vertical)
+   (skk-show-candidates-always-pop-to-buffer . nil)
+   ;; Dynamic complete
+   (skk-dcomp-activate . t)
+   (skk-dcomp-multiple-activate . t)
+   ;; Input/Output
+   (skk-egg-like-newline . t)
+   (skk-henkan-strict-okuri-precedence . t)
+   (skk-sticky-key . (kbd
+                      (pcase system-type
+                        (`windows-nt "<non-convert>")
+                        (_ "<muhenkan>"))))
+   (skk-search-katakana . t)
+   (skk-japanese-message-and-error . t))
+  :face
+  ((skk-dcomp-multiple-face
+    . ((t (:foreground "black" :background "gray" :bold nil))))
+   (skk-dcomp-multiple-trailing-face
+    . ((t (:foreground "white" :bold nil))))
+   (skk-dcomp-multiple-selected-face
+    . ((t (:foreground "white" :background "steel blue" :bold nil))))
 
-(leaf* remote
-  :config
-  (leaf ssh
-    :custom
-    (ssh-program . "plink")
-    (tramp-default-method . "psftp")
-    :hook
-    ((ssh-mode-hook . ssh-directory-tracking-mode)
-     (ssh-mode-hook . shell-dirtrack-mode))))
+   (skk-dcomp-face . '((t (:foreground "#dfdfdf")))))
+  :eval
+  ((add-to-list 'skk-rom-kana-rule-list '("z:" nil (":" . ":")) t)))
+
+(mmic jaword
+  :define-key-after-load
+  ((jaword-mode-map
+    ("M-f" . #'jaword-forward-to)))
+  :eval
+  ((global-jaword-mode)))
+
+(mmic migemo
+  :require t
+  :custom
+  ((migemo-command . "cmigemo")
+   (migemo-options . '("-q" "--emacs"))
+   ;; Set your installed path
+   (migemo-dictionary
+    . (pcase system-type
+        (`windows-nt
+         (expand-file-name
+          "dict/utf-8/migemo-dict"
+          (file-name-directory (locate-file "cmigemo.exe" exec-path))))
+        (_ (cl-some (lambda (arg) (when (file-exists-p arg) (expand-file-name arg)))
+                    '("/usr/share/cmigemo/utf-8/migemo-dict"
+                      "~/.guix-profile/share/migemo/utf-8/migemo-dict")))))
+   (migemo-user-dictionary . nil)
+   (migemo-regex-dictionary . nil)
+   (migemo-coding-system . 'utf-8))
+  :eval-after-load
+  ((migemo-init)))
+
+(mmic open-junk-file
+  :define-key
+  ((global-map
+    ("C-x s" . #'open-junk-file)))
+  :custom
+  ((open-junk-file-format
+    . (expand-file-name
+       "junk/%Y-%m-%d-%H%M%S."
+       (getenv "HOME")))))
+
+(mmic oj
+  :custom
+  ((oj-home-dir . (expand-file-name "oj" "~"))
+   (oj-default-online-judge . 'atcoder))
+  :define-key
+  ((global-map
+    ("C-x j" . (make-sparse-keymap))
+    ("C-x j t" . #'oj-test)
+    ("C-x j s" . #'oj-submit)
+    ("C-x j n" . #'oj-next)
+    ("C-x j p" . #'oj-prev)
+    ("C-x j P" . #'oj-prepare))))
+
+(mmic ssh
+  :custom
+  ((ssh-program . "plink")
+   (tramp-default-method . "psftp"))
+  :hook
+  ((ssh-mode-hook . #'ssh-directory-tracking-mode)
+   (ssh-mode-hook . #'shell-dirtrack-mode)))
 
 (leaf* wsl
   ;; https://www.reddit.com/r/emacs/comments/6xryqh/emacs_in_wsl_and_the_windows_clipboard/
