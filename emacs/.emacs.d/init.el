@@ -64,8 +64,11 @@
       my-mic-filter-package-t-to-name
       my-mic-filter-require-nonlist-to-list
       my-mic-filter-require-t-to-name
+      my-mic-filter-ignore-docs
       mic-filter-define-key-general
       mic-filter-hydra
+      mic-filter-pretty-hydra
+      mic-filter-pretty-hydra+
       mic-filter-mykie))
 
   (mic-defmic mmic mic
@@ -75,8 +78,11 @@
       my-mic-filter-package-t-to-name
       my-mic-filter-require-nonlist-to-list
       my-mic-filter-require-t-to-name
+      my-mic-filter-ignore-docs
       mic-filter-define-key-general
       mic-filter-hydra
+      mic-filter-pretty-hydra
+      mic-filter-pretty-hydra+
       mic-filter-mykie)))
 
 (mmic* straight
@@ -256,6 +262,8 @@
       :custom ((el-get-git-shallow-clone . t)))
 
     (mic hydra)
+    (mic pretty-hydra)
+    (mic major-mode-hydra)
 
     (leaf-keywords-init))
   (leaf mykie
@@ -574,7 +582,19 @@ how long to wait for a response before giving up."
     ("M-o" . #'ace-window)))
   :custom
   ((aw-keys . '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?\;))
-   (aw-dispatch-always . t))
+   (aw-dispatch-always . t)
+   (display-buffer-base-action
+    . '((display-buffer-reuse-window
+         ace-display-buffer)))
+   (display-buffer-alist
+    . `(("\\*help\\[R" (display-buffer-reuse-mode-window
+                        ace-display-buffer)
+         (reusable-frames . nil))
+        ("\\*R" nil (reusable-frames . nil))
+        ("\\*Help\\*" display-buffer-fallback-action)
+        ,(cons "\\*helm" display-buffer-fallback-action)
+        ("magit-diff:" nil
+         (inhibit-same-window . t)))))
   :face
   ((aw-leading-char-face
     . ((t (:foreground "red" :height 10.0))))
@@ -632,48 +652,40 @@ how long to wait for a response before giving up."
 
 (mmic* frame
   :custom
-  ((blink-cursor-blinks . 0)
-   (frame-title-format
-    . '(global-mode-string
-        (:eval (if (buffer-file-name)
-                   "%f" "%b")))))
+  ((blink-cursor-blinks . 0))
   :define-key
   ((global-map
+    ;; `suspend-frame' should not be run easily
     ("C-z" . nil))))
 
 (mmic* time
   :custom
   ((display-time-day-and-date . t)
    (display-time-format . "%Y-%m-%d %a %-H:%M")
-   (display-time-default-load-average . nil)
-   (system-time-locale . "C")))
+   (display-time-default-load-average . nil)))
 
-(mmic* c-source-vars
+(mmic* emacs
+  :custom
+  ((system-time-locale . "C")))
+
+(mmic* filelock
   :custom
   ((create-lockfiles . nil)))
 
-(mmic* lisp
+(mmic* eval
   :custom
   ((max-lisp-eval-depth . 5000)
    (max-specpdl-size . 5000)))
 
 (mmic package-lint)
 
-(mmic paradox
+(mmic package
   :define-key
   ((package-menu-mode-map
     ("R" . #'package-reinstall))
    (global-map
-    ("C-x p l" . #'paradox-list-packages)
-    ("C-x p r" . #'package-refresh-contents)))
-  :custom
-  ((paradox-execute-asynchronously . nil)
-   (paradox-automatically-star . nil)
-   (paradox-column-width-version . 13)
-   (paradox-display-star-count . nil)
-   (paradox-github-token . t))
-  :eval-after-others
-  ((paradox-enable)))
+    ("C-x p l" . #'package-list-packages)
+    ("C-x p r" . #'package-refresh-contents))))
 
 (mmic async
   :eval
@@ -1134,7 +1146,9 @@ cases."
   :hook
   ((org-agenda-finalize-hook . #'my:org-agenda-color-todo-state)))
 
-(mmic org-commentary)
+(mmic org-commentary
+  :autoload-interactive
+  (org-commentary-update))
 
 (mmic org-appear
   :hook
@@ -2119,9 +2133,13 @@ cases."
 (mmic jaword
   :define-key-after-load
   ((jaword-mode-map
-    ("M-f" . #'jaword-forward-to)))
+    ("M-f" . #'jaword-forward-to)
+    ("M-a" . #'jaword-backward)
+    ("M-e" . #'jaword-forward)))
   :eval
   ((global-jaword-mode)))
+
+
 
 (mmic migemo
   :require t
@@ -2175,385 +2193,159 @@ cases."
   ((ssh-mode-hook . #'ssh-directory-tracking-mode)
    (ssh-mode-hook . #'shell-dirtrack-mode)))
 
-(leaf* wsl
-  ;; https://www.reddit.com/r/emacs/comments/6xryqh/emacs_in_wsl_and_the_windows_clipboard/
-  :mykie
-  (("C-y" :default yank :C-u wsl-paste))
-  :preface
-  (defun wsl-paste ()
-    (interactive)
-    (let ((wslbuffername "wsl-temp-buffer"))
-      (get-buffer-create wslbuffername)
-      (with-current-buffer wslbuffername
-        (insert (let ((coding-system-for-read 'dos))
-                  ;; TODO: put stderr somewhere else
-                  (shell-command "powershell.exe -command 'Get-Clipboard' 2> /dev/null" wslbuffername nil)))
-        (goto-char (point-min))
-        (ignore-errors (delete-char 1)))
-      (insert-buffer-substring wslbuffername)
-      (kill-buffer wslbuffername)))
-
-  (defun wsl-copy (start end)
-    (interactive "r")
-    (shell-command-on-region start end "clip.exe")
-    (deactivate-mark)))
-
-(leaf yasnippet
-  :defvar
-  (yas-new-snippet-default
-   yas-snippet-dirs
-   yas-maybe-expand)
-  :defun
-  (yas-load-directory
-   yas-expand-snippet)
-  :require t
-  :bind
-  (:my-yas-prefix-map
-   ("n" . yas-new-snippet)
-   ("v" . yas-visit-snippet-file)
-   ("e" . yas-visit-snippet-file)
-   ("i" . yas-insert-snippet))
-  (:yas-minor-mode-map
-   ("<deletechar>" . yas-skip-and-clear-or-delete-char)
-   ("<tab>" . nil))
-  :custom
+(mmic yasnippet
+  :package (yasnippet-snippets)
+  :require (t yasnippet-snippets)
+  :pretty-hydra
+  (( hydra-yas (:quit-key "q")
+     ("YASnippet"
+      (("n" yas-new-snippet "New")
+       ("e" yas-visit-snippet-file "Edit")
+       ("i" yas-insert-snippet "Insert")))))
+  :define-key
+  ((yas-minor-mode-map
+    ("<deletechar>" . #'yas-skip-and-clear-or-delete-char)
+    ("<tab>" . nil)
+    ("TAB" . nil)
+    ("C-x y" . #'hydra-yas/body)))
+  :define-key-after-load
+  ((yas-minor-mode-map
+    ("SPC" . yas-maybe-expand)))
+   :custom
   ;; expand yasnippet only beginning of symbol.
-  (yas-key-syntaxes . '("w_"))
-  (yas-also-auto-indent-first-line . t)
-  :bind
-  (:yas-minor-mode-map
-   ("TAB" . nil))
-  :mode
-  ("snippets/" . snippet-mode)
-  :defun
-  (yas-snippet-from-region
-   yas--guess-snippet-directories
-   yas--table-mode)
-  :preface
-  (defvar my-yas-prefix-map (make-sparse-keymap) "Prefix keymap of C-xy")
-
-  (defvar yas-original-buffer nil)
-  (defun yas-snippet-from-region ()
-    "Initial snippet content from region."
-    (or (with-current-buffer yas-original-buffer
-          (if (region-active-p)
-              (replace-regexp-in-string
-               "[\\$]" "\\\\\\&"
-               (buffer-substring-no-properties
-                (region-beginning) (region-end)))))
-        ""))
-  (defun yas-new-snippet--with-region (&optional no-template)
-    "Pops a new buffer for writing a snippet.
-
-Expands a snippet-writing snippet, unless the optional prefix arg
-NO-TEMPLATE is non-nil."
-    (interactive "P")
-    (let ((guessed-directories (yas--guess-snippet-directories)))
-
-      (setq yas-original-buffer (current-buffer))
-      (switch-to-buffer "*new snippet*")
-      (erase-buffer)
-      (kill-all-local-variables)
-      (snippet-mode)
-      (yas-minor-mode 1)
-      (set (make-local-variable 'yas--guessed-modes)
-           (mapcar (lambda (d)
-                     (yas--table-mode (car d)))
-                   guessed-directories))
-      (when (and (not no-template) yas-new-snippet-default)
-        (save-excursion (insert (yas-snippet-from-region)))
-        (yas-expand-snippet yas-new-snippet-default))))
-  (defun hook:snippet/kill-whitespace-trancation ()
-    (remove-hook 'before-save-hook #'delete-trailing-whitespace t))
-  (defun my:initial-yas ()
-    (setq yas-snippet-dirs
-          (list
-           (expand-file-name "snippets" user-emacs-directory)
-           'yasnippet-snippets-dir))
-    (yas-load-directory (expand-file-name "snippets" user-emacs-directory) t))
+  ((yas-key-syntaxes . '("w_"))
+   (yas-also-auto-indent-first-line . t))
+  :custom-after-load
+  ((yas-buffer-local-condition . yas-not-string-or-comment-condition))
   :hook
-  (after-init-hook . my:initial-yas)
-  (snippet-mode-hook . hook:snippet/kill-whitespace-trancation)
-  :advice
-  (:override yas-new-snippet yas-new-snippet--with-region)
-  :commands yas-new-snippet
-  :global-minor-mode yas-global-mode
-  :defvar yas-buffer-local-condition yas-not-string-or-comment-condition
-  :config
-  (define-key yas-minor-mode-map "\C-xy" my-yas-prefix-map)
-  (setq yas-buffer-local-condition yas-not-string-or-comment-condition)
+  ((after-init-hook . #'my:initial-yas)
+   (snippet-mode-hook . #'hook:snippet/kill-whitespace-trancation))
+  :eval
+  ((add-to-list 'auto-mode-alist '("snippets/" . snippet-mode))
+   (yas-global-mode)
+   (defun hook:snippet/kill-whitespace-trancation ()
+     (remove-hook 'before-save-hook #'delete-trailing-whitespace t))
+   (defun my:initial-yas ()
+     (setq yas-snippet-dirs
+           (list
+            (expand-file-name "snippets" user-emacs-directory)
+            'yasnippet-snippets-dir))
+     (yas--load-snippet-dirs))))
 
-  (leaf yasnippet-snippets
-    :require t
-    :commands yasnippet-snippets-initialize
-    :advice
-    (:override yasnippet-snippets-initialize ignore))
-
-  (leaf popup :require t)
-
-  (defvar flymake-is-active-flag nil)
-  (defadvice yas/expand-snippet
-      (before inhibit-flymake-syntax-checking-while-expanding-snippet
-              activate)
-    (setq flymake-is-active-flag
-    	  (or flymake-is-active-flag
-    		  (assoc-default 'flymake-mode (buffer-local-variables))))
-    (when flymake-is-active-flag
-      (flymake-mode -1)))
-  (add-hook 'yas-after-exit-snippet-hook
-    		(lambda ()
-              (when flymake-is-active-flag
-                (flymake-mode 1) (setq flymake-is-active-flag nil))))
-
-  (leaf auto-yasnippet
-    :custom
-    (aya-create-with-newline . t)
-    :mykie
-    ("C-x C-y" :default aya-expand :C-u! aya-create)
-    ("C-x y y" :default aya-expand :C-u! aya-create))
-
-  (define-key yas-minor-mode-map (kbd "SPC") yas-maybe-expand))
-
-(leaf* autoinsert
-  :require t
-  :commands auto-insert-mode
+(mmic* char-code
   :custom
-  `(auto-insert-directory
-    . ,(expand-file-name "auto-insert" user-emacs-directory))
-  :defvar auto-insert-alist
-  :config
-  (add-to-list
-   'auto-insert-alist
-   `(("\\(README\\)\\|\\([Rr]eadme\\)\\.org$"
-      . "Readme.org header")
-     "Short description: "
-     "[[https://github.com/ROCKTAKEY/" (file-name-base (directory-file-name (project-root (project-current))))
-     "][https://img.shields.io/github/tag/ROCKTAKEY/"
-     (file-name-base (directory-file-name (project-root (project-current))))
-     ".svg?style=flat-square]]\n"
-     "[[file:LICENSE][https://img.shields.io/github/license/ROCKTAKEY/"
-     (file-name-base (directory-file-name (project-root (project-current)))) ".svg?style=flat-square]]\n"
-     "[[https://codecov.io/gh/ROCKTAKEY/" (file-name-base (directory-file-name (project-root (project-current))))
-     "?branch=master][https://img.shields.io/codecov/c/github/ROCKTAKEY/"
-     (file-name-base (directory-file-name (project-root (project-current)))) ".svg?style=flat-square]]\n"
-     (if (string-match "^docker-" (file-name-base (directory-file-name (project-root (project-current)))))
-         (let ((s (substring (file-name-base (directory-file-name (project-root (project-current)))) 7)))
-           (concat
-            "[[https://cloud.docker.com/repository/docker/rocktakey/"
-            s
-            "/][https://img.shields.io/docker/automated/rocktakey/"
-            s
-            ".svg?style=flat-square]]\n"))
-       (concat
-        "[[https://github.com/ROCKTAKEY/" (file-name-base (directory-file-name (project-root (project-current))))
-        "/actions][https://img.shields.io/github/workflow/status/ROCKTAKEY/"
-        (file-name-base (directory-file-name (project-root (project-current))))
-        "/CI/master.svg?style=flat-square]]\n"
-        ))
-     "* " str "\n"
-     _ "\n"
-     "* How to Use?\n"
-     "* License\n"
-     "  This package is licensed by GPLv3. See [[file:LICENSE][LICENSE]].\n"
-     ))
+  ((buffer-file-coding-system . 'utf-8))
+  :eval
+  ((defalias 'mojibake 'revert-buffer-with-coding-system)
+   (defalias 'mojibakejanai 'set-buffer-file-coding-system)
+   (when (eq system-type 'gnu/linux)
+     (setq default-file-name-coding-system 'utf-8))))
 
-  (add-to-list 'auto-insert-alist
-               '(("\\.el\\'" . "Emacs Lisp header")
-                 "Short description: "
-                 ";;; " (file-name-nondirectory (buffer-file-name)) " --- " str
-                 (make-string (max 2 (- 80 (current-column) 27)) ?\s)
-                 "-*- lexical-binding: t; -*-" '(setq lexical-binding t)
-                 "
-
-;; Copyright (C) " (format-time-string "%Y") "  "
-                 (getenv "ORGANIZATION") | (progn user-full-name) "
-
-;; Author: " (user-full-name)
-                 '(if (search-backward "&" (line-beginning-position) t)
-                      (replace-match (capitalize (user-login-name)) t t))
-                 '(end-of-line 1) " <" (progn user-mail-address) ">
-;; Keywords: "
-                 '(require 'finder)
-                 ;;'(setq v1 (apply 'vector (mapcar 'car finder-known-keywords)))
-                 '(setq v1 (mapcar (lambda (x) (list (symbol-name (car x))))
-		                           finder-known-keywords)
-	                    v2 (mapconcat (lambda (x) (format "%12s:  %s" (car x) (cdr x)))
-	                                  finder-known-keywords
-	                                  "\n"))
-                 ((let ((minibuffer-help-form v2))
-                    (completing-read "Keyword, C-h: " v1 nil t))
-                  str ", ") & -2 "
-
-\;; Version: 0.0.0
-\;; Package-Requires: ((emacs \"24.1\"))
-\;; URL: https://github.com/"(user-full-name) "/" (file-name-base (directory-file-name (project-root (project-current)))) _ "\n"
-                  "\
-\;; This program is free software; you can redistribute it and/or modify
-\;; it under the terms of the GNU General Public License as published by
-\;; the Free Software Foundation, either version 3 of the License, or
-\;; (at your option) any later version.
-
-\;; This program is distributed in the hope that it will be useful,
-\;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-\;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-\;; GNU General Public License for more details.
-
-\;; You should have received a copy of the GNU General Public License
-\;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-\;;; Commentary:
-
-\;; "  "
-
-\;;; Code:\n"
-
-'(when (string-match "test/.*\\.el$\\|^.*-test\\.el" (file-name-base))
-   "\
-(require 'undercover)
-(undercover \"*.el\"
-            (:report-file \"coverage-final.json\")
-            (:send-report nil))\n\n\n")
-
-"
-\(provide '"
-                 (file-name-base)
-                 ")
-\;;; " (file-name-nondirectory (buffer-file-name)) " ends here\n"))
-
-  (add-to-list 'auto-insert-alist
-               '(("\\.tex\\'" . "TeX header.")
-                 nil
-                 "\\documentclass{jsarticle}\n"
-                 "\\usepackage[dvipdfmx]{graphicx}\n"
-                 "\\usepackage{tikz}\n"
-                 "\\usepackage{mhchem}\n"
-                 "\\usepackage{chemfig}\n"
-                 "\n"
-                 "\\begin{document}\n\n"
-                 _ "\n"
-                 "\\end{document}\n"))
-
-  (add-to-list 'auto-insert-alist (cons "/junk/" nil)))
-
-(leaf* char-code
-  :config
-  (defalias 'mojibake 'revert-buffer-with-coding-system)
-  (defalias 'mojibakejanai 'set-buffer-file-coding-system)
-
-  (setq-default buffer-file-coding-system 'utf-8)
-  (when (eq system-type 'gnu/linux)
-    (setq default-file-name-coding-system 'utf-8)))
-
-(leaf* visual
+(mmic* doc
   :custom
-  ((text-quoting-style . 'straight)
-   (use-dialog-box . nil)
-   (show-help-function . #'message)
-   (echo-keystrokes . 0.01)
-   )
-  :config
-  (leaf* highlight
-    :config
-    (leaf highlight-indent-guides
-      :hook (yaml-mode-hook . highlight-indent-guides-mode)
-      :custom
-      ((highlight-indent-guides-method . 'fill)
-       (highlight-indent-guides-auto-enabled . t)
-       (highlight-indent-guides-responsive . t)
-       (highlight-indent-guides-delay . 0.9)))
+  ((text-quoting-style . 'straight)))
 
-    (leaf highlight-defined
-      :hook
-      (emacs-lisp-mode-hook . highlight-defined-mode))
+(mmic* visual
+  :custom
+  ((use-dialog-box . nil)
+   (echo-keystrokes . 0.01)))
 
-    (leaf volatile-highlights
-      :global-minor-mode
-      volatile-highlights-mode)
+(mmic highlight-indent-guides
+  :hook
+  ((yaml-mode-hook . #'highlight-indent-guides-mode))
+  :custom
+  ((highlight-indent-guides-method . 'fill)
+   (highlight-indent-guides-auto-enabled . t)
+   (highlight-indent-guides-responsive . t)
+   (highlight-indent-guides-delay . 0.9)))
 
-    (leaf whitespace
-      :ensure nil
-      :global-minor-mode global-whitespace-mode
-      :custom-face
-      (whitespace-space
-       . '((t (:foreground "#ffb90f" :background nil :underline t :bold t))))
-      (whitespace-tab
-       . '((t (:foreground "#caff70" :background nil :underline t))))
-      :custom
-      (whitespace-style
-       . '(face tabs tab-mark spaces space-mark newline newline-mark))
-      (whitespace-space-regexp . "\\(\x3000+\\)")
-      (whitespace-display-mappings
-       . '((tab-mark   ?\t   [?\xBB ?\t])))
-      :config
-      (defun trailing-whitespace-off ()
-        (interactive)
-        (setq show-trailing-whitespace nil)))
+(mmic highlight-defined
+  :hook
+  ((emacs-lisp-mode-hook . #'highlight-defined-mode)))
 
-    (leaf rainbow-mode
-      :hook emacs-lisp-mode-hook)
+(mmic volatile-highlights
+  :eval
+  ((volatile-highlights-mode)))
 
-    (leaf color-identifiers-mode
-      :hook c-mode-common-hook
-      :custom
-      (color-identifiers:num-colors . 20)))
+(mmic whitespace
+  :face
+  ((whitespace-space
+    . ((t (:foreground "#ffb90f" :background nil :underline t :bold t))))
+   (whitespace-tab
+    . ((t (:foreground "#caff70" :background nil :underline t)))))
+  :custom
+  ((whitespace-style
+    . '(face tabs tab-mark spaces space-mark newline newline-mark))
+   (whitespace-space-regexp . "\\(\x3000+\\)")
+   (whitespace-display-mappings
+    . '((tab-mark   ?\t   [?\xBB ?\t]))))
+  :eval
+  ((global-whitespace-mode)
 
-  (defalias 'messasge-box 'message)
+   (defun trailing-whitespace-off ()
+     (interactive)
+     (setq show-trailing-whitespace nil))))
 
-  (leaf* font
+(mmic rainbow-mode
+  :hook
+  ((emacs-lisp-mode-hook . #'rainbow-mode)))
+
+(mmic color-identifiers-mode
+  :hook ((c-mode-common-hook . #'color-identifiers-mode))
+  :custom
+  ((color-identifiers:num-colors . 20)))
+
+(defalias 'messasge-box 'message)
+
+(when (display-graphic-p)
+  (mmic* font
     :custom
-    (use-default-font-for-symbols . nil)
-    :if (display-graphic-p)
-    :config
-    (leaf font-lock-studio
-      :doc
-      "Developer tools for font-lock.")
+    ((use-default-font-for-symbols . nil)))
+  (mmic font-lock-studio
+    :doc
+    "Developer tools for font-lock.")
 
-    (defvar my:font
-      (cond
-       ((font-info "Cica")
-        "Cica")
-       ((font-info "Courier New")
-        "Courier New")
-       (t (face-attribute 'default :family))))
+  (defvar my:font
+    (cond
+     ((font-info "Cica")
+      "Cica")
+     ((font-info "Courier New")
+      "Courier New")
+     (t (face-attribute 'default :family))))
 
-    (set-fontset-font
-     "fontset-standard"
-     'unicode
-     (font-spec :family my:font))
+  (set-fontset-font
+   "fontset-standard"
+   'unicode
+   (font-spec :family my:font))
 
-    (mapc
-     (lambda (arg)
-       (eval `(push '(font . "fontset-standard") ,arg)))
-     '(initial-frame-alist
-       default-frame-alist))
+  (mapc
+   (lambda (arg)
+     (eval `(push '(font . "fontset-standard") ,arg)))
+   '(initial-frame-alist
+     default-frame-alist))
 
-    (set-face-attribute 'variable-pitch nil :family 'unspecified)
-    (set-face-attribute 'fixed-pitch nil :family 'unspecified)
+  (set-face-attribute 'variable-pitch nil :family 'unspecified)
+  (set-face-attribute 'fixed-pitch nil :family 'unspecified))
 
-    )
+(mmic* my-modeline
+  :require t)
 
-  (leaf my-modeline
-    :ensure nil
-    :require t
-    :defvar
-    my:color-view-mode-enabled
-    my:color-modeline-background)
+(add-to-list 'default-frame-alist '(cursor-type . box))
 
-  (add-to-list 'default-frame-alist '(cursor-type . box))
+;; theme load
+(mmic* theme
+  :custom
+  ((custom-theme-directory . (expand-file-name "themes/" user-emacs-directory)))
+  :eval-after-others
+  ;; (load-theme 'my-dark-green t)
+  ((load-theme 'my-dark-cream t)))
 
-  ;; theme load
-  (leaf* theme
-    :custom
-    `((custom-theme-directory . ,(expand-file-name "themes/" user-emacs-directory)))
-    :config
-    ;; (load-theme 'my-dark-green t)
-    (load-theme 'my-dark-cream t)))
-
-(leaf* view
-  :leaf-defer nil
-  :bind
-  (("<f9>" . view-mode)
-   (:view-mode-map
+(mmic view
+  :define-key
+  ((global-map
+    ("<f9>" . view-mode)))
+  :define-key-after-load
+  ((view-mode-map
     ("s" . swiper)
     ("f" . forward-word)
     ("b" . backward-word)
@@ -2579,79 +2371,43 @@ NO-TEMPLATE is non-nil."
     ("j" . next-line)
     ("k" . previous-line)
     ("l" . forward-word)))
-  :preface
-  (defvar view-mode-off-hook nil)
-  (defun my:view-mode-off-hook (&rest _)
-    (run-hooks 'view-mode-off-hook))
-  (defun my:view-color ()
-    (if view-mode
-        (face-remap-add-relative 'mode-line
-                                 :background my:color-view-mode-enabled)
-      (face-remap-add-relative 'mode-line
-                               :background my:color-modeline-background)))
-  :advice
-  (:after view--disable my:view-mode-off-hook)
+  :eval
+  ((defvar view-mode-off-hook nil)
+   (defun my:view-mode-off-hook (&rest _)
+     (run-hooks 'view-mode-off-hook))
+   (advice-add #'view--disable :after #'my:view-mode-off-hook)
+   (defun my:view-color ()
+     (if view-mode
+         (face-remap-add-relative 'mode-line
+                                  :background my:color-view-mode-enabled)
+       (face-remap-add-relative 'mode-line
+                                :background my:color-modeline-background))))
   :hook
-  ((view-mode-hook .  my:view-color)
-   (view-mode-off-hook . my:view-color))
-  :config
-  (leaf* hide/show
-    :leaf-defer nil
-    :hydra
-    (hydra-h
-     (:color blue :hint nil)
-     "
-  ^hide-line^            ^hide/show^
---^---------^------------^^^^^^^--------------------
-  _m_: match             _.__/__\\_: toggle
-  _u_: unmatch           ^^^^^ _H_ : hide all
-  _s_: show all          ^^^^^ _S_ : show all
-"
-     ("q" nil "Quit")
-     ;; hide line
-     ("m" hide-lines-matching)
-     ("u" hide-lines-not-matching)
-     ("s" hide-lines-show-all)
-     ;; hs-mode
-     ("H" hs-hide-all)
-     ("S" hs-show-all)
-     ("." hs-toggle-hiding)
-     ("/" hs-toggle-hiding)
-     ("\\" hs-toggle-hiding))
-    :bind
-    (("M-h" . hydra-h/body))
-    :config
-    (leaf hide-lines
-      :doc
-      "Hide line which matches regexp.")
-    (leaf hideshow
-      :defun
-      hs-hide-level
-      :hook
-      (prog-mode-hook . hs-minor-mode)
-      :preface
-      (defun my-hs-hide-level ()
-        (interactive)
-        (hs-hide-level 0))
-      :bind
-      ((:hs-minor-mode-map
-        ("C-\\"  . hs-toggle-hiding)
-        ("M-s s" . hs-show-all))
-       ("M-<non-convert>" . hs-toggle-hiding))
-      :mykie
-      (:hs-minor-mode-map
-       :package hideshow
-       ("M-s h" :default my-hs-hide-level :C-u hs-hide-all)))))
+  ((view-mode-hook .  #'my:view-color)
+   (view-mode-off-hook . #'my:view-color)))
 
-(leaf* disable-disabled
-  :config
-  (mapc
-   (lambda (arg)
-     (put arg 'disabled nil))
-   '(downcase-region
-     narrow-to-region
-     list-timers
-     upcase-region)))
+(mmic hideshow
+  :hook
+  ((prog-mode-hook . #'hs-minor-mode))
+  :eval
+  ((defun my-hs-hide-level ()
+     (interactive)
+     (hs-hide-level 0)))
+  :define-key-after-load
+  ((hs-minor-mode-map
+    ("C-\\"  . #'hs-toggle-hiding)
+    ("M-s s" . #'hs-show-all)))
+  :eval-after-load
+  ((mykie:define-key hs-minor-mode-map "M-s h"
+     :default my-hs-hide-level :C-u hs-hide-all)))
+
+(mapc
+ (lambda (arg)
+   (put arg 'disabled nil))
+ '(downcase-region
+   narrow-to-region
+   list-timers
+   upcase-region))
 
 (provide 'init)
 
