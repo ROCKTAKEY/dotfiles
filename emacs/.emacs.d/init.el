@@ -39,17 +39,13 @@
   (add-to-list 'package-archives '("roquelpa" . "https://rocktakey.github.io/roquelpa/"))
   (package-initialize))
 
-(unless (package-installed-p 'leaf)
-  (package-refresh-contents)
-  (package-install 'leaf))
-(require 'leaf)
-
 (eval-and-compile
   (unless (package-installed-p 'mic)
     (package-refresh-contents)
     (package-install 'mic))
   (require 'mic)
   (require 'mic-filter)
+  (require 'mic-deffilter)
 
   (mic-deffilter-t-to-name my-mic-filter-package-t-to-name :package)
   (mic-deffilter-nonlist-to-list my-mic-filter-package-nonlist-to-list :package)
@@ -101,184 +97,14 @@
   :custom
   ((straight-vc-git-default-clone-depth . 1)))
 
-(eval-and-compile
-  (leaf leaf
-    :require t
-    :custom `((leaf-defaults . '(:ensure t)))
-    :config
-    (eval-and-compile
-      (defmacro leaf* (name &rest args)
-        "leaf without ensureing."
-        (declare (indent defun))
-        `(leaf ,name :ensure nil :leaf-defer nil ,@args)))
-    (font-lock-add-keywords
-     'emacs-lisp-mode
-     '(("(\\(leaf\\*?\\)\\_>[ \t']*\\(\\(?:\\sw\\|\\s_\\)+\\)?"
-        (1 font-lock-keyword-face)
-        (2 font-lock-constant-face nil t)))))
+(mmic el-get
+  :custom ((el-get-git-shallow-clone . t)))
 
-  (leaf leaf-keywords
-    :require t
-    :defvar
-    (leaf-keywords-before-conditions
-     leaf-keywords-documentation-keywords
-     leaf-keywords-after-conditions
-     leaf-keywords-after-config
-     leaf-keywords-before-protection
-     leaf-keywords-before-require
-     leaf-keywords-normalize)
-    :init
-    (leaf el-get
-      :custom ((el-get-git-shallow-clone . t)))
+(mmic hydra)
 
-    (leaf hydra
-      :require t)
+(mmic pretty-hydra)
 
-    (leaf mykie
-      :doc
-      "Fusion key bindings with prefix arguments and so on."
-      :require t)
-    :config
-    (mapc
-     (lambda (arg)
-       (setf (plist-get leaf-keywords-before-conditions (car arg))
-             (cadr arg)))
-     '((:system-type
-        (when leaf--body
-          `((when
-                (memq system-type
-                      ',(if (listp (car leaf--value))
-                            (car leaf--value)
-                          leaf--value))
-              ,@leaf--body))))
-       (:system-name
-        (when leaf--body
-          `((when
-                (member (system-name)
-                        ',(if (listp (car leaf--value))
-                              (car leaf--value)
-                            leaf--value))
-              ,@leaf--body))))
-       (:system-name-regexp
-        (when leaf--body
-          `((when
-                (cl-some (lambda (arg)
-                           (string-match arg (system-name)))
-                         ',(if (listp (car leaf--value))
-                               (car leaf--value)
-                             leaf--value))
-              ,@leaf--body))))))
-
-    (plist-put leaf-keywords-documentation-keywords
-               :defer '`(,@leaf--body))
-    (add-to-list 'leaf-defer-keywords :defer)
-
-    (plist-put
-     leaf-keywords-before-require
-     :mykie
-     '(let ((map (gensym))
-            (after-load (gensym))
-            rec fns)
-        (set map 'global-map)
-        (set after-load nil)
-        (setq
-         rec
-         (lambda (arg)
-           (setq arg (car arg))
-           (cond
-            ((and (listp arg) (not (stringp (car arg))))
-             (let ((map (gensym))
-                   (after-load (gensym)))
-               (set map 'global-map)
-               (set after-load nil)
-               (cl-mapcon rec arg)))
-            ((eq (symbol-value after-load) t)
-             (set after-load arg)
-             nil)
-            ((eq arg :package)
-             (set after-load t)
-             nil)
-            ((and (symbolp arg) (string-match "^:\\(.*\\)" (symbol-name arg)))
-             (set map (intern (substring (symbol-name arg) 1)))
-             nil)
-            (t
-             (setf
-              (cdr arg)
-              (cl-mapcon
-               (lambda (arg)
-                 (when (cl-oddp (length arg))
-                   (cl-pushnew (car arg) fns))
-                 `(,(car arg)))
-               (cdr arg)))
-             (if (and (symbol-value after-load)
-                      (not (eq (symbol-value after-load) t)))
-                 (list
-                  `(with-eval-after-load ',(symbol-value after-load)
-                     (mykie:define-key ,(symbol-value map) ,(car arg) ,@(cdr arg))))
-               (list `(mykie:define-key ,(symbol-value map) ,(car arg) ,@(cdr arg))))))))
-
-        (setq result (cl-mapcon rec leaf--value))
-        (append
-         (mapcar
-          (lambda (arg)
-            `(autoload ',arg ,(symbol-name leaf--name) nil t))
-          (nreverse fns))
-         result
-         leaf--body)))
-    (add-to-list 'leaf-defer-keywords :mykie)
-
-    (setf (plist-get leaf-keywords-after-conditions :depends)
-          '`(,@(mapcar
-                (lambda (elm)
-                  `(leaf-handler-package ,leaf--name ,(car elm) ,(cdr elm)))
-                (if (listp (car leaf--value)) leaf--value (list leaf--value)))
-             ,@leaf--body))
-
-    (require 'plstore)
-
-    (setf
-     (plist-get leaf-keywords-after-config :pl-post-custom)
-     '`(,@(mapcar (lambda (elm)
-                    `(customize-set-variable
-                      ',(car elm)
-                      (leaf-handler-auth ,leaf--name ,(car elm) ,(cdr elm))
-                      ,(leaf--create-custom-comment :pl-custom (cdr elm))))
-                  leaf--value)
-        ,@leaf--body))
-
-    (push
-     '((eq leaf--key :pl-post-custom)
-       (mapcar (lambda (elm)
-                 (cond
-                  ((leaf-pairp elm)
-                   (if (eq t (car elm)) `(,leaf--name . ,(cdr elm)) elm))
-                  (t
-                   `(,@elm . leaf-default-plstore))))
-               (mapcan
-                (lambda (elm) (leaf-normalize-list-in-list elm 'dotlistp))
-                leaf--value)))
-     leaf-keywords-normalize)
-    (mic el-get
-      :custom ((el-get-git-shallow-clone . t)))
-
-    (mic hydra)
-    (mic pretty-hydra)
-    (mic major-mode-hydra)
-
-    (leaf-keywords-init))
-  (leaf mykie
-    :doc
-    "Fusion key bindings with prefix arguments and so on."
-    :require t))
-
-(leaf leaf-tree
-  :custom
-  `(leaf-tree-regexp
-    . ,(concat
-        "^\\s-*(\\_<\\(leaf\\*?\\)\\_>\\s-+\\("
-        (or (bound-and-true-p lisp-mode-symbol-regexp)
-            "\\(?:\\sw\\|\\s_\\|\\\\.\\)+")
-        "\\)")))
+(mmic major-mode-hydra)
 
 (mmic general)
 
@@ -299,23 +125,22 @@
       arg))
    (directory-files "/mnt/c/Users/" t)))
 
-(eval-and-compile
-  (defvar my-dropbox-directory
-    (expand-file-name
-     "Dropbox"
+(defvar my-dropbox-directory
+  (expand-file-name
+   "Dropbox"
+   (cond
+    ((eq system-type 'windows-nt) (getenv "USERPROFILE"))
+    ((eq system-type 'gnu/linux)
      (cond
-      ((eq system-type 'windows-nt) (getenv "USERPROFILE"))
-      ((eq system-type 'gnu/linux)
-       (cond
-        ((getenv "WSL_DISTRO_NAME")
-         (get-wsl-user-directory))
-        (t (getenv "HOME")))))))
+      ((getenv "WSL_DISTRO_NAME")
+       (get-wsl-user-directory))
+      (t (getenv "HOME")))))))
 
-  (defvar my-org-directory
-    (expand-file-name "memo" my-dropbox-directory))
+(defvar my-org-directory
+  (expand-file-name "memo" my-dropbox-directory))
 
-  (defvar my-blog-directory
-    (expand-file-name "~/rhq/github.com/ROCKTAKEY/blog")))
+(defvar my-blog-directory
+  (expand-file-name "~/rhq/github.com/ROCKTAKEY/blog"))
 
 (mmic* userinfo
   :custom
@@ -1444,10 +1269,6 @@ cases."
 (mmic flymake
   :hook
   ((prog-mode-hook . #'flymake-mode)))
-
-(mmic flymake-popon
-  :eval
-  ((global-flymake-popon-mode)))
 
 (mmic flymake-elisp-config
   :eval
