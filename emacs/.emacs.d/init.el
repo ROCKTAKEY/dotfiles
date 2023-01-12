@@ -2165,33 +2165,6 @@ cases."
   :define-key
   ((global-map
     ("<f9>" . view-mode)))
-  :define-key-after-load
-  ((view-mode-map
-    ("s" . swiper)
-    ("f" . forward-word)
-    ("b" . backward-word)
-    ("n" . next-line)
-    ("p".  previous-line)
-    ("o" . other-buffer)
-    ("g" . goto-line)
-    ("t" . hs-toggle-hiding)
-    ("H" . hs-hide-all)
-    ("L" . recenter-top-bottom)
-    (" " . scroll-up)
-    ("M-SPC" . scroll-down)
-    ("v" . scroll-up)
-    ("c" . scroll-down)
-    ("V" . scroll-other-window)
-    ("C" . scroll-other-window-down)
-    (";" . ace-jump-char-mode)
-    ("[" . bm-previous)
-    ("]" . bm-next)
-    ("\\" . bm-toggle)
-    ("E" . eval-last-sexp)
-    ("h" . backward-word)
-    ("j" . next-line)
-    ("k" . previous-line)
-    ("l" . forward-word)))
   :eval
   ((defvar view-mode-off-hook nil)
    (defun my:view-mode-off-hook (&rest _)
