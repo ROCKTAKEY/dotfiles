@@ -126,9 +126,15 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-# Add profile by guix to environmental variable
-GUIX_PROFILE=~/.guix-profile
-. "$GUIX_PROFILE/etc/profile"
+# Run /etc/profile.d/*.sh
+if [ -d /etc/profile.d ]; then
+  for i in /etc/profile.d/*.sh; do
+    if [ -r $i ]; then
+      . $i
+    fi
+  done
+  unset i
+fi
 
 # Automatically added by the Guix install script.
 if [ -n "$GUIX_ENVIRONMENT" ]; then
