@@ -1952,15 +1952,8 @@ cases."
   ((add-to-list 'skk-rom-kana-rule-list '("z:" nil (":" . ":")) t)))
 
 (mmic jaword
-  :define-key-after-load
-  ((jaword-mode-map
-    ("M-f" . #'jaword-forward-to)
-    ("M-a" . #'jaword-backward)
-    ("M-e" . #'jaword-forward)))
   :eval
   ((global-jaword-mode)))
-
-
 
 (mmic migemo
   :require t
