@@ -1337,24 +1337,23 @@ cases."
     ("3" . (my/embark-split-action bookmark-jump split-window-right))))
   :eval
   ;; https://karthinks.com/software/fifteen-ways-to-use-embark/
-  ((eval-when-compile
-     (defmacro my/embark-ace-action (fn)
-       `(defun ,(intern (concat "my/embark-ace-" (symbol-name fn))) ()
-          (interactive)
-          (with-demoted-errors "%s"
-            (require 'ace-window)
-            (let ((aw-dispatch-always t))
-              (aw-switch-to-window (aw-select nil))
-              (call-interactively (symbol-function ',fn))))))
-     (defmacro my/embark-split-action (fn split-type)
-       `(defun ,(intern (concat "my/embark-"
-                                (symbol-name fn)
-                                "-"
-                                (car (last  (split-string
-                                             (symbol-name split-type) "-"))))) ()
-          (interactive)
-          (funcall #',split-type)
-          (call-interactively #',fn))))
+  ((defmacro my/embark-ace-action (fn)
+     `(defun ,(intern (concat "my/embark-ace-" (symbol-name fn))) ()
+        (interactive)
+        (with-demoted-errors "%s"
+          (require 'ace-window)
+          (let ((aw-dispatch-always t))
+            (aw-switch-to-window (aw-select nil))
+            (call-interactively (symbol-function ',fn))))))
+   (defmacro my/embark-split-action (fn split-type)
+     `(defun ,(intern (concat "my/embark-"
+                              (symbol-name fn)
+                              "-"
+                              (car (last  (split-string
+                                           (symbol-name split-type) "-"))))) ()
+        (interactive)
+        (funcall #',split-type)
+        (call-interactively #',fn)))
 
    (defun sudo-find-file (file)
      "Open FILE as root."
