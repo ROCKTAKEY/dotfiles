@@ -1288,6 +1288,10 @@ cases."
     'ispell-skip-region-alist
     '("\"\\([^\000-\377]\\|[ \n\t.,()0-9@:;/\\\\`{}*+<>?_]\\)+\""))))
 
+(mmic apheleia
+  :eval
+  ((apheleia-global-mode)))
+
 (mmic consult
   :define-key
   ((global-map
