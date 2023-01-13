@@ -416,8 +416,10 @@ how long to wait for a response before giving up."
                         ace-display-buffer)
          (reusable-frames . nil))
         ("\\*R" nil (reusable-frames . nil))
-        ("\\*Help\\*" display-buffer-fallback-action)
-        ,(cons "\\*helm" display-buffer-fallback-action)
+        ("\\*Help\\*" . ,display-buffer-fallback-action)
+        ("\\*embark\\*" . ,display-buffer-fallback-action)
+        ("\\*Embark Actions\\*" . ,display-buffer-fallback-action)
+        ("\\*helm" . ,display-buffer-fallback-action)
         ("magit-diff:" nil
          (inhibit-same-window . t)))))
   :face
