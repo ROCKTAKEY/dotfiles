@@ -1251,7 +1251,8 @@ cases."
 (mmic eldoc
   :custom
   ((eldoc-idle-delay . 1)
-   (eldoc-echo-area-use-multiline-p . t)))
+   (eldoc-echo-area-use-multiline-p . t)
+   (eldoc-documentation-strategy . #'eldoc-documentation-compose)))
 
 ;; (leaf flycheck
 ;;   :defun (global-flycheck-mode flycheck-error-message)
