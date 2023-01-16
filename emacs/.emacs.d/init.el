@@ -848,7 +848,7 @@ cases."
    (org-directory . my-org-directory)
    (org-log-done . 'time)
    (org-default-notes-file . (expand-file-name "inbox.org" my-org-directory))
-   (org-agenda-files . '(,my-org-directory))
+   (org-agenda-files . (list my-org-directory))
    (org-todo-keywords
     . '((sequence "TODO(t)" "WAIT(w)" "|" "OBSOLETED(o)" "DONE(d)")))
    (org-capture-templates
