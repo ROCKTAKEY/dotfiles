@@ -1174,6 +1174,10 @@ cases."
      (interactive)
      (byte-compile-file (buffer-file-name)))))
 
+(mmic elisp-docstring-mode)
+
+(mmic string-edit-at-point)
+
 (mmic clojure-mode)
 
 (mmic rust-mode)
