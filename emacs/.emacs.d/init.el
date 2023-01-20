@@ -1155,7 +1155,9 @@ cases."
   :custom
   ((css-indent-offset . 2)))
 
-(mmic edit-list)
+(mmic edit-list
+  :autoload-interactive
+  (edit-list))
 
 (mmic undercover)
 
