@@ -763,9 +763,6 @@ cases."
 (mmic markdown-mode)
 
 (mmic cc-mode
-  :custom
-  ((c-basic-offset . 4)
-   (c-default-style . "bsd"))
   :eval
   ((defun my:c-statement-cont (cons)
      (if (string=
