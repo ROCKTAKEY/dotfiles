@@ -79,7 +79,7 @@
  (bootloader
   (bootloader-configuration
    (bootloader grub-bootloader)
-   (target "/dev/sdc")
+   (target "/dev/sdb")
    (keyboard-layout keyboard-layout)))
  (mapped-devices
   (list (mapped-device
