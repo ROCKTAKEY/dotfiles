@@ -1304,7 +1304,7 @@ cases."
     ("M-g e" . #'consult-flymake)
     ("C-r" . #'consult-ripgrep)))
   :eval-after-load
-  ((add-to-list 'consult-buffer-sources 'rhq-consult-source-project-directory)))
+  ((add-to-list 'consult-buffer-sources 'rhq-consult-source-project-directory 'append)))
 
 ;; (leaf consult-flycheck
 ;;   :bind
