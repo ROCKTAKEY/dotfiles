@@ -2005,11 +2005,12 @@ cases."
   :package (yasnippet-snippets)
   :require (t yasnippet-snippets)
   :pretty-hydra
-  (( hydra-yas (:quit-key "q")
+  (( hydra-yas (:color blue)
      ("YASnippet"
       (("n" yas-new-snippet "New")
        ("e" yas-visit-snippet-file "Edit")
-       ("i" yas-insert-snippet "Insert")))))
+       ("i" yas-insert-snippet "Insert")
+       ("q" nil)))))
   :define-key
   ((yas-minor-mode-map
     ("<deletechar>" . #'yas-skip-and-clear-or-delete-char)
@@ -2024,21 +2025,17 @@ cases."
   ((yas-key-syntaxes . '("w_"))
    (yas-also-auto-indent-first-line . t))
   :custom-after-load
-  ((yas-buffer-local-condition . yas-not-string-or-comment-condition))
+  ((yas-buffer-local-condition . yas-not-string-or-comment-condition)
+   (yas-snippet-dirs
+    . (cons 'yasnippet-snippets-dir
+            (my-standard-value 'yas-snippet-dirs))))
   :hook
-  ((after-init-hook . #'my:initial-yas)
-   (snippet-mode-hook . #'hook:snippet/kill-whitespace-trancation))
+  ((snippet-mode-hook . #'hook:snippet/kill-whitespace-trancation))
   :eval
   ((add-to-list 'auto-mode-alist '("snippets/" . snippet-mode))
    (yas-global-mode)
    (defun hook:snippet/kill-whitespace-trancation ()
-     (remove-hook 'before-save-hook #'delete-trailing-whitespace t))
-   (defun my:initial-yas ()
-     (setq yas-snippet-dirs
-           (list
-            (expand-file-name "snippets" user-emacs-directory)
-            'yasnippet-snippets-dir))
-     (yas--load-snippet-dirs))))
+     (remove-hook 'before-save-hook #'delete-trailing-whitespace t))))
 
 (mmic* char-code
   :custom
