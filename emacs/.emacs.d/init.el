@@ -1246,7 +1246,7 @@ cases."
   :custom
   ((eldoc-idle-delay . 1)
    (eldoc-echo-area-use-multiline-p . t)
-   (eldoc-documentation-strategy . #'eldoc-documentation-compose)))
+   (eldoc-documentation-strategy . #'eldoc-documentation-compose-eagerly)))
 
 ;; (leaf flycheck
 ;;   :defun (global-flycheck-mode flycheck-error-message)
