@@ -2,18 +2,6 @@
 ;;; Commentary:
 ;; My init file
 ;;; Code:
-
-(unless (get 'plist-get 'gv-expander)
-  (gv-define-expander plist-get
-    (lambda (do plist prop)
-      (macroexp-let2 macroexp-copyable-p key prop
-        (gv-letplace (getter setter) plist
-          (macroexp-let2 nil p `(plist-member ,getter ,key)
-            (funcall do
-                     `(cadr ,p)
-                     (lambda (val)
-                       `(if (plist-member ,plist ,key) (setcar (cdr (plist-member ,plist ,key)) ,val)
-                          ,(funcall setter `(cons ,key (cons ,val ,getter))))))))))))
 (defvar my-profiler-on nil)
 (when my-profiler-on
   (profiler-start 'cpu))
