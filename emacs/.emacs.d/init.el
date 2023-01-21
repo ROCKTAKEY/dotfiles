@@ -419,6 +419,7 @@ how long to wait for a response before giving up."
         ("\\*Help\\*" . ,display-buffer-fallback-action)
         ("\\*embark\\*" . ,display-buffer-fallback-action)
         ("\\*Embark Actions\\*" . ,display-buffer-fallback-action)
+        ("\\*Org Select\\*" . ,display-buffer-fallback-action)
         ("\\*helm" . ,display-buffer-fallback-action)
         ("magit-diff:" nil
          (inhibit-same-window . t)))))
