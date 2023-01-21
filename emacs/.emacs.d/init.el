@@ -6,6 +6,10 @@
 (when my-profiler-on
   (profiler-start 'cpu))
 
+(defun my-standard-value (symbol)
+  "Return standard value of SYMBOL."
+  (eval (car (get symbol 'standard-value))))
+
 ;; load-path
 
 (add-to-list 'load-path (expand-file-name "conf" user-emacs-directory))
