@@ -459,14 +459,6 @@ how long to wait for a response before giving up."
   ((tab-width . 4)
    (indent-tabs-mode . nil)))
 
-(mmic* menu-bar
-  :eval
-  ((menu-bar-mode -1)))
-
-(mmic* tool-bar
-  :eval
-  ((tool-bar-mode -1)))
-
 (mmic* scroll
   :custom
   ((scroll-conservatively . 35)
