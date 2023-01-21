@@ -65,6 +65,7 @@
       mic-filter-hydra
       mic-filter-pretty-hydra
       mic-filter-pretty-hydra+
+      mic-filter-mode-hydra
       mic-filter-mykie))
 
   (mic-defmic mmic mic
@@ -79,6 +80,7 @@
       mic-filter-hydra
       mic-filter-pretty-hydra
       mic-filter-pretty-hydra+
+      mic-filter-mode-hydra
       mic-filter-mykie)))
 
 (mmic* straight
@@ -104,7 +106,10 @@
 
 (mmic pretty-hydra)
 
-(mmic major-mode-hydra)
+(mmic major-mode-hydra
+  :define-key
+  ((global-map
+    ("M-q" . #'major-mode-hydra))))
 
 (mmic general)
 
@@ -824,18 +829,11 @@ cases."
 
 (mmic org
   :package org-contrib
-  :declare-function
-  (org-capture
-   org-metaright
-   org-metaleft
-   org-metadown
-   org-metaup
-   org-meta-return
-   org-cycle
-   org-up-element
-   org-element-at-point
-   org-element-property
-   org-save-all-org-buffers)
+  :mode-hydra
+  (( org-mode ()
+     ("Export"
+      (("C" org-commentary-update "Export to Commentary")))))
+
   :custom
   ((org-agenda-sticky . t)
    (org-directory . my-org-directory)
@@ -912,9 +910,6 @@ cases."
   ((org-clock-in-hook . #'org-save-all-org-buffers)
    (org-clock-out-hook . #'org-save-all-org-buffers)
    (org-clock-cancel-hook . #'org-save-all-org-buffers))
-  :define-key
-  ((global-map
-    ("M-q" . #'org-capture)))
   :define-key-after-load
   ((org-mode-map
     ("C-M-f" . #'org-metaright)
