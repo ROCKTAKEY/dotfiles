@@ -14,6 +14,9 @@
                      (lambda (val)
                        `(if (plist-member ,plist ,key) (setcar (cdr (plist-member ,plist ,key)) ,val)
                           ,(funcall setter `(cons ,key (cons ,val ,getter))))))))))))
+(defvar my-profiler-on nil)
+(when my-profiler-on
+  (profiler-start 'cpu))
 
 ;; load-path
 
@@ -2195,6 +2198,10 @@ cases."
    narrow-to-region
    list-timers
    upcase-region))
+
+(when my-profiler-on
+  (add-hook 'after-init-hook #'profiler-report 100)
+  (add-hook 'after-init-hook #'profiler-stop 110))
 
 (provide 'init)
 
