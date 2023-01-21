@@ -52,6 +52,7 @@
       my-mic-filter-require-nonlist-to-list
       my-mic-filter-require-t-to-name
       my-mic-filter-ignore-docs
+      mic-filter-hook-list-maybe
       mic-filter-define-key-general
       mic-filter-hydra
       mic-filter-pretty-hydra
@@ -67,6 +68,7 @@
       my-mic-filter-require-nonlist-to-list
       my-mic-filter-require-t-to-name
       my-mic-filter-ignore-docs
+      mic-filter-hook-list-maybe
       mic-filter-define-key-general
       mic-filter-hydra
       mic-filter-pretty-hydra
@@ -667,26 +669,27 @@ cases."
 ;;        . ,(expand-file-name "etc/.dap-breakpoints" user-emacs-directory)))))
 
 (mmic eglot
-  :hook
-  ((c-mode-hook           . #'eglot-ensure)
-   (c++-mode-hook         . #'eglot-ensure)
-   (web-mode-hook         . #'eglot-ensure)
-   (dockerfile-mode-hook  . #'eglot-ensure)
-   (yaml-mode-hook        . #'eglot-ensure)
-   (r-mode-hook           . #'eglot-ensure)
-   (javascript-mode-hook  . #'eglot-ensure)
-   (js-mode-hook          . #'eglot-ensure)
-   (typescript-mode-hook  . #'eglot-ensure)
-   (sh-mode-hook          . #'eglot-ensure)
-   (common-lisp-mode-hook . #'eglot-ensure)
-   (yatex-mode-hook       . #'eglot-ensure)
-   (tex-mode-hook         . #'eglot-ensure)
-   (latex-mode-hook       . #'eglot-ensure)
-   (bibtex-mode-hook      . #'eglot-ensure)
-   (java-mode-hook        . #'eglot-ensure)
-   (clojure-mode-hook     . #'eglot-ensure)
-   (rust-mode-hook        . #'eglot-ensure))
-  :defvar-noninitial (eglot-server-programs)
+  :hook-list-maybe
+  (((c-mode-hook
+     c++-mode-hook
+     web-mode-hook
+     dockerfile-mode-hook
+     yaml-mode-hook
+     r-mode-hook
+     javascript-mode-hook
+     js-mode-hook
+     typescript-mode-hook
+     sh-mode-hook
+     common-lisp-mode-hook
+     yatex-mode-hook
+     tex-mode-hook
+     latex-mode-hook
+     bibtex-mode-hook
+     java-mode-hook
+     clojure-mode-hook
+     rust-mode-hook
+     cmake-mode-hook)
+    . eglot-ensure))
   :define-key-after-load
   ((eglot-mode-map
     ("M-r" . #'eglot-rename)))
