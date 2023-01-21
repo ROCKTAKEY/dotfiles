@@ -1153,6 +1153,20 @@ cases."
   :define-key-after-load
   ((emacs-lisp-mode-map
     ("C-c c" . #'my:byte-compile-this)))
+  :mode-hydra
+  (( emacs-lisp-mode (:title "Emacs Lisp Mode")
+     ("Eval"
+      (("b" eval-buffer "Eval Buffer")
+       ("r" eval-buffer "Eval region"))
+      "Edit"
+      (("s" string-edit-at-point "Edit string")
+       ("l" edit-list "Edit list"))
+      "Test/Debug"
+      (("t" ert "Run test")
+       ("d" edebug-defun "Debug defun")
+       ("e" macrostep-expand "Expand")
+       ("p" package-lint-current-buffer "Lint")
+       ("c" checkdoc "Checkdoc")))))
   :eval
   ((defun my:byte-compile-this ()
      "byte-compile opened file."
