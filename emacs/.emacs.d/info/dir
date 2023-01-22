@@ -4,7 +4,8 @@ File: dir,	Node: Top	This is the top of the INFO tree
 * Menu:
 
 Emacs
-* Emacs(Japanese): (emacs-ja).     Emacs reference(Japanese Ver).
+* Emacs: (emacs).            拡張可能なセルフドキュメント形式のテキストエディター。
+* Elisp: (elisp).            The Emacs Lisp Reference Manual.
 * Org Mode(Japanese): (org-ja).     Outline-based notes management and organizer
                                   (Japanese translation)
 * YaTeX: (yatexj). Yet Another tex-mode for Emacs. (Japanese).

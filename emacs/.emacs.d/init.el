@@ -1860,7 +1860,8 @@ cases."
  '(emacs-ja
    :host github
    :repo "ayatakesi/ayatakesi.github.io"
-   :files ("emacs/26.1/emacs-ja.info")))
+   :files ("emacs/28.2/emacs-ja.info"
+           "lispref/28.2/elisp-ja.info")))
 
 (straight-use-package
  '(org-ja
@@ -1883,6 +1884,7 @@ cases."
   :eval
   ((defvar my-Info-substitute
      '(("emacs" . "emacs-ja")
+       ("elisp" . "emacs-ja")
        ("org" . "org-ja")
        ("magit" . "magit.ja")
        ("magit-section" . "magit-section.ja")))
