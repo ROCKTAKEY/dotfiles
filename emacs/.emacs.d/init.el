@@ -1756,17 +1756,6 @@ cases."
    (rainbow-delimiters-depth-8-face . ((t (:foreground "#66ff66"))))
    (rainbow-delimiters-depth-9-face . ((t (:foreground "#6666ff"))))))
 
-(mmic smart-newline
-  :hook
-  ((prog-mode-hook . #'smart-newline-mode)
-   (text-mode-hook . #'smart-newline-mode)
-   (makefile-mode-hook . #'smart-newline-mode-off)
-   (makefile-gmake-mode-hook . #'smart-newline-mode-off)
-   (yaml-mode-hook . #'smart-newline-mode-off))
-  :eval
-  ((defun smart-newline-mode-off ()
-     (smart-newline-mode -1))))
-
 (mmic electric-operator
   :hook ((c-mode-common-hook . #'electric-operator-mode)
          (typescript-mode-hook . #'electric-operator-mode)
