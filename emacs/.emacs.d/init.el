@@ -1044,6 +1044,8 @@ cases."
   :declare-function
   (YaTeX-typeset-menu
    YaTeX-get-preview-file-name)
+  :autoload-interactive
+  (yatex-mode)
   :define-key-after-load
   ((YaTeX-prefix-map
     ("v" . #'yatex-open-dvi-with-emacs))
