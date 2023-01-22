@@ -10,6 +10,21 @@
   "Return standard value of SYMBOL."
   (eval (car (get symbol 'standard-value))))
 
+(defun my-copy-file-name-with-absolute-path ()
+  "Add absolute path to `kill-ring'."
+  (interactive)
+  (message "Copy \"%s\"" (kill-new (buffer-file-name))))
+
+(defun my-copy-file-name ()
+  "Add file name to `kill-ring'."
+  (interactive)
+  (message "Copy \"%s\"" (kill-new (file-name-nondirectory (buffer-file-name)))))
+
+(defun my-copy-directory ()
+  "Add directory name to `kill-ring'."
+  (interactive)
+  (message "Copy \"%s\"" (kill-new (file-name-directory (buffer-file-name)))))
+
 ;; load-path
 
 (add-to-list 'load-path (expand-file-name "conf" user-emacs-directory))
@@ -101,7 +116,16 @@
 
 (mmic hydra)
 
-(mmic pretty-hydra)
+(mmic pretty-hydra
+  :pretty-hydra
+  (( my-hydra (:color blue)
+     ("File/Directory"
+      (("f" my-copy-file-name "File Name")
+       ("p" my-copy-file-name-with-absolute-path "Path")
+       ("d" my-copy-directory "Directory")))))
+  :define-key
+  ((global-map
+    ("M-h" . #'my-hydra/body))))
 
 (mmic major-mode-hydra
   :define-key
