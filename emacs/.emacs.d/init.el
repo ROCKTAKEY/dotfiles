@@ -1939,6 +1939,10 @@ cases."
 
 (mmic* skk
   :package ddskk
+  :define-key
+  ((global-map
+    ("C-j" . #'skk-mode)
+    ("M-j" . #'skk-mode)))
   :define-key-after-load
   ((skk-j-mode-map
     ("\\" . #'self-insert-command)
@@ -1952,8 +1956,18 @@ cases."
        (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar))))
   :custom
   ((skk-inhibit-ja-dic-search . t)
+   (skk-jisyo-code . 'utf-8)
    (skk-jisyo
     . (expand-file-name "etc/.skk-jisyo" user-emacs-directory))
+   (skk-large-jisyo
+    . (pcase system-type
+        (`windows-nt
+         nil)
+        (_
+         (cons (cl-some (lambda (arg) (when (file-exists-p arg) (expand-file-name arg)))
+                        '("/usr/share/skk/SKK-JISYO.L"
+                          "~/.guix-profile/share/skk/SKK-JISYO.L"))
+               'euc-jp))))
    ;; annotation
    (skk-show-annotation . t)
    (skk-annotation-delay . 3)
@@ -1973,18 +1987,7 @@ cases."
                         (`windows-nt "<non-convert>")
                         (_ "<muhenkan>"))))
    (skk-search-katakana . t)
-   (skk-japanese-message-and-error . t))
-  :face
-  ((skk-dcomp-multiple-face
-    . ((t (:foreground "black" :background "gray" :bold nil))))
-   (skk-dcomp-multiple-trailing-face
-    . ((t (:foreground "white" :bold nil))))
-   (skk-dcomp-multiple-selected-face
-    . ((t (:foreground "white" :background "steel blue" :bold nil))))
-
-   (skk-dcomp-face . '((t (:foreground "#dfdfdf")))))
-  :eval
-  ((add-to-list 'skk-rom-kana-rule-list '("z:" nil (":" . ":")) t)))
+   (skk-japanese-message-and-error . t)))
 
 (mmic jaword
   :eval
