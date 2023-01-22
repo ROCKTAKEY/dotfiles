@@ -6,7 +6,7 @@
 (define switch-im-key '("<Control>Shift_key" "<Shift>Control_key"))
 (define switch-im-key? (make-key-predicate '("<Control>Shift_key" "<Shift>Control_key")))
 (define switch-im-skip-direct-im? #f)
-(define enable-im-toggle? #t)
+(define enable-im-toggle? #f)
 (define toggle-im-key '("<Meta> "))
 (define toggle-im-key? (make-key-predicate '("<Meta> ")))
 (define toggle-im-alt-im 'direct)

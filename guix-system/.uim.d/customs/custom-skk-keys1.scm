@@ -1,5 +1,5 @@
-(define skk-on-key '("<IgnoreCase><Control>j" generic-on-key))
-(define skk-on-key? (make-key-predicate '("<IgnoreCase><Control>j" generic-on-key?)))
+(define skk-on-key '("zenkaku-hankaku" "<IgnoreCase><Alt>j"))
+(define skk-on-key? (make-key-predicate '("zenkaku-hankaku" "<IgnoreCase><Alt>j")))
 (define skk-latin-key '("<IgnoreCase>l" generic-off-key))
 (define skk-latin-key? (make-key-predicate '("<IgnoreCase>l" generic-off-key?)))
 (define skk-wide-latin-key '("<IgnoreCase><Shift>l"))
