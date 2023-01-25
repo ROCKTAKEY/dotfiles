@@ -724,7 +724,8 @@ cases."
   :eval-after-load
   ((setcdr (assoc '(c++-mode c-mode) eglot-server-programs)
            (eglot-alternatives
-            '("ccls" "clangd")))))
+            '("ccls" "clangd")))
+   (add-to-list 'eglot-server-programs '(yatex-mode . ("texlab")))))
 
 (mmic tree-sitter
   :package tree-sitter-langs
