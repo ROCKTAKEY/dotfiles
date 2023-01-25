@@ -1496,7 +1496,7 @@ cases."
     . (expand-file-name
        "etc/history"
        user-emacs-directory)))
-  :eval
+  :eval-after-others
   ((savehist-mode)))
 
 (mmic recentf
