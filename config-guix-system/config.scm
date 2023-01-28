@@ -1,12 +1,9 @@
-;; This is an operating system configuration generated
-;; by the graphical installer.
-
 (use-modules (gnu)
-             (gnu services syncthing)
+             (gnu packages fonts)
              (gnu packages gnome)
              (nongnu packages linux)
              (nongnu system linux-initrd))
-(use-service-modules desktop networking ssh xorg docker virtualization)
+(use-service-modules desktop networking ssh xorg docker virtualization syncthing)
 
 (operating-system
  (kernel linux)
@@ -19,7 +16,8 @@
   (keyboard-layout
    "jp"
    #:options
-   '("ctrl:nocaps")))
+   '("ctrl:nocaps"
+     "caps:ctrl_modifier")))
  (host-name "guix-desktop")
  (users (cons* (user-account
                 (name "rocktakey")
@@ -30,56 +28,54 @@
                  '("wheel" "netdev" "audio" "video" "docker" "kvm" "libvirt")))
                %base-user-accounts))
  (packages
-  (append
-   (list (specification->package "emacs")
-         (specification->package "emacs-exwm")
-         (specification->package
-          "emacs-desktop-environment")
-         (specification->package "nss-certs"))
+  (cons*
+   (specification->package "nss-certs")
    %base-packages))
  (services
-  (append
-   (list (service gnome-desktop-service-type)
-         (service syncthing-service-type
-                  (syncthing-configuration (user "rocktakey")))
-         (set-xorg-configuration
-          (xorg-configuration
-           (keyboard-layout keyboard-layout)))
-         (service docker-service-type)
-         (service libvirt-service-type
-                  (libvirt-configuration
-                   (unix-sock-group "libvirt")))
-         (service virtlog-service-type))
+  (cons*
+   (set-xorg-configuration
+    (xorg-configuration
+     (keyboard-layout keyboard-layout)))
+   (service gnome-desktop-service-type)
+   (service syncthing-service-type
+            (syncthing-configuration (user "rocktakey")))
+   (service docker-service-type)
+   (service libvirt-service-type
+            (libvirt-configuration
+             (unix-sock-group "libvirt")))
+   (service virtlog-service-type)
    (modify-services %desktop-services
-                    (guix-service-type config => (guix-configuration
-                                                  (inherit config)
-                                                  (substitute-urls
-                                                   (append (list "https://substitutes.nonguix.org")
-                                                           %default-substitute-urls))
-                                                  (authorized-keys
-                                                   (append (list (plain-file "non-guix.pub"
-                                                                             "(public-key
+     (guix-service-type
+      config => (guix-configuration
+                 (inherit config)
+                 (substitute-urls
+                  (append (list "https://substitutes.nonguix.org")
+                          %default-substitute-urls))
+                 (authorized-keys
+                  (append (list (plain-file "non-guix.pub"
+                                            "(public-key
  (ecc
   (curve Ed25519)
   (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))"))
-                                                           %default-authorized-guix-keys))))
-                    (gdm-service-type
-                     config => (gdm-configuration
-                                (gnome-shell-assets
-                                 (list (specification->package "font-google-noto")
-                                       (specification->package "adwaita-icon-theme")))))
-                    (network-manager-service-type
-                     config =>
-                     (network-manager-configuration
-                      (inherit config)
-                      (vpn-plugins (list
-                                    network-manager-openvpn
-                                    network-manager-vpnc
-                                    network-manager-openconnect)))))))
+                          %default-authorized-guix-keys))))
+     (gdm-service-type
+      config => (gdm-configuration
+                 (inherit config)
+                 (gnome-shell-assets
+                  (cons* (specification->package "font-google-noto")
+                         (list adwaita-icon-theme font-abattis-cantarell)))))
+     (network-manager-service-type
+      config =>
+      (network-manager-configuration
+       (inherit config)
+       (vpn-plugins (list
+                     network-manager-openvpn
+                     network-manager-vpnc
+                     network-manager-openconnect)))))))
  (bootloader
   (bootloader-configuration
    (bootloader grub-bootloader)
-   (target "/dev/sdb")
+   (targets '("/dev/sdb"))
    (keyboard-layout keyboard-layout)))
  (mapped-devices
   (list (mapped-device
