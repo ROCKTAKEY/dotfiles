@@ -117,7 +117,7 @@
 (mmic hydra)
 
 (mmic pretty-hydra
-  :pretty-hydra
+  :pretty-hydra+
   (( my-hydra (:color blue)
      ("File/Directory"
       (("f" my-copy-file-name "File Name")
@@ -837,14 +837,6 @@ cases."
   :eval
   ((diredfl-global-mode)))
 
-(mmic dired-git-info
-  :declare-function
-  (dired-git-info-auto-enable)
-  :hook
-  ((dired-after-readin-hook . #'dired-git-info-auto-enable))
-  :custom
-  ((dgi-auto-hide-details-p . nil)))
-
 (mmic dockerfile-mode)
 
 (mmic org
@@ -1330,7 +1322,7 @@ cases."
   ((global-map
     ("C-s" . #'consult-line)
     ("C-x b" . #'consult-buffer)
-    ("M-y" . #'consult-yank-from-kill-ring)
+    ("M-y" . #'consult-yank-pop)
     ("M-g g" . #'consult-goto-line)
     ("M-g o" . #'consult-outline)
     ("M-g i" . #'consult-imenu)
@@ -1345,6 +1337,8 @@ cases."
     ("M-g a" . #'consult-org-agenda)
     ("M-g e" . #'consult-flymake)
     ("C-r" . #'consult-ripgrep)))
+  :custom
+  ((xref-show-xrefs-function . #'consult-xref))
   :eval-after-load
   ((add-to-list 'consult-buffer-sources 'rhq-consult-source-project-directory 'append)))
 
@@ -1380,8 +1374,9 @@ cases."
         (with-demoted-errors "%s"
           (require 'ace-window)
           (let ((aw-dispatch-always t))
+            (message "Call `%s' with buffer:" ',fn)
             (aw-switch-to-window (aw-select nil))
-            (call-interactively (symbol-function ',fn))))))
+            (call-interactively #',fn)))))
    (defmacro my/embark-split-action (fn split-type)
      `(defun ,(intern (concat "my/embark-"
                               (symbol-name fn)
@@ -1461,7 +1456,8 @@ cases."
   :hook
   ((completion-at-point-functions . #'cape-file)
    (completion-at-point-functions . #'cape-keyword)
-   (completion-at-point-functions . #'cape-dict)))
+   (completion-at-point-functions . #'cape-dict)
+   (completion-at-point-functions . #'cape-dabbrev)))
 
 (mmic* history
   :custom
@@ -1811,7 +1807,6 @@ cases."
 "
     ("u" undo-tree-undo)
     ("C-/" undo-tree-undo)
-    ("M-u" undo-tree-undo)
     ("r" undo-tree-redo)
     ("q" nil "quit")
     ("t" undo-tree-visualize "visualize tree" :exit t)
@@ -1819,8 +1814,7 @@ cases."
     ("<right>" winner-redo)))
   :define-key
   ((global-map
-    ("C-x u" . #'hydra-undo/undo-tree-undo)
-    ("M-u" . #'hydra-undo/undo-tree-undo)))
+    ("C-x u" . #'hydra-undo/undo-tree-undo)))
   :define-key-after-load
   ((undo-tree-map
     ("C-x u" . #'hydra-undo/undo-tree-undo)
@@ -2203,6 +2197,13 @@ cases."
 (mmic hideshow
   :hook
   ((prog-mode-hook . #'hs-minor-mode))
+  :pretty-hydra+
+  (( my-hydra (:color blue)
+     ("Hide/Show"
+      (("t" hs-toggle-hiding "Toggle")
+       ("S" hs-show-all "Show All")
+       ("h" hs-hide-level "Hide Level")
+       ("H" hs-hide-all "Hide All")))))
   :eval
   ((defun my-hs-hide-level ()
      (interactive)
