@@ -13,7 +13,6 @@
 #include <cctype>
 #include <chrono>
 #include <cmath>
-#include <compare>
 #include <cstdio>
 #include <deque>
 #include <iomanip>
@@ -399,8 +398,8 @@ struct Arc {
 
 template <typename T> struct Node {
   T value;
-  std::set<Arc> arcs;
-  std::set<Arc> revarcs;
+  std::vector<Arc> arcs;
+  std::vector<Arc> revarcs;
   Node(T v) : value(v) {}
 
   Node &operator=(T const &a) {
@@ -410,7 +409,7 @@ template <typename T> struct Node {
   operator T() const { return value; }
 };
 
-template <typename T> class Graph {
+template <typename T, bool useRevarc = false> class Graph {
 public:
   std::vector<Node<T>> nodes;
   T init;
@@ -420,8 +419,10 @@ public:
 
   void addArc(std::size_t from, std::size_t to, long long cost) {
     assert(0 <= from && from <= n - 1 && 0 <= to && to <= n - 1);
-    nodes[from].arcs.insert({to, cost});
-    nodes[to].revarcs.insert({from, cost});
+    nodes[from].arcs.push_back({to, cost});
+    if (useRevarc) {
+      nodes[to].revarcs.push_back({from, cost});
+    }
   }
   void addEdge(std::size_t a, std::size_t b, long long cost) {
     addArc(a, b, cost);
@@ -441,8 +442,21 @@ public:
   void reset(void) { reset(init); }
 
   void removeArc(std::size_t from, std::size_t to, long long cost) {
-    nodes[from].arcs.erase(nodes[from].arcs.find({to, cost}));
-    nodes[to].revarcs.erase(nodes[to].revarcs.find({from, cost}));
+    auto removedArcIterator =
+        find(nodes[from].arcs.begin(), nodes[from].arcs.end(), Arc{to, cost});
+    removedArcIterator->to = -1;
+    auto removedReversearcIterator =
+        find(nodes[to].arcs.begin(), nodes[to].arcs.end(), Arc{from, cost});
+    removedReversearcIterator->to = -1;
+  }
+
+  void removeArcEnsure() {
+    for (auto &node : nodes) {
+      node.arcs.erase(
+          std::remove_if(node.arcs.begin(), node.arcs.end(),
+                         [](auto const &arc) { return arc.to == -1; }),
+          node.arcs.cend());
+    }
   }
 
   void print(bool novalue = false, bool nocost = false) const {
@@ -509,9 +523,9 @@ struct GraphComponent : public Graph<std::size_t> {
   }
 };
 
-struct Tree : public Graph<std::size_t> {
+struct Tree : public Graph<std::size_t, true> {
 public:
-  Tree(std::size_t n) : Graph<std::size_t>(n, 0) {}
+  Tree(std::size_t n) : Graph<std::size_t, true>(n, 0) {}
   void toTree(size_t root) {
     (*this)[root].value = 0;
 
