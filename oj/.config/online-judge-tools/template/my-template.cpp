@@ -334,45 +334,51 @@ struct powers {
 //// Union Find
 
 struct UnionFind {
-  std::vector<unsigned long long> parent;
-  std::vector<size_t> size;
+  std::vector<std::size_t> parent;
+  std::vector<std::size_t> size;
   unsigned long long n;
-  UnionFind(unsigned long long n) : parent(n), size(n, 1), n(n) {
+
+  UnionFind(std::size_t n) : parent(n), size(n, 1), n(n) {
     for (auto it = parent.begin(); it != parent.end(); ++it) {
       *it = std::distance(parent.begin(), it);
     }
   }
 
-  long long root(unsigned long long k) {
+  long long root(std::size_t k) {
     assert(k < n);
-
-    return parent[k] == k ? k : root(parent[k]);
+    // Compress path
+    return parent[k] == k ? k : parent[k] = root(parent[k]);
   }
 
-  bool sameRoot(unsigned long long k, unsigned long long l) {
+  bool sameRoot(std::size_t k, std::size_t l) {
     assert(k < n && l < n);
 
     return root(k) == root(l);
   }
 
+  void updateParent(std::size_t const newParent, std::size_t const newChild) {
+    parent[newChild] = newParent;
+    size[newParent] += size[newChild];
+  }
+
   // Return false if the two have already same root
-  bool unite(unsigned long long k, unsigned long long l) {
+  bool unite(std::size_t const k, std::size_t const l) {
     assert(k < n && l < n);
 
     if (sameRoot(k, l)) {
       return false;
     }
 
-    auto L = size[l] <= size[k] ? k : l;
-    auto S = size[k] <= size[l] ? k : l;
-
-    parent[root(S)] = root(L);
+    // Union by size
+    // size is only used on root
+    auto [S, L] = size[l] <= size[k] ? std::tuple{l, k} : std::tuple{k, l};
+    updateParent(root(L), root(S));
 
     return true;
   }
 
-  auto rootList(void) {
-    std::unordered_set<unsigned long long> s;
+  auto rootList(void) const {
+    std::unordered_set<std::size_t> s;
     for (unsigned long long i = 0; i < n; ++i)
       if (i == parent[i])
         s.insert(i);
