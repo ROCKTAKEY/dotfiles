@@ -42,32 +42,36 @@
 
 //// Output
 
-template <typename T> void outputVectorHorizontal(std::vector<T> const &v) {
-  for (auto &&it = v.cbegin(); it != v.cend(); ++it) {
-    std::cerr << (it == v.begin() ? "" : " ");
-    std::cerr << *it;
-  }
-  std::cerr << "\n";
+template <typename T, typename S>
+std::ostream &operator<<(std::ostream &stream, std::pair<T, S> const &p) {
+  stream << "(" << p.first << "," << p.second << ")";
+  return stream;
 }
 
-template <typename T> void outputVectorVertical(std::vector<T> const &v) {
+template <typename T>
+void outputVectorHorizontal(std::vector<T> const &v,
+                            std::ostream &c = std::cerr) {
   for (auto &&it = v.cbegin(); it != v.cend(); ++it) {
-    std::cerr << *it << "\n";
+    c << (it == v.begin() ? "" : " ");
+    c << *it;
+  }
+  c << "\n";
+}
+
+template <typename T>
+void outputVectorVertical(std::vector<T> const &v,
+                          std::ostream &c = std::cerr) {
+  for (auto &&it = v.cbegin(); it != v.cend(); ++it) {
+    c << *it << "\n";
   }
 }
 
 template <typename T>
-void outputVector2D(std::vector<std::vector<T>> const &vv) {
+void outputVector2D(std::vector<std::vector<T>> const &vv,
+                    std::ostream &c = std::cerr) {
   for (auto const &v : vv) {
-    outputVectorHorizontal(v);
+    outputVectorHorizontal(v, c);
   }
-}
-
-template <typename T, typename S>
-std::ostream &operator<<(std::ostream &stream, std::pair<T, S> const &p) {
-  stream << "(" << p.first << "," << p.second << ")"
-         << "\n";
-  return stream;
 }
 
 //// Modclass
