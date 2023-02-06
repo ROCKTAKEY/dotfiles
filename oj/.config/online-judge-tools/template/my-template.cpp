@@ -668,6 +668,135 @@ struct warshallFloyd : public Graph<long long> {
 
 constexpr long long warshallFloyd::INF;
 
+template <typename T, typename Operator, bool debug = false>
+struct SegmentTree {
+  std::vector<T> v;
+  std::size_t virtualSize;
+  std::size_t width;
+  std::size_t depth;
+  T unitElement;
+  Operator const op;
+
+  std::size_t leftChildOf(std::size_t const parentSegment) const {
+    assert(parentSegment <= width - 1);
+    return 2 * (parentSegment + 1) - 1;
+  }
+
+  std::size_t rightChildOf(std::size_t const parentSegment) const {
+    assert(parentSegment <= width - 1);
+
+    return 2 * (parentSegment + 1);
+  }
+
+  std::size_t parentOf(std::size_t const childSegment) const {
+    assert(childSegment != 0);
+    assert(childSegment < v.size());
+
+    return (childSegment - 1) / 2;
+  }
+
+  std::size_t positionToSegment(std::size_t const position) const {
+    assert(position < virtualSize);
+    return position + width - 1;
+  }
+
+  SegmentTree(std::vector<T> const &initialValues, T unitElement, Operator op)
+      : virtualSize(initialValues.size()), width(1), depth(0),
+        unitElement(unitElement), op(op) {
+    assert(virtualSize != 0);
+
+    while (width < initialValues.size()) {
+      width <<= 1;
+      ++depth;
+    }
+
+    v = std::vector<T>(2 * width - 1, unitElement);
+    std::copy(initialValues.begin(), initialValues.end(),
+              v.begin() + (width - 1));
+
+    // Counting down cannot be used due to underflow
+    for (std::size_t i = 1; i <= width - 1; ++i) {
+      std::size_t const j = width - 1 - i;
+      v[j] = op(v[leftChildOf(j)], v[rightChildOf(j)]);
+    }
+
+    // Output debug infomation
+    if constexpr (debug) {
+      std::cerr << "SegmentTreeSize: " << v.size() << "\n";
+      std::cerr << "Width: " << width << "\n";
+      std::cerr << "Depth: " << depth << "\n";
+      outputVectorHorizontal(v);
+    }
+  }
+
+public:
+  // Get value on [l,r)
+  T get(std::size_t const l, std::size_t const r) const {
+    return get(l, r, 0, 0, width);
+  }
+
+  T get(std::size_t const position) { return v[positionToSegment(position)]; }
+
+private:
+  T get(std::size_t const l, std::size_t const r, std::size_t const segment,
+        std::size_t const segmentL, std::size_t const segmentR) const {
+    assert(l <= virtualSize);
+    assert(r <= virtualSize);
+    assert(segment < v.size());
+
+    // Output debug infomation
+    if constexpr (debug) {
+      std::cerr << l << "/" << r << ":" << segmentL << "/" << segmentR << ":"
+                << segment << "\n";
+    }
+
+    if (l <= segmentL && segmentR <= r) {
+      return v[segment];
+    }
+
+    if (r <= segmentL || segmentR <= l) {
+      return unitElement;
+    }
+
+    auto const segmentM = (segmentL + segmentR) / 2;
+    return op(get(l, r, leftChildOf(segment), segmentL, segmentM),
+              get(l, r, rightChildOf(segment), segmentM, segmentR));
+  }
+
+private:
+  void updateSegment(std::size_t segment) {
+    // Output debug information
+    if constexpr (debug) {
+      std::cerr << "Update segment: " << segment << "\n";
+    }
+    v[segment] = op(v[leftChildOf(segment)], v[rightChildOf(segment)]);
+
+    if (segment != 0) {
+      updateSegment(parentOf(segment));
+    }
+  }
+
+public:
+  void set(std::size_t const position, T const value) {
+    auto const segment = positionToSegment(position);
+
+    // Output debug information
+    if constexpr (debug) {
+      std::cerr << "Update position: " << position << " (segment: " << segment
+                << ")"
+                << "\n";
+    }
+
+    v[positionToSegment(position)] = value;
+    updateSegment(parentOf(segment));
+
+    // Output debug information
+    if constexpr (debug) {
+      outputVectorHorizontal(v);
+    }
+  }
+};
+
 //// Some shorthands
 
 using namespace std;
