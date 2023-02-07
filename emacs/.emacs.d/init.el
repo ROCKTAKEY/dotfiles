@@ -1087,9 +1087,6 @@ cases."
   :hook
   ((latex-mode-hook . #'turn-on-reftex)
    (yatex-mode-hook . #'turn-on-reftex))
-  :declare-function
-  (reftex-access-scan-info
-   reftex-offer-label-menu)
   :custom
   ((reftex-default-bibliography
     . (list (expand-file-name
