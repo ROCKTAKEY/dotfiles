@@ -826,10 +826,6 @@ cases."
   :eval
   ((slime-setup '(slime-repl slime-fancy slime-banner slime-autodoc))))
 
-(mmic geiser)
-
-(mmic geiser-guile)
-
 (mmic* dired
   :define-key
   ((dired-mode-map
@@ -1140,6 +1136,12 @@ cases."
 (mmic elisp-docstring-mode)
 
 (mmic string-edit-at-point)
+
+(mmic geiser)
+
+(mmic geiser-guile
+  :custom
+  ((geiser-guile-load-path . '("~/rhq/git.savannah.gnu.org/guix/"))))
 
 (mmic clojure-mode)
 
