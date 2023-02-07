@@ -1032,56 +1032,17 @@ cases."
 (defun to-comma-hook ()
   (add-hook 'before-save-hook #'replace-to-comma nil t))
 
-(mmic tex-mode
-  :custom
-  ((tex-command . "platex --synctex=1")
-   (tex-run-command . "platex")
-   (latex-run-command . "platex")))
-
 (mmic bibtex
   :custom
   ((bibtex-command . "pbibtex")))
 
-(mmic yatex
-  :declare-function
-  (YaTeX-typeset-menu
-   YaTeX-get-preview-file-name)
-  :autoload-interactive
-  (yatex-mode)
-  :define-key-after-load
-  ((YaTeX-prefix-map
-    ("v" . #'yatex-open-dvi-with-emacs))
-   (YaTeX-mode-map
-    ("C-c C-c" . #'YaTeX-typeset-pdf)))
-  :custom
-  ((YaTeX-user-completion-table
-    . (expand-file-name "etc/.yatexrc" user-emacs-directory))
-   ;; https://oku.edu.mie-u.ac.jp/~okumura/texfaq/qa/52930.html
-   (YaTeX-latex-message-code . 'utf-8))
-  :eval
-  ((add-to-list 'auto-mode-alist
-                '("\\.tex\\'" . yatex-mode))
-   (defun ad:yatex-typeseting-sentinel (_ arg)
-     (when (string= arg "finished\n")
-       (ignore-errors
-         (with-current-buffer
-             (if (string-match-p "\\.pdf$" (buffer-file-name))
-                 (current-buffer)
-               (find-buffer-visiting
-                (YaTeX-get-preview-file-name "dvipdfmx")))
-           (revert-buffer nil t)))))
-   (defun YaTeX-typeset-pdf (arg)
-     (interactive "P")
-     (YaTeX-typeset-menu arg ?d))
-   (defun yatex-open-dvi-with-emacs ()
-     "Preview current dvi file."
-     (interactive)
-     (find-file-other-window
-      (YaTeX-get-preview-file-name))))
-  :eval-after-load
-  ((advice-add #'YaTeX-typeset-sentinel :after #'ad:yatex-typeseting-sentinel)))
+(mmic auctex
+  :custom-after-load
+  ((TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))))
 
-(mmic auctex)
+(mmic auctex-latexmk
+  :eval
+  ((auctex-latexmk-setup)))
 
 (mmic reftex
   :hook
@@ -1093,37 +1054,15 @@ cases."
              "texmf/bibtex/bib/mine.bib"
              (pcase system-type
                (`windows-nt (getenv "USERPROFILE"))
-               (_ (getenv "HOME")))))))
-  :eval
-  ((defmacro my-define-ref (name command label-menu)
-     `(defun ,name ()
-        (interactive)
-        (require 'tex)
-        (require 'reftex-ref)
-        (reftex-access-scan-info current-prefix-arg)
-        (insert
-         (format ,(format "\\%s{%%s}" command) (nth 0 (car (reftex-offer-label-menu ,label-menu)))))))
-   (my-define-ref my:eqref "eref" "e")
-   (my-define-ref my:tabref "tabref" "t")
-   (my-define-ref my:figref "figref" "f")
-   (my-define-ref my:secref "ref" "s"))
-  :hydra
-  ((hydra-yatex-ref
-    (:color blue)
-    "\\ref"
-    ("e" my:eqref "equation")
-    ("t" my:tabref "table")
-    ("f" my:figref "figure")
-    ("s" my:secref "section")))
-  :define-key-after-load
-  ((reftex-mode-map
-    ("C-c C-r" . #'hydra-yatex-ref/body))))
+               (_ (getenv "HOME"))))))))
 
 (when (eq system-type 'gnu/linux)
   (mmic pdf-tools
     :eval
     ((add-to-list 'auto-mode-alist
-                  '("\\.pdf\\'" . pdf-view-mode)))))
+                  '("\\.pdf\\'" . pdf-view-mode)))
+    :autoload-interactive
+    (pdf-view-mode)))
 
 (mmic eslintd-fix
   :hook
