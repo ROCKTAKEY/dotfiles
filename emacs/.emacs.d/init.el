@@ -605,7 +605,13 @@ cases."
 
 (mmic imenu
   :custom
-  ((imenu-auto-rescan . t)))
+  ((imenu-auto-rescan . t))
+  :eval
+  ((defun shell-imenu-setup ()
+     (setq-local imenu-generic-expression
+                 '(("Prompt" "^.*[\\$#] .*$" 0)))))
+  :hook
+  ((shell-mode-hook . #'shell-imenu-setup)))
 
 (mmic imenu-list
   :custom
