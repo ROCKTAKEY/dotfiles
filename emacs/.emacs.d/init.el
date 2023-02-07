@@ -731,6 +731,9 @@ cases."
   ((setcdr (assoc '(c++-mode c-mode) eglot-server-programs)
            (eglot-alternatives
             '("ccls" "clangd")))
+   (let ((cons (assoc '(tex-mode context-mode texinfo-mode bibtex-mode) eglot-server-programs)))
+     (cl-pushnew 'yatex-mode (car cons))
+     (setf (cdr cons) '("texlab")))
    (add-to-list 'eglot-server-programs '(yatex-mode . ("texlab")))))
 
 (mmic tree-sitter
