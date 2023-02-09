@@ -1,0 +1,6 @@
+#!/usr/bin/env perl
+
+$pdflatex = 'lualatex -interaction=nonstopmode -synctex=1';
+$biber = 'biber --bblencoding=utf8 -u -U --output_safechars';
+$pdf_mode = 1;
+$max_repeat = 5;
