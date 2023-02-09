@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: hl
-# key: hl
-# --
-:hl_lines ${1:1,2-3}

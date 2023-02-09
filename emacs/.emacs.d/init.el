@@ -1978,41 +1978,18 @@ cases."
   ((ssh-mode-hook . #'ssh-directory-tracking-mode)
    (ssh-mode-hook . #'shell-dirtrack-mode)))
 
-(mmic yasnippet
-  :package (yasnippet-snippets)
-  :require (t yasnippet-snippets)
-  :pretty-hydra
-  (( hydra-yas (:color blue)
-     ("YASnippet"
-      (("n" yas-new-snippet "New")
-       ("e" yas-visit-snippet-file "Edit")
-       ("i" yas-insert-snippet "Insert")
-       ("q" nil)))))
+(mmic tempel
   :define-key
-  ((yas-minor-mode-map
-    ("<deletechar>" . #'yas-skip-and-clear-or-delete-char)
-    ("<tab>" . nil)
-    ("TAB" . nil)
-    ("C-x y" . #'hydra-yas/body)))
+  ((global-map
+    ("M-l" . #'tempel-complete)))
   :define-key-after-load
-  ((yas-minor-mode-map
-    ("SPC" . yas-maybe-expand)))
-   :custom
-  ;; expand yasnippet only beginning of symbol.
-  ((yas-key-syntaxes . '("w_"))
-   (yas-also-auto-indent-first-line . t))
-  :custom-after-load
-  ((yas-buffer-local-condition . yas-not-string-or-comment-condition)
-   (yas-snippet-dirs
-    . (cons 'yasnippet-snippets-dir
-            (my-standard-value 'yas-snippet-dirs))))
-  :hook
-  ((snippet-mode-hook . #'hook:snippet/kill-whitespace-trancation))
-  :eval
-  ((add-to-list 'auto-mode-alist '("snippets/" . snippet-mode))
-   (yas-global-mode)
-   (defun hook:snippet/kill-whitespace-trancation ()
-     (remove-hook 'before-save-hook #'delete-trailing-whitespace t))))
+  ((tempel-map
+    ("M-p" . #'tempel-previous)
+    ("M-n" . #'tempel-next)))
+  :pretty-hydra+
+  (( my-hydra nil
+     ("TempEl"
+      (("i" tempel-insert "Insert template"))))))
 
 (mmic* char-code
   :custom

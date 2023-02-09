@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: fact
-# key: fact
-# --
-ll fact(int n, int i = 1){
-    return n == 0 ? i : fact(n - 1, i * n);
-}

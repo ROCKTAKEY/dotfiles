@@ -1,5 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: message
-# key: mes
-# --
-(message ${1:"$0"})

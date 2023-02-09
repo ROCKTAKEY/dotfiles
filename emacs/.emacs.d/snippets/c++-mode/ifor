@@ -1,6 +1,0 @@
-# key: ifor
-# name: ifor
-# --
-for(auto &&i = ${1:container}.begin(); i != $1.end(); ++i){
-    $0
-}

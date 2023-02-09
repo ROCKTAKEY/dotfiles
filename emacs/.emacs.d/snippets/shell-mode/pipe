@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: pipe
-# key: pipe
-# --
- < ${1:input-file} > ${2:output-file}

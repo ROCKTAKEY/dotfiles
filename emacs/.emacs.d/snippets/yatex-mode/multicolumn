@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: multicolumn
-# key: multicolumn
-# --
-\\multicolumn{$1}{c}{$0}

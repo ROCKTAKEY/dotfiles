@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: makeert
-# key: makeert
-# condition: (eq system-type 'windows-nt)
-# --
-make ert CASK="c:/Python27/python %USERPROFILE%/.cask/bin/cask"

@@ -1,0 +1,227 @@
+;; -*- mode: Lisp-Data;-*-
+
+fundamental-mode
+
+
+
+bibtex-mode
+(url "@misc{" p "," n>
+     "title = {" p "}," n>
+     "author = {" p "}," n>
+     "year = {" p "}," n>
+     "URL = {" p "}," n>
+     "}")
+
+
+yatex-mode LaTeX-mode latex-mode tex-mode TeX-mode
+(def
+ "\newcommand{" p "}{" p "}")
+
+(def-with-arg
+  "\newcommand{" p "}[" p "]{" p "}")
+
+(figure
+ "\\begin{figure}[h]" n>
+ "\\centering" n>
+ r>
+ "\\caption{" r> "}" n>
+ "\\label{" p "}" n>
+ "\end{figure}")
+
+(image
+ "\\includegraphics[width=0.8\hsize]{" p "}")
+
+(minipage
+ "\\begin{minipage}[c]{" (p "1") "\\hsize}" n>
+ r> n>
+ "\\end{minipage}")
+
+(multicolumn
+ "\\multicolumn{" p "}{c}{" p "}")
+
+(multirow
+ "\\multirow{" p "}{*}{" p "}")
+
+(table
+ "\\begin{table}[H]" n>
+ "\\centering" n>
+ "\\caption{" p "}" n>
+ "\\label{" p "}" n>
+ "\\begin{tabular}{" p "}" n>
+ "\\toprule" n>
+ n>
+ "\\midrule" n>
+ "\\\\" n>
+ "\\bottomrule" n>
+ "\\end{tabular}" n>
+ "\\end{table}")
+
+(template-lualatexn
+ "\\documentclass" (p "[titlepage]") "{" (p (completing-read "documentclass: " '("jlreq" "ltjsarticle" "ltjsbook" "ltjsreport" "ltjspf" "ltjskiyou" "beamer"))) "}" n
+ "\\usepackage{luatexja}" n
+ "\\usepackage{graphicx}" n
+ "\\usepackage[no-math]{fontspec}" n
+ "\\usepackage[unicode,hidelinks,pdfusetitle]{hyperref}" n
+ "\\usepackage{amsmath}" n
+ "\\usepackage{amssymb}" n
+ "\\usepackage{amsthm}" n
+ "\\usepackage{mathtools}" n
+ "\\usepackage[ISO]{diffcoeff}" n
+ "\\usepackage{siunitx}" n
+ "\\usepackage{cancel}" n
+ "\\usepackage[nameinlink]{cleveref}" n
+ n
+ "% \\usepackage[sorting=none]{biblatex}" n
+ "% \\addbibresource{mine.bib}" n
+ n
+ "% \\usepackage[version=4]{mhchem}" n
+ "% \\usepackage{chemfig}" n
+ n
+ "\\crefformat{chapter}{第#2#1#3章}" n
+ "\\crefformat{section}{#2#1#3節}" n
+ "\\crefformat{subsection}{#2#1#3節}" n
+ "\\crefname{figure}{図}{図}" n
+ "\\crefname{table}{表}{表}" n
+ "\\crefname{equation}{式}{式}" n
+ "\\crefname{appendix}{付録}{付録}" n
+ n
+ "\\title{" p "}" n
+ "\\author{" p "}" n
+ n
+ "\\begin{document}" n
+ "\\maketitle" n
+ n
+ r>
+ n
+ "% \\printbibliography[title=参考文献]" n
+ "\\end{document}")
+
+
+
+c-mode c++-mode
+(forr "for(auto &&" (p "it") " : " (p "container") ") {" n>
+      r> n
+      "}" >)
+
+(fori "for(auto &&" (p "it" it) " = " (p "container" container) ".begin(); " it " !=  " container ".end(); ++" it ") {" n>
+      r> n
+      "}">)
+
+(main
+ "int main(" (p (completing-read "Argument: " '("int argc, char *argv[]" "void"))) ") {" n>
+ r> n> n>
+ "return 0;" n
+ "}")
+
+
+
+edebug-eval-mode
+(watch "(with-current-buffer \"*Watch*\"" n>
+       "(insert (format \"%S\" " r> ")))")
+
+
+
+emacs-lisp-mode
+(defun "(defun " (p "name") " (" p ")" n>
+       "\"" (p "Docstring." )"\"" n>
+       r> n>
+       ")")
+
+
+
+org-mode
+(hl ":hl_lines " (p "1,2-3"))
+
+(begin "#+BEGIN_" (s name) n> r> n "#+END_" name)
+
+(quote "#+BEGIN_QUOTE" n>
+       r> n
+       "#+END_QUOTE")
+
+(example "#+BEGIN_EXAMPLE" n>
+         r> n
+         "#+END_EXAMPLE")
+
+(src "#+BEGIN_SRC " q n>
+     r> n
+     "#+END_SRC")
+
+(caption "#+CAPTION: ")
+
+(title "#+TITLE: " p n
+       "#+AUTHOR: " p n
+       "#+LANGUAGE: en" (p (completing-read "Language: " '("en" "ja"))))
+
+(hugotag > ":EXPORT_HUGO_TAGS: ")
+
+
+
+scheme-mode
+(guix-define-module
+ "(define-module" n>
+ "(" (string-join (file-name-split (file-relative-name (file-name-sans-extension (buffer-file-name)) (project-root (project-current)))) " ") ")"
+ "#:use-module (guix packages)" n>
+ "#:use-module ((guix licenses) #:prefix license:)" n>
+ "#:use-module (guix download)" n>
+ "#:use-module (guix git-download)" n>
+ "#:use-module (nonguix build-system gnu))")
+
+(guix-define-public-git
+ "(define-public " (p name) n>
+ "(package" n>
+ "(name " name ")" n>
+ "(version \"0\")" n>
+ "(source" n>
+ "(origin" n>
+ "(method url-fetch)" n>
+ "(uri (git-reference" n>
+ "(url \""  (p (concat "https://github.com/" name "/" name) url)  "\")" n>
+ "(commit (string-append \"v\" version))))" n>
+ "(sha256" n>
+ "(base32" n>
+ "\"\"))))" n>
+ "(build-system gnu-build-system)" n>
+ "(arguments '())" n>
+ "(home-page " (p url) ")" n>
+ "(synopsis \"" p  "\")" n>
+ "(description \"" p "\")" n>
+ "(license license:"
+ (p (completing-read "License: " '("agpl1" "agpl3" "agpl3+" "apsl2" "asl1.1" "asl2.0" "boost1.0" "bsd-0" "bsd-1" "bsd-2" "bsd-3" "bsd-4" "non-copyleft" "cc0" "cc-by2.0" "cc-by3.0" "cc-by4.0" "cc-by-sa2.0" "cc-by-sa3.0" "cc-by-sa4.0" "cddl1.0" "cddl1.1" "cecill" "cecill-b" "cecill-c" "artistic2.0" "clarified-artistic" "copyleft-next" "cpl1.0" "cua-opl1.0" "edl1.0" "epl1.0" "epl2.0" "eupl1.1" "eupl1.2" "expat" "expat-0" "freetype" "freebsd-doc" "giftware" "gpl1" "gpl1+" "gpl2" "gpl2+" "gpl3" "gpl3+" "gfl1.0" "fdl1.1+" "fdl1.2+" "fdl1.3+" "opl1.0+" "osl2.1" "isc" "ijg" "ibmpl1.0" "imlib2" "ipa" "knuth" "lal1.3" "lgpl2.0" "lgpl2.0+" "lgpl2.1" "lgpl2.1+" "lgpl3" "lgpl3+" "llgpl" "lppl" "lppl1.0+" "lppl1.1+" "lppl1.2" "lppl1.2+" "lppl1.3" "lppl1.3+" "lppl1.3a" "lppl1.3a+" "lppl1.3b" "lppl1.3b+" "lppl1.3c" "lppl1.3c+" "miros" "mpl1.0" "mpl1.1" "mpl2.0" "ms-pl" "ncsa" "nmap" "ogl-psi1.0" "openldap2.8" "openssl" "perl-license" "psfl" "public-domain" "qpl" "qwt1.0" "repoze" "ruby" "sgifreeb2.0" "silofl1.1" "sleepycat" "tcl/tk" "unicode" "unlicense" "vim" "w3c" "x11" "x11-style" "zpl2.1" "zlib" "fsf-free" "wtfpl2" "wxwindows3.1+" "hpnd" "fsdg-compatible")))
+ ")))")
+
+(guix-define-public-zip
+ "(define-public " (p name) n>
+ "(package" n>
+ "(name " name ")" n>
+ "(version \"0\")" n>
+ "(source" n>
+ "(origin" n>
+ "(method url-fetch)" n>
+ "(uri (string-append" n>
+ "(url "  (p (concat "\"https://github.com/" name "/" name "/releases/download/\" version \"/linux-x64-\" version \".zip\"") url)  "\")" n>
+ "(commit (string-append \"v\" version))))" n>
+ "(sha256" n>
+ "(base32" n>
+ "\"\"))))" n>
+ "(build-system gnu-build-system)" n>
+ "(arguments '())" n>
+ "(home-page " (p (concat "\"https://github.com/" name "/" name)) ")" n>
+ "(synopsis \"" p  "\")" n>
+ "(description \"" p "\")" n>
+ "(license license:"
+ (p (completing-read "License: " '("agpl1" "agpl3" "agpl3+" "apsl2" "asl1.1" "asl2.0" "boost1.0" "bsd-0" "bsd-1" "bsd-2" "bsd-3" "bsd-4" "non-copyleft" "cc0" "cc-by2.0" "cc-by3.0" "cc-by4.0" "cc-by-sa2.0" "cc-by-sa3.0" "cc-by-sa4.0" "cddl1.0" "cddl1.1" "cecill" "cecill-b" "cecill-c" "artistic2.0" "clarified-artistic" "copyleft-next" "cpl1.0" "cua-opl1.0" "edl1.0" "epl1.0" "epl2.0" "eupl1.1" "eupl1.2" "expat" "expat-0" "freetype" "freebsd-doc" "giftware" "gpl1" "gpl1+" "gpl2" "gpl2+" "gpl3" "gpl3+" "gfl1.0" "fdl1.1+" "fdl1.2+" "fdl1.3+" "opl1.0+" "osl2.1" "isc" "ijg" "ibmpl1.0" "imlib2" "ipa" "knuth" "lal1.3" "lgpl2.0" "lgpl2.0+" "lgpl2.1" "lgpl2.1+" "lgpl3" "lgpl3+" "llgpl" "lppl" "lppl1.0+" "lppl1.1+" "lppl1.2" "lppl1.2+" "lppl1.3" "lppl1.3+" "lppl1.3a" "lppl1.3a+" "lppl1.3b" "lppl1.3b+" "lppl1.3c" "lppl1.3c+" "miros" "mpl1.0" "mpl1.1" "mpl2.0" "ms-pl" "ncsa" "nmap" "ogl-psi1.0" "openldap2.8" "openssl" "perl-license" "psfl" "public-domain" "qpl" "qwt1.0" "repoze" "ruby" "sgifreeb2.0" "silofl1.1" "sleepycat" "tcl/tk" "unicode" "unlicense" "vim" "w3c" "x11" "x11-style" "zpl2.1" "zlib" "fsf-free" "wtfpl2" "wxwindows3.1+" "hpnd" "fsdg-compatible")))
+ ")))")
+
+
+
+shell-mode eshell-mode
+(cmake-compile-commands-json
+ "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON")
+(cmake-build-type-relwithdebinfo
+ "-DCMAKE_BUILD_TYPE=RelWithDebInfo")
+
+
+
+text-mode
+(co-authored-by
+ "Co-authored-by: " (p "Name") " <" (p "email@example.com") ">")
