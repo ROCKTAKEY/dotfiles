@@ -390,6 +390,17 @@ struct UnionFind {
   }
 };
 
+
+// Left is false, right is true.
+template<class T, class F>
+T binarySearch(T l, T r, F func, T diff = 1) {
+    while (std::abs(r - l) > diff) {
+        T m = (l + r) / 2;
+        (func(m) ? r : l) = m;
+    }
+    return r;
+}
+
 //// Graph
 
 struct Arc {
