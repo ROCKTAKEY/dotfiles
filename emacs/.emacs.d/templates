@@ -99,6 +99,13 @@ yatex-mode LaTeX-mode latex-mode tex-mode TeX-mode
 
 
 c-mode c++-mode
+(main
+ "int main(" (p (completing-read "Argument: " '("int argc, char *argv[]" "void"))) ") {" n>
+ r> n> n>
+ "return 0;" n
+ "}")
+
+c++-mode
 (forr "for(auto &&" (p "it") " : " (p "container") ") {" n>
       r> n
       "}" >)
@@ -107,11 +114,11 @@ c-mode c++-mode
       r> n
       "}">)
 
-(main
- "int main(" (p (completing-read "Argument: " '("int argc, char *argv[]" "void"))) ") {" n>
- r> n> n>
- "return 0;" n
- "}")
+(cout > "std::cout << " r> ";")
+
+(cerr > "std::cerr << " r> ";")
+
+(cin > "std::cin >> " r> ";")
 
 
 
