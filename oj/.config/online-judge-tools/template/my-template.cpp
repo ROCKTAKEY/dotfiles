@@ -48,9 +48,8 @@ std::ostream &operator<<(std::ostream &stream, std::pair<T, S> const &p) {
   return stream;
 }
 
-template <typename T>
-void outputVectorHorizontal(std::vector<T> const &v,
-                            std::ostream &c = std::cerr) {
+template <typename Container>
+void outputVectorHorizontal(Container const &v, std::ostream &c = std::cerr) {
   for (auto &&it = v.cbegin(); it != v.cend(); ++it) {
     c << (it == v.begin() ? "" : " ");
     c << *it;
@@ -58,17 +57,15 @@ void outputVectorHorizontal(std::vector<T> const &v,
   c << "\n";
 }
 
-template <typename T>
-void outputVectorVertical(std::vector<T> const &v,
-                          std::ostream &c = std::cerr) {
+template <typename Container>
+void outputVectorVertical(Container const &v, std::ostream &c = std::cerr) {
   for (auto &&it = v.cbegin(); it != v.cend(); ++it) {
     c << *it << "\n";
   }
 }
 
-template <typename T>
-void outputVector2D(std::vector<std::vector<T>> const &vv,
-                    std::ostream &c = std::cerr) {
+template <typename Container>
+void outputVector2D(Container const &vv, std::ostream &c = std::cerr) {
   for (auto const &v : vv) {
     outputVectorHorizontal(v, c);
   }
