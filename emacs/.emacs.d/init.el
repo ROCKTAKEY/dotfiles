@@ -1485,7 +1485,13 @@ cases."
 (mmic magit
   :define-key
   ((global-map
-    ("M-g M-g" . #'magit-status))))
+    ("M-g M-g" . #'magit-status)))
+  :hook
+  ((fundamental-mode . #'magit-wip-mode))
+  :pretty-hydra+
+  (( my-hydra nil
+     ("Magit"
+      (("w" magit-wip-log "Show wip commit log"))))))
 
 (mmic forge
   :custom
