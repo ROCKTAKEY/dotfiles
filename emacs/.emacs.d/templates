@@ -134,6 +134,8 @@ emacs-lisp-mode
        r> n>
        ")")
 
+(autoload ";;;###autoload")
+
 
 
 org-mode
@@ -143,15 +145,15 @@ org-mode
 
 (quote "#+BEGIN_QUOTE" n>
        r> n
-       "#+END_QUOTE")
+       "#+END_QUOTE" >)
 
 (example "#+BEGIN_EXAMPLE" n>
          r> n
-         "#+END_EXAMPLE")
+         "#+END_EXAMPLE" >)
 
 (src "#+BEGIN_SRC " q n>
      r> n
-     "#+END_SRC")
+     "#+END_SRC" >)
 
 (caption "#+CAPTION: ")
 
