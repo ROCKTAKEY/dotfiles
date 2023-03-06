@@ -1987,7 +1987,7 @@ cases."
 (mmic tempel
   :define-key
   ((global-map
-    ("M-l" . #'tempel-complete)))
+    ("M-i" . #'tempel-complete)))
   :define-key-after-load
   ((tempel-map
     ("M-p" . #'tempel-previous)
