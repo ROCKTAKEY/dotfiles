@@ -1978,8 +1978,7 @@ cases."
 
 (mmic ssh
   :custom
-  ((ssh-program . "plink")
-   (tramp-default-method . "psftp"))
+  ((tramp-default-method . "psftp"))
   :hook
   ((ssh-mode-hook . #'ssh-directory-tracking-mode)
    (ssh-mode-hook . #'shell-dirtrack-mode)))
