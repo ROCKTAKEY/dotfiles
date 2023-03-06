@@ -1312,7 +1312,15 @@ cases."
    (embark-bookmark-map
     ("o" . (my/embark-ace-action bookmark-jump))
     ("2" . (my/embark-split-action bookmark-jump split-window-below))
-    ("3" . (my/embark-split-action bookmark-jump split-window-right))))
+    ("3" . (my/embark-split-action bookmark-jump split-window-right)))
+   (embark-symbol-map
+    ("h" . #'helpful-symbol))
+   (embark-function-map
+    ("h" . #'helpful-function))
+   (embark-command-map
+    ("h" . #'helpful-command))
+   (embark-variable-map
+    ("h" . #'helpful-variable)))
   :eval
   ;; https://karthinks.com/software/fifteen-ways-to-use-embark/
   ((defmacro my/embark-ace-action (fn)
