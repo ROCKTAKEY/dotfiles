@@ -796,6 +796,8 @@ cases."
 
 (mmic markdown-mode)
 
+(mmic jq-mode)
+
 (mmic cc-mode
   :eval
   ((defun my:c-statement-cont (cons)
