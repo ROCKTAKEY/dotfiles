@@ -1503,6 +1503,10 @@ cases."
      ("Magit"
       (("w" magit-wip-log "Show wip commit log"))))))
 
+(mmic magit-todos
+  :eval
+  ((magit-todos-mode)))
+
 (mmic forge
   :custom
   ((forge-database-file
