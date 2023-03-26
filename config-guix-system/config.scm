@@ -2,7 +2,8 @@
              (gnu packages fonts)
              (gnu packages gnome)
              (nongnu packages linux)
-             (nongnu system linux-initrd))
+             (nongnu system linux-initrd)
+             (roquix services tailscale))
 (use-service-modules desktop networking ssh xorg docker virtualization syncthing)
 
 (operating-system
@@ -44,6 +45,8 @@
             (libvirt-configuration
              (unix-sock-group "libvirt")))
    (service virtlog-service-type)
+   (service tailscale-service-type)
+   ;; (tailscale-service '())
    (modify-services %desktop-services
      (guix-service-type
       config => (guix-configuration
