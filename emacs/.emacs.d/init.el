@@ -114,6 +114,8 @@
 (mmic el-get
   :custom ((el-get-git-shallow-clone . t)))
 
+(mmic mykie)
+
 (mmic hydra)
 
 (mmic pretty-hydra
