@@ -869,7 +869,7 @@ cases."
    (org-todo-keywords
     . '((sequence "TODO(t)" "WAIT(w)" "|" "OBSOLETED(o)" "DONE(d)")))
    (org-capture-templates
-    . '(("n" "Note" entry (file org-default-notes-file)
+    . `(("n" "Note" entry (file org-default-notes-file)
          "** %?\n   %i\n   %a\n   %U")
         ("t" "Todo" entry (file org-default-notes-file)
          "** TODO %?\n   %i\n   %a\n   %U")
