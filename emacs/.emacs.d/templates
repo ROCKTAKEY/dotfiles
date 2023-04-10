@@ -120,6 +120,29 @@ c++-mode
 
 (cin > "std::cin >> " r> ";")
 
+(clang-format-off "// clang-format off" n>
+                  r> n>
+                  "// clang-format on" n>)
+
+(cxxopts
+ "cxxopts::Options options(\"" (p "executableName") "\", \"" (p "description") "\");" n>
+ "// clang-format off" n>
+ "options.add_options()" n>
+ "(\"d,directory\", \"Directory\", cxxopts::value<std::filesystem::path>())" n>
+ "(\"h,help\", \"Display help and exit\")" n>
+ ";" n>
+ "// clang-format on" n>
+ n>
+ "auto const parsedOptionsResult = options.parse(argc, argv);" n>
+ n>
+ "if (parsedOptionsResult.count(\"help\")){" n>
+ "std::cerr<<options.help() << std::endl;" n>
+ "return 0;" n>
+ "}" n>
+ n>
+ "auto const directory =" n>
+ "parsedOptionsResult[\"directory\"].as<std::filesystem::path>();" n>)
+
 
 
 edebug-eval-mode
@@ -176,22 +199,23 @@ scheme-mode
  "#:use-module (nonguix build-system gnu))")
 
 (guix-define-public-git
- "(define-public " (p name) n>
+ "(define-public " (s name) n>
  "(package" n>
  "(name " name ")" n>
  "(version \"0\")" n>
  "(source" n>
  "(origin" n>
- "(method url-fetch)" n>
+ "(method git-fetch)" n>
  "(uri (git-reference" n>
- "(url \""  (p (concat "https://github.com/" name "/" name) url)  "\")" n>
+ "(url \""  (p (concat "https://github.com/") url)  "\")" n>
  "(commit (string-append \"v\" version))))" n>
+ "(file-name (git-file-name name version))"
  "(sha256" n>
  "(base32" n>
  "\"\"))))" n>
  "(build-system gnu-build-system)" n>
  "(arguments '())" n>
- "(home-page " (p url) ")" n>
+ "(home-page " url ")" n>
  "(synopsis \"" p  "\")" n>
  "(description \"" p "\")" n>
  "(license license:"
@@ -199,9 +223,9 @@ scheme-mode
  ")))")
 
 (guix-define-public-zip
- "(define-public " (p name) n>
+ "(define-public " (s name) n>
  "(package" n>
- "(name " name ")" n>
+ "(name \"" name "\")" n>
  "(version \"0\")" n>
  "(source" n>
  "(origin" n>
@@ -214,7 +238,7 @@ scheme-mode
  "\"\"))))" n>
  "(build-system gnu-build-system)" n>
  "(arguments '())" n>
- "(home-page " (p (concat "\"https://github.com/" name "/" name)) ")" n>
+ "(home-page \"" (p (concat "\"https://github.com/")) "\")" n>
  "(synopsis \"" p  "\")" n>
  "(description \"" p "\")" n>
  "(license license:"
@@ -228,9 +252,68 @@ shell-mode eshell-mode
  "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON")
 (cmake-build-type-relwithdebinfo
  "-DCMAKE_BUILD_TYPE=RelWithDebInfo")
+(environment-version
+ "VERSION=$(git describe)")
 
 
 
 text-mode
-(co-authored-by
- "Co-authored-by: " (p "Name") " <" (p "email@example.com") ">")
+co-authored-by
+"Co-authored-by: " (p "Name") " <" (p "email@example.com") ">"
+
+
+
+js-mode
+(cmakepresets
+ "{
+  \"version\": 6,
+  \"cmakeMinimumRequired\": {
+    \"major\": 3,
+    \"minor\": 12,
+    \"patch\": 0
+  },
+  \"configurePresets\": [
+    {
+      \"name\": \"default\",
+      \"displayName\": \"Default Config\",
+      \"description\": \"Default build\",
+      \"binaryDir\": \"build\"
+    }
+  ],
+  \"buildPresets\": [
+    {
+      \"name\": \"default\",
+      \"configurePreset\": \"default\"
+    }
+  ],
+  \"testPresets\": [
+    {
+      \"name\": \"default\",
+      \"configurePreset\": \"default\",
+      \"output\": {
+        \"outputOnFailure\": true,
+        \"outputJUnitFile\": \"junitreport.xml\"
+      }
+    }
+  ],
+  \"workflowPresets\": [
+    {
+      \"name\": \"default\",
+      \"steps\": [
+        {
+          \"type\": \"configure\",
+          \"name\": \"default\"
+        },
+        {
+          \"type\": \"build\",
+          \"name\": \"default\"
+        },
+        {
+          \"type\": \"test\",
+          \"name\": \"default\"
+        }
+      ]
+    }
+  ]
+}
+")
