@@ -1182,16 +1182,6 @@ cases."
   :face
   ((comint-highlight-prompt . ((t (:foreground "#00ff00"))))))
 
-(mmic* ansi-color
-  :hook
-  ((compilation-filter-hook . #'my-colorize-compilation-buffer))
-  :eval
-  ;; https://stackoverflow.com/questions/13397737/ansi-coloring-in-compilation-mode
-  ((defun my-colorize-compilation-buffer ()
-     (when (provided-mode-derived-p major-mode 'compilation-mode)
-       (let ((inhibit-read-only t))
-         (ansi-color-apply-on-region compilation-filter-start (point-max)))))))
-
 (mmic eshell
   :custom
   ((eshell-directory-name
