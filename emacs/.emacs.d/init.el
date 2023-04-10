@@ -841,7 +841,11 @@ cases."
   :eval
   ((put 'dired-find-alternate-file 'disabled nil)))
 
-(mmic dired-filter)
+(mmic dired-filter
+  :define-key-with-feature
+  ((dired
+    (dired-mode-map
+     ("/" . dired-filter-map)))))
 
 (mmic diredfl
   :eval
