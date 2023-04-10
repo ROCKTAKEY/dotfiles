@@ -258,8 +258,8 @@ shell-mode eshell-mode
 
 
 text-mode
-co-authored-by
-"Co-authored-by: " (p "Name") " <" (p "email@example.com") ">"
+(co-authored-by
+ "Co-authored-by: " (p "Name") " <" (p "email@example.com") ">")
 
 
 
