@@ -1674,31 +1674,27 @@ cases."
   ((key-translation-map
     ("C-h" . (kbd "DEL")))))
 
-(mmic puni
-  :define-key
-  ((puni-mode-map
-    ("C-S-h" . #'puni-splice)
-    ("C-S-i" . #'puni-slurp-forward)
-    ("C-S-o" . #'puni-barf-forward)
-    ("M-I" . #'puni-slurp-backward)
-    ("M-O" . #'puni-barf-backward)))
-
-  :eval
-  ((puni-global-mode)))
-
-(mmic elec-pair
-  :eval
-  ((electric-pair-mode)))
+(mmic topsy
+  :hook
+  ((prog-mode-hook . #'topsy-mode)))
 
 (mmic smartparens
-  :require t
-  :define-key
-  ((puni-mode-map
+  :define-key-after-load
+  ((smartparens-mode-map
+    ("C-S-h" . #'sp-splice-sexp)
+    ("C-S-i" . #'sp-forward-slurp-sexp)
+    ("C-S-o" . #'sp-forward-barf-sexp)
+    ("M-I" . #'sp-backward-slurp-sexp)
+    ("M-O" . #'sp-backward-barf-sexp)
     ("M-s r" . #'sp-rewrap-sexp)
     ("C-M-d" . #'sp-delete-symbol)))
   :custom
   ((sp-highlight-pair-overlay . nil)
-   (sp-base-key-bindings . 'sp)))
+   (sp-base-key-bindings . 'sp))
+  :eval
+  ((require 'smartparens-config)
+   (smartparens-global-mode)
+   (smartparens-global-strict-mode)))
 
 (mmic rainbow-delimiters
   :hook ((lisp-mode-hook . #'rainbow-delimiters-mode)
