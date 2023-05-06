@@ -1168,6 +1168,8 @@ cases."
 
 (mmic keg-mode)
 
+(mmic gnuplot)
+
 (mmic gdb-mi
   :custom
   ((gud-gdb-command-name . "gdb")))
