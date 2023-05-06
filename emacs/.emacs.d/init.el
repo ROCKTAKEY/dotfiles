@@ -2097,7 +2097,8 @@ cases."
      default-frame-alist))
 
   (set-face-attribute 'variable-pitch nil :family 'unspecified)
-  (set-face-attribute 'fixed-pitch nil :family 'unspecified))
+  (set-face-attribute 'fixed-pitch nil :family 'unspecified)
+  (set-face-attribute 'fixed-pitch-serif nil :family 'unspecified))
 
 (mmic* my-modeline
   :require t)
