@@ -6,6 +6,9 @@
 (when my-profiler-on
   (profiler-start 'cpu))
 
+(require 'cl-lib)
+(require 'seq)
+
 (defun my-standard-value (symbol)
   "Return standard value of SYMBOL."
   (eval (car (get symbol 'standard-value))))
@@ -25,13 +28,24 @@
   (interactive)
   (message "Copy \"%s\"" (kill-new (file-name-directory (buffer-file-name)))))
 
+(defun download-all (url-list dir)
+  "Download all files from url in URL-LIST in directory DIR."
+  (let ((padding (ceiling (log (length url-list) 10))))
+    (seq-map-indexed
+     (lambda (url n)
+       (call-process "curl" nil nil nil
+                     url
+                     "-o"
+                     (expand-file-name (format (format "%%0%dd.%%s" padding)
+                                               n (file-name-extension url))
+                                       dir)))
+     url-list)))
+
 ;; load-path
 
 (add-to-list 'load-path (expand-file-name "conf" user-emacs-directory))
 
 
-
-(require 'cl-lib)
 
 (prog1 'nsm
   (set-variable
