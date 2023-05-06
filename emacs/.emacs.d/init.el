@@ -45,7 +45,6 @@
   (setq package-check-signature nil)
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
   (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/"))
-  (add-to-list 'package-archives '("celpa" . "https://celpa.conao3.com/packages/"))
   (add-to-list 'package-archives '("roquelpa" . "https://rocktakey.github.io/roquelpa/"))
   (package-initialize))
 
