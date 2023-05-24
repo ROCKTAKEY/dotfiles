@@ -32,7 +32,7 @@ if [ -x "$(command -v rclone)" ]; then
     for remote in $(rclone listremotes); do
         remoteDir=~/${remote:0:(-1)}
         mkdir -p ${remoteDir}
-        rclone mount ${remote}/ ${remoteDir} &
+        rclone mount ${remote}/ ${remoteDir} --vfs-cache-mode full &
     done
 fi
 
