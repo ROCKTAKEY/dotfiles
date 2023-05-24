@@ -30,6 +30,8 @@
 
 (defun download-all (url-list dir)
   "Download all files from url in URL-LIST in directory DIR."
+  (unless (file-directory-p dir)
+    (mkdir dir))
   (let ((padding (ceiling (log (length url-list) 10))))
     (seq-map-indexed
      (lambda (url n)
