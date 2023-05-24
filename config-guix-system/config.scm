@@ -31,6 +31,9 @@
  (packages
   (cons*
    (specification->package "nss-certs")
+   (specification->package "i3-wm")
+   (specification->package "i3status")
+   (specification->package "rofi")
    %base-packages))
  (services
   (cons*
