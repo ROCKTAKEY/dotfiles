@@ -49,7 +49,6 @@
              (unix-sock-group "libvirt")))
    (service virtlog-service-type)
    (service tailscale-service-type)
-   ;; (tailscale-service '())
    (modify-services %desktop-services
      (guix-service-type
       config => (guix-configuration
