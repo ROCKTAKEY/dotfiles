@@ -34,6 +34,8 @@
    (specification->package "i3-wm")
    (specification->package "i3status")
    (specification->package "rofi")
+   (specification->package "polybar")
+
    %base-packages))
  (services
   (cons*
