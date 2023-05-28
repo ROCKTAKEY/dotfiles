@@ -1387,9 +1387,14 @@ cases."
 (mmic orderless
   :custom
   ((completion-styles . '(orderless basic))
-   (completion-category-overrides . '((file (styles orderless-migemo basic partial-completion))
-                                      (consult-location (styles orderless-migemo basic partial-completion))
-                                      (consult-org-heading (styles orderless-migemo basic partial-completion)))))
+   (completion-category-overrides
+    .
+    '(
+      ;; https://github.com/minad/vertico#tramp-hostname-and-username-completion
+      ;; For ssh hostname and username completion, the order basic -> orderless is used.
+      (file (styles basic orderless-migemo partial-completion))
+      (consult-location (styles orderless-migemo basic partial-completion))
+      (consult-org-heading (styles orderless-migemo basic partial-completion)))))
   :eval-after-load
   (
    ;; 1 character migemo regexp is too long
