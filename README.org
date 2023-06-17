@@ -2,14 +2,20 @@
 ** whole dependency
 This dotfiles can be installed by [[https://www.gnu.org/software/stow/][GNU Stow]].
 
-** Directory dependency
+** Directory requirement
+- =config-guix= :: [[https://guix.gnu.org][GNU Guix, GNU Guix System]] (Note that this is not for installation by stow)
+- =config-guix-system= :: [[https://guix.gnu.org][GNU Guix, GNU Guix System]] (Note that this is not for installation by stow)
+- =config-wsl-guix-system= :: [[https://guix.gnu.org][GNU Guix, GNU Guix System]] (Note that this is not for installation by stow)
 - =cookiecutter= :: [[https://github.com/cookiecutter/cookiecutter][cookiecutter]]
 - =emacs= :: [[https://www.gnu.org/software/emacs/][GNU Emacs]], [[https://github.com/koron/cmigemo][cmigemo]], [[https://github.com/ggreer/the_silver_searcher][ag]]
 - =git= :: [[https://git-scm.com/][Git]]
 - =guix= :: [[https://guix.gnu.org][GNU Guix, GNU Guix System]]
-- =guix-config= :: [[https://guix.gnu.org][GNU Guix, GNU Guix System]] (Note that this is not for installation by stow)
+- =guix-system= :: [[https://guix.gnu.org][GNU Guix, GNU Guix System]]
+- =i3= :: [[https://i3wm.org/][i3wm]], [[https://github.com/polybar/polybar][polybar]]
+- =lualatex= :: [[https://tug.org/texlive/][TeX Live]]
 - =oj= :: [[https://github.com/online-judge-tools/oj][oj]], [[https://github.com/online-judge-tools/template-generator][template-generator]]
 - =rhq= :: [[https://github.com/ubnt-intrepid/rhq][rhq]]
+- =rofi= :: [[https://github.com/davatorium/rofi][Rofi]]
 - =wslg= :: [[https://github.com/microsoft/wslg][wslg]]
 
 ** Getting started
