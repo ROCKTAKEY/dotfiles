@@ -164,7 +164,7 @@ emacs-lisp-mode
 org-mode
 (hl ":hl_lines " (p "1,2-3"))
 
-(begin "#+BEGIN_" (s name) n> r> n "#+END_" name)
+(begin "#+begin_" (s name) n> r> n "#+end_" name)
 
 (quote "#+BEGIN_QUOTE" n>
        r> n
@@ -202,7 +202,7 @@ scheme-mode
  "(define-public " (s name) n>
  "(package" n>
  "(name " name ")" n>
- "(version \"0\")" n>
+ "(version \"" (p "0") "\")" n>
  "(source" n>
  "(origin" n>
  "(method git-fetch)" n>
@@ -226,19 +226,18 @@ scheme-mode
  "(define-public " (s name) n>
  "(package" n>
  "(name \"" name "\")" n>
- "(version \"0\")" n>
+ "(version \"" (p "0") "\")" n>
  "(source" n>
  "(origin" n>
  "(method url-fetch)" n>
  "(uri (string-append" n>
- "(url "  (p (concat "\"https://github.com/" name "/" name "/releases/download/\" version \"/linux-x64-\" version \".zip\"") url)  "\")" n>
- "(commit (string-append \"v\" version))))" n>
+ (p (concat "\"https://github.com/" name "/" name "/releases/download/\" version \"/linux-x64-\" version \".zip\"") url)  ")))" n>
  "(sha256" n>
  "(base32" n>
  "\"\"))))" n>
  "(build-system gnu-build-system)" n>
  "(arguments '())" n>
- "(home-page \"" (p (concat "\"https://github.com/")) "\")" n>
+ "(home-page \"" (p (concat "https://github.com/")) "\")" n>
  "(synopsis \"" p  "\")" n>
  "(description \"" p "\")" n>
  "(license license:"
