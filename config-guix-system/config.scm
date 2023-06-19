@@ -2,12 +2,20 @@
              (gnu packages fonts)
              (gnu packages gnome)
              (nongnu packages linux)
+             (nongnu packages nvidia)
              (nongnu system linux-initrd)
              (roquix services tailscale))
 (use-service-modules desktop networking ssh xorg docker virtualization syncthing)
 
 (operating-system
- (kernel linux)
+ (kernel
+  ;; NOTE: NVIDIA driver 515 needs linux-5.15.
+  linux-5.15)
+ (kernel-loadable-modules (list nvidia-module))
+ (kernel-arguments
+  (list
+   ;; NOTE: NVIDIA driver cannot be used with noveau and pcspkr
+   "modprobe.blacklist=nouveau,pcspkr"))
  (initrd microcode-initrd)
  (firmware (list linux-firmware))
 
@@ -41,7 +49,17 @@
   (cons*
    (set-xorg-configuration
     (xorg-configuration
-     (keyboard-layout keyboard-layout)))
+     (keyboard-layout keyboard-layout)
+     (modules
+      (cons*
+       ;; NOTE: NVIDIA driver should be loaded as a kernel module
+       nvidia-driver
+
+       %default-xorg-modules))))
+
+   ;; NOTE: NVIDIA driver needs udev rule to recognize NVIDIA GPU.
+   (udev-rules-service 'nvidia-gpu nvidia-driver)
+
    (service gnome-desktop-service-type)
    (service syncthing-service-type
             (syncthing-configuration (user "rocktakey")))
