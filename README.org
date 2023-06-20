@@ -33,7 +33,7 @@ This dotfiles can be installed by [[https://www.gnu.org/software/stow/][GNU Stow
 #+END_SRC
 
 ** Multiple display configuration with i3
-1. Run ARandR
+1. Run [[https://christian.amsuess.com/tools/arandr/][ARandR]]
 2. Configure preferred display config
 3. Save it as .screenlayout/main.sh
 4. [[file:i3/.config/i3/config][i3/.config/i3/config]] executes the display configuration by ~exec --no-startup-id ~/.screenlayout/main.sh~.
