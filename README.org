@@ -2,10 +2,7 @@
 ** whole dependency
 This dotfiles can be installed by [[https://www.gnu.org/software/stow/][GNU Stow]].
 
-** Directory requirement
-- =config-guix= :: [[https://guix.gnu.org][GNU Guix, GNU Guix System]] (Note that this is not for installation by stow)
-- =config-guix-system= :: [[https://guix.gnu.org][GNU Guix, GNU Guix System]] (Note that this is not for installation by stow)
-- =config-wsl-guix-system= :: [[https://guix.gnu.org][GNU Guix, GNU Guix System]] (Note that this is not for installation by stow)
+** Requirement of each directory
 - =cookiecutter= :: [[https://github.com/cookiecutter/cookiecutter][cookiecutter]]
 - =emacs= :: [[https://www.gnu.org/software/emacs/][GNU Emacs]], [[https://github.com/koron/cmigemo][cmigemo]], [[https://github.com/ggreer/the_silver_searcher][ag]]
 - =git= :: [[https://git-scm.com/][Git]]
@@ -16,6 +13,7 @@ This dotfiles can be installed by [[https://www.gnu.org/software/stow/][GNU Stow
 - =oj= :: [[https://github.com/online-judge-tools/oj][oj]], [[https://github.com/online-judge-tools/template-generator][template-generator]]
 - =rhq= :: [[https://github.com/ubnt-intrepid/rhq][rhq]]
 - =rofi= :: [[https://github.com/davatorium/rofi][Rofi]]
+- =uim= :: [[https://github.com/uim/uim][uim]]
 - =wslg= :: [[https://github.com/microsoft/wslg][wslg]]
 
 ** Getting started
@@ -27,32 +25,24 @@ This dotfiles can be installed by [[https://www.gnu.org/software/stow/][GNU Stow
 
 *** Example on GNU Guix System
 #+BEGIN_SRC shell -n
-  stow cookiecutter emacs git guix guix-system oj rhq
-#+END_SRC
-
-If you want to reconfigure GNU Guix System, you can run:
-#+BEGIN_SRC shell -n
-  sudo guix archive --authorize < ~/dotfiles/guix-config/signing-keys/signing-key.pub
-  sudo guix system reconfigure /etc/config.scm --substitute-urls='https://ci.guix.gnu.org https://bordeaux.guix.gnu.org https://substitutes.nonguix.org'
-#+END_SRC
-
-With GNU Guix, all almost dependencies can be installed.
-Note that some packages are defined on [[https://github.com/ROCKTAKEY/roquix][roquix]], which is my channel for guix, or some other public channels.
-#+BEGIN_SRC shell -n
   guix pull
-  guix install python-cookiecutter emacs cmigemo migemo-dict the-silver-searcher git online-judge-tools online-judge-template-generator rust-rhq
+  guix install stow
+  stow cookiecutter emacs git guix guix-system oj rhq rofi uim
+  sudo guix system reconfigure ~/config/config.scm --substitute-urls='https://ci.guix.gnu.org https://bordeaux.guix.gnu.org https://substitutes.nonguix.org'
+  guix package -m config/manifest.scm
 #+END_SRC
 
-*** Example on wslg
-#+BEGIN_SRC shell -n
-  stow cookiecutter emacs git oj rhq wslg guix
-#+END_SRC
+** Multiple display configuration with i3
+1. Run ARandR
+2. Configure preferred display config
+3. Save it as .screenlayout/main.sh
+4. [[file:i3/.config/i3/config][i3/.config/i3/config]] executes the display configuration by ~exec --no-startup-id ~/.screenlayout/main.sh~.
 
 ** Git signing
 1. Make your own gpg key by `gpg --full-gen-key`
 2. Show your own key name by `gpg --list-keys`
 3. Add to =~/.config/git/config.local=:
-   #+begin_src conf-toml :tangle yes
+   #+begin_src conf-toml
      [user]
          signingKey = <keyname>!
    #+end_src
@@ -63,10 +53,10 @@ Note that some packages are defined on [[https://github.com/ROCKTAKEY/roquix][ro
 
 1. =stow git=
 2. Login to one account
-3. Rename ~./config/gh/hosts.yml~ to ID
+3. Rename ~./config/gh/hosts.yml~ to ID (e.g. ~yourid.yml~)
 4. Login to another account
-5. Rename ~./config/gh/hosts.yml~ to ID
-6. Now you can switch to =<ID>= account by =ghs <ID>=
+5. Rename ~./config/gh/hosts.yml~ to ID (e.g. ~anotherid.yml~)
+6. Now you can switch to =<ID>= account by =ghs <ID>= (e.g. ~ghs yourid~ or ~ghs anotherid~)
 
 * License
 This dotfiles are basically published under [[file:LICENSE][GPLv3]].
