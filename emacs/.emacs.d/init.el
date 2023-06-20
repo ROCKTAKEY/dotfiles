@@ -1690,6 +1690,13 @@ cases."
        (end-of-line)
        (comment-or-uncomment-region (region-beginning) (region-end))))))
 
+(mmic hl-todo
+  :pretty-hydra+
+  (( my-hydra nil
+     ("Insert"
+      (("k" hl-todo-insert "Keyword like TODO")))))
+  :eval
+  ((global-hl-todo-mode)))
 
 (mmic* key-translation
   :define-key
