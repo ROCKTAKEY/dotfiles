@@ -39,6 +39,9 @@
  (packages
   (cons*
    (specification->package "nss-certs")
+
+   (specification->package "xrandr")
+
    (specification->package "i3-wm")
    (specification->package "i3status")
    (specification->package "rofi")
@@ -87,6 +90,7 @@
      (gdm-service-type
       config => (gdm-configuration
                  (inherit config)
+                 (auto-suspend? #f)
                  (gnome-shell-assets
                   (cons* (specification->package "font-google-noto")
                          (list adwaita-icon-theme font-abattis-cantarell)))))
