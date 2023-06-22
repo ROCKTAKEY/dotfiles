@@ -29,7 +29,7 @@ This dotfiles can be installed by [[https://www.gnu.org/software/stow/][GNU Stow
   guix install stow
   stow cookiecutter emacs git guix guix-system oj rhq rofi uim
   sudo guix system reconfigure ~/config/config.scm --substitute-urls='https://ci.guix.gnu.org https://bordeaux.guix.gnu.org https://substitutes.nonguix.org'
-  guix package -m config/manifest.scm
+  guix package -m config/manifest/guix.scm config/manifest/guix-system.scm
 #+END_SRC
 
 ** Multiple display configuration with i3
