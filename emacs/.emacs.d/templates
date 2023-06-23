@@ -191,12 +191,12 @@ org-mode
 scheme-mode
 (guix-define-module
  "(define-module" n>
- "(" (string-join (file-name-split (file-relative-name (file-name-sans-extension (buffer-file-name)) (project-root (project-current)))) " ") ")"
+ "(" (string-join (file-name-split (file-relative-name (file-name-sans-extension (buffer-file-name)) (project-root (project-current)))) " ") ")" n>
  "#:use-module (guix packages)" n>
  "#:use-module ((guix licenses) #:prefix license:)" n>
  "#:use-module (guix download)" n>
  "#:use-module (guix git-download)" n>
- "#:use-module (nonguix build-system gnu))")
+ "#:use-module (guix build-system gnu))")
 
 (guix-define-public-git
  "(define-public " (s name) n>
@@ -231,7 +231,7 @@ scheme-mode
  "(origin" n>
  "(method url-fetch)" n>
  "(uri (string-append" n>
- (p (concat "\"https://github.com/" name "/" name "/releases/download/\" version \"/linux-x64-\" version \".zip\"") url)  ")))" n>
+ (p (concat "\"https://github.com/" name "/" name "/releases/download/v\" version \"/linux-x64-\" version \".zip\"") url)  "))" n>
  "(sha256" n>
  "(base32" n>
  "\"\"))))" n>
