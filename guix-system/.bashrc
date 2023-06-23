@@ -29,9 +29,3 @@ fi
 alias ls='ls -p --color=auto'
 alias ll='ls -l'
 alias grep='grep --color=auto'
-
-# # For keyboard
-# setxkbmap -option ctrl:nocaps
-xmodmap -e 'keycode 102=Alt_L'  # 102 is Muhenkan
-xmodmap -e 'keycode 100=Muhenkan' # 100 is Henkan
-xmodmap -e 'keycode 101=Muhenkan' # 101 is Hiragana_Katakana
