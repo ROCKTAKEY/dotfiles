@@ -215,7 +215,7 @@ scheme-mode
  "\"0yirfwqarcbjhr916qcx6zqw9bh4r08ldx598swkcgd275nhyl31\"))))" n>
  "(build-system gnu-build-system)" n>
  "(arguments '())" n>
- "(home-page " url ")" n>
+ "(home-page \"" url "\")" n>
  "(synopsis \"" p  "\")" n>
  "(description \"" p "\")" n>
  "(license license:"
