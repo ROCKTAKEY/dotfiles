@@ -1777,7 +1777,12 @@ cases."
 
 (mmic winner
   :eval
-  ((winner-mode)))
+  ((winner-mode))
+  :pretty-hydra+
+  (( my-hydra (:color blue)
+     ("Winner"
+      (("j" winner-undo "Undo" :color pink)
+       (";" winner-redo "Redo" :color pink))))))
 
 (mmic undo-tree
   :custom
