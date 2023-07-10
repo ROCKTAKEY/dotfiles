@@ -201,7 +201,7 @@ scheme-mode
 (guix-define-public-git
  "(define-public " (s name) n>
  "(package" n>
- "(name " name ")" n>
+ "(name \"" name "\")" n>
  "(version \"" (p "0") "\")" n>
  "(source" n>
  "(origin" n>
