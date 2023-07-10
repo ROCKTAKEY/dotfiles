@@ -1292,7 +1292,7 @@ cases."
     ("M-g I" . #'consult-imenu-multi)
     ("M-g m" . #'consult-mark)
     ("M-g M" . #'consult-global-mark)
-    ("M-s f" . #'consult-find)
+    ("M-g f" . #'consult-find)
     ("M-s k" . #'consult-focus-lines)
     ("M-@" . #'consult-register-load)
     ("C-M-@" . #'consult-register-store)
