@@ -39,8 +39,8 @@ This dotfiles can be installed by [[https://www.gnu.org/software/stow/][GNU Stow
 4. [[file:i3/.config/i3/config][i3/.config/i3/config]] executes the display configuration by ~exec --no-startup-id ~/.screenlayout/main.sh~.
 
 ** Git signing
-1. Make your own gpg key by `gpg --full-gen-key`
-2. Show your own key name by `gpg --list-keys`
+1. Make your own gpg key by =gpg --full-gen-key=
+2. Show your own key name by =gpg --list-keys=
 3. Add to =~/.config/git/config.local=:
    #+begin_src conf-toml
      [user]
