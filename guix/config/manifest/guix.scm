@@ -12,6 +12,7 @@
   (specification->package "glibc")
   (specification->package "gnupg")
   (specification->package "make")
+  (specification->package "nss-certs")
   (specification->package "stow")
   (specification->package "unzip")
 
