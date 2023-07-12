@@ -5,7 +5,8 @@
   ;;; Essensial tools
   (specification->package "clang")
   (specification->package "cmake")
-  (specification->package "gcc-toolchain@10.3.0")
+  (specification->package "fontconfig")
+  (specification->package "gcc-toolchain")
   (specification->package "git")
   (list (specification->package "git") "send-email")
   (specification->package "glibc")
@@ -22,17 +23,17 @@
   ;;; Emacs
   (specification->package "emacs")
   (specification->package "emacs-keg")
+  (specification->package "emacs-cask")
 
   ;; Tools needed by Emacs
   (specification->package "ccls")
   (specification->package "cmigemo")
   (specification->package "migemo-dict")
   (specification->package "miscfiles")
-  (specification->package "the-silver-searcher")
+  (specification->package "ripgrep")
 
   ;;; Other tools
   (specification->package "f3")
-  (specification->package "gitlab-runner")
   (specification->package "go-github-com-cli-cli-v2")
   (specification->package "go-github-com-gohugoio-hugo")
   (specification->package "go-github-com-gohugoio-hugo-extended")
@@ -42,9 +43,6 @@
   (specification->package "online-judge-tools")
   (specification->package "python-cookiecutter")
   (specification->package "rust-rhq")
-
-  ;;; Libraries
-  (specification->package "eigen")
 
   ;;; Fonts
   (specification->package "font-cica")
