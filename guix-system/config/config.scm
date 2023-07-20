@@ -5,7 +5,7 @@
              (nongnu packages nvidia)
              (nongnu system linux-initrd)
              (roquix services tailscale))
-(use-service-modules desktop networking ssh xorg docker virtualization syncthing cups admin)
+(use-service-modules desktop networking ssh xorg docker virtualization syncthing cups admin nix)
 
 (operating-system
  (kernel
@@ -47,6 +47,8 @@
    (specification->package "rofi")
    (specification->package "polybar")
 
+   (specification->package "nix")
+
    %base-packages))
  (services
   (cons*
@@ -64,6 +66,11 @@
    (udev-rules-service 'nvidia-gpu nvidia-driver)
 
    (service gnome-desktop-service-type)
+   (service nix-service-type
+            (nix-configuration
+             (extra-config
+              (list "experimental-features = nix-command flakes"))))
+
    (service syncthing-service-type
             (syncthing-configuration (user "rocktakey")))
    (service docker-service-type)
