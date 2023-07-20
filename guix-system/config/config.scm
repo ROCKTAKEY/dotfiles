@@ -5,7 +5,7 @@
              (nongnu packages nvidia)
              (nongnu system linux-initrd)
              (roquix services tailscale))
-(use-service-modules desktop networking ssh xorg docker virtualization syncthing)
+(use-service-modules desktop networking ssh xorg docker virtualization syncthing cups admin)
 
 (operating-system
  (kernel
@@ -67,25 +67,46 @@
    (service syncthing-service-type
             (syncthing-configuration (user "rocktakey")))
    (service docker-service-type)
+
+   ;; NOTE: For GNOME Boxes and other virturlization softwares
    (service libvirt-service-type
             (libvirt-configuration
              (unix-sock-group "libvirt")))
    (service virtlog-service-type)
    (service tailscale-service-type)
+
+   ;; NOTE: Printer
+   (service cups-service-type)
+
+   ;; NOTE: Upgrade system automatically
+   (service unattended-upgrade-service-type)
+
    (modify-services %desktop-services
      (guix-service-type
       config => (guix-configuration
                  (inherit config)
                  (substitute-urls
-                  (append %default-substitute-urls
-                          (list "https://substitutes.nonguix.org")))
+                  (cons*  "https://substitutes.nonguix.org"
+                          "https://guix.bordeaux.inria.fr"
+                          %default-substitute-urls))
                  (authorized-keys
                   (cons*
                    (plain-file "nonguix.pub"
-                               "(public-key
+                               "\
+(public-key
  (ecc
   (curve Ed25519)
-  (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))")
+  (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))\
+"
+                               )
+                   (plain-file "inria.pub"
+                               "\
+(public-key
+ (ecc
+  (curve Ed25519)
+  (q #89FBA276A976A8DE2A69774771A92C8C879E0F24614AAAAE23119608707B3F06#)))\
+"
+                               )
                    %default-authorized-guix-keys))))
      (gdm-service-type
       config => (gdm-configuration
