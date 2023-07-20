@@ -871,10 +871,16 @@ cases."
 (mmic org
   :package org-contrib
   :mode-hydra
-  (( org-mode ()
+  (( org-mode (:color pink :quit-key "q")
      ("Export"
-      (("C" org-commentary-update "Export to Commentary")))))
-
+      (("C" org-commentary-update "Export to Commentary" :color blue))
+      "Same Level Heading"
+      (("C-b" org-backward-heading-same-level "Back")
+       ("C-f" org-forward-heading-same-level "Forward"))
+      "Heading"
+      (("C-p" org-previous-visible-heading "Previous")
+       ("C-n" org-next-visible-heading "Next")
+       ("C-u" outline-up-heading "Parent")))))
   :custom
   ((org-agenda-sticky . t)
    (org-directory . my-org-directory)
@@ -1145,12 +1151,14 @@ cases."
       "Edit"
       (("s" string-edit-at-point "Edit string")
        ("l" edit-list "Edit list"))
-      "Test/Debug"
-      (("t" ert "Run test")
-       ("d" edebug-defun "Debug defun")
+      "Debug"
+      (("d" edebug-defun "Debug defun")
        ("e" macrostep-expand "Expand")
-       ("p" package-lint-current-buffer "Lint")
-       ("c" checkdoc "Checkdoc")))))
+       ("t" toggle-debug-on-error "Debug on error" :toggle (default-value 'debug-on-error)))
+      "Development"
+      (("p" package-lint-current-buffer "Lint")
+       ("c" checkdoc "Checkdoc")
+       ("T" ert "Run test")))))
   :eval
   ((defun my:byte-compile-this ()
      "byte-compile opened file."
@@ -1716,14 +1724,50 @@ cases."
     ("M-I" . #'sp-backward-slurp-sexp)
     ("M-O" . #'sp-backward-barf-sexp)
     ("M-s r" . #'sp-rewrap-sexp)
-    ("C-M-d" . #'sp-delete-symbol)))
+    ("M-d" . #'sp-delete-word)
+    ("C-M-d" . #'sp-delete-sexp)
+    ("M-h" . #'sp-backward-delete-word)
+    ("C-M-h" . #'sp-backward-delete-sexp)
+    ("M-k" . #'sp-kill-sexp)))
   :custom
   ((sp-highlight-pair-overlay . nil)
    (sp-base-key-bindings . 'sp))
   :eval
   ((require 'smartparens-config)
    (smartparens-global-mode)
-   (smartparens-global-strict-mode)))
+   (smartparens-global-strict-mode)
+   (defun sp-delete-sexp (&optional arg)
+     "Delete the balanced expression following point.
+
+This is exactly like calling `sp-kill-sexp'
+except deleted sexp does not go to the clipboard or kill ring.
+
+With ARG being positive number N, repeat that many times.
+
+With ARG being Negative number -N, repeat that many times in
+backward direction.
+
+See also `sp-kill-sexp' examples."
+     (interactive "*p")
+     (let* ((kill-ring kill-ring)
+            (select-enable-clipboard nil))
+       (sp-kill-sexp arg)))
+   (defun sp-backward-delete-sexp (&optional arg)
+     "Delete the balanced expression preceding point.
+
+This is exactly like calling `sp-backword-kill-sexp'
+except deleted sexp does not go to the clipboard or kill ring.
+
+With ARG being positive number N, repeat that many times.
+
+With ARG being Negative number -N, repeat that many times in
+forward direction.
+
+See also `sp-backward-kill-sexp' examples."
+     (interactive "*p")
+     (let* ((kill-ring kill-ring)
+            (select-enable-clipboard nil))
+       (sp-backward-kill-sexp arg)))))
 
 (mmic rainbow-delimiters
   :hook ((lisp-mode-hook . #'rainbow-delimiters-mode)
