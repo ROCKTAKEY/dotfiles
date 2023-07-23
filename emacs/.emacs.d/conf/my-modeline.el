@@ -223,7 +223,7 @@
        " "))))
 
 
-  mode-line-process
+  'mode-line-process
   " "
 
   ;; LSP-mode
