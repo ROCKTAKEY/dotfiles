@@ -448,12 +448,10 @@ how long to wait for a response before giving up."
         ("\\*Warnings\\*" . ,display-buffer-fallback-action)
         ("magit-diff:" nil
          (inhibit-same-window . t)))))
+  :eval-after-others ((ace-window-display-mode))
   :face
-  ((aw-leading-char-face
-    . ((t (:foreground "red" :height 10.0))))
-   (aw-mode-line-face
-    . ((t (:background "#006000" :foreground "white" :bold t)))))
-  :eval-after-others ((ace-window-display-mode)))
+  ((aw-leading-char-face . ((t (:height 10.0))))
+   (aw-mode-line-face . ((t (:bold t))))))
 
 (mmic* uniquify
   :custom
@@ -1188,18 +1186,14 @@ cases."
 
 (mmic* comint
   :custom
-  ((comint-scroll-show-maximum-output . t))
-  :face
-  ((comint-highlight-prompt . ((t (:foreground "#00ff00"))))))
+  ((comint-scroll-show-maximum-output . t)))
 
 (mmic eshell
   :custom
   ((eshell-directory-name
     . (expand-file-name
        "etc/eshell"
-       user-emacs-directory)))
-  :face
-  ((eshell-prompt . ((t (:foreground "#00ff00"))))))
+       user-emacs-directory))))
 
 (mmic shell
   :hook
@@ -1600,12 +1594,6 @@ cases."
   ((override
     ("C-M-n" . #'bm-next)
     ("C-M-p" . #'bm-previous)))
-  :face
-  ((bm-persistent-face
-    . ((((class grayscale) (background light)) (:background "DimGray"))
-       (((class grayscale) (background dark))  (:background "LightGray"))
-       (((class color)     (background light)) (:foreground nil :background "#090960"))
-       (((class color)     (background dark))  (:foreground nil :background "#090960")))))
   :hook
   ((after-init-hook . #'bm-repository-load)
    (find-file-hook  . #'bm-buffer-restore)
@@ -1782,16 +1770,7 @@ See also `sp-backward-kill-sexp' examples."
          (c-mode-common-hook . #'rainbow-delimiters-mode))
   :face
   ((rainbow-delimiters-unmatched-face
-    . ((t (:foreground "#ff0000" :bold t :underline t))))
-   (rainbow-delimiters-depth-1-face . ((t (:foreground "#bbffff"))))
-   (rainbow-delimiters-depth-2-face . ((t (:foreground "#ffbbff"))))
-   (rainbow-delimiters-depth-3-face . ((t (:foreground "#ffffaa"))))
-   (rainbow-delimiters-depth-4-face . ((t (:foreground "#aaddaa"))))
-   (rainbow-delimiters-depth-5-face . ((t (:foreground "#ff55ff"))))
-   (rainbow-delimiters-depth-6-face . ((t (:foreground "#09d999"))))
-   (rainbow-delimiters-depth-7-face . ((t (:foreground "#ff6666"))))
-   (rainbow-delimiters-depth-8-face . ((t (:foreground "#66ff66"))))
-   (rainbow-delimiters-depth-9-face . ((t (:foreground "#6666ff"))))))
+    . ((t (:bold t :underline t))))))
 
 (mmic electric-operator
   :hook ((c-mode-common-hook . #'electric-operator-mode)
@@ -2124,17 +2103,12 @@ See also `sp-backward-kill-sexp' examples."
   ((volatile-highlights-mode)))
 
 (mmic whitespace
-  :face
-  ((whitespace-space
-    . ((t (:foreground "#ffb90f" :background nil :underline t :bold t))))
-   (whitespace-tab
-    . ((t (:foreground "#caff70" :background nil :underline t)))))
   :custom
   ((whitespace-style
     . '(face tabs tab-mark spaces space-mark newline newline-mark))
    (whitespace-space-regexp . "\\(\x3000+\\)")
    (whitespace-display-mappings
-    . '((tab-mark   ?\t   [?\xBB ?\t]))))
+    . '((tab-mark ?\t [?\xBB ?\t]))))
   :eval
   ((global-whitespace-mode)
 
