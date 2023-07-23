@@ -142,7 +142,7 @@
        ("d" my-copy-directory "Directory")))))
   :define-key
   ((global-map
-    ("M-h" . #'my-hydra/body))))
+    ("M-m" . #'my-hydra/body))))
 
 (mmic major-mode-hydra
   :define-key
