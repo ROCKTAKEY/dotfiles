@@ -1202,10 +1202,18 @@ cases."
        (_ (set-process-coding-system (get-buffer-process (current-buffer)) 'utf-8-unix 'utf-8-unix))))))
 
 (mmic term
+  :mode-hydra
+  (( term-mode (:color "pink" :quit-key "q")
+     ("Mode"
+      (("C-j" term-line-mode "Line (emulate)" :toggle (term-in-line-mode))
+       ("C-k" term-char-mode "Char (Emacs)" :toggle (term-in-char-mode)))
+      "Buffer"
+      (("C-x k" kill-buffer "Kill buffer")))))
   :define-key-after-load
   ((term-raw-map
     ("M-x" . #'execute-extended-command)
-    ("M-o" . #'ace-window))))
+    ("M-o" . #'ace-window)
+    ("M-q" . #'major-mode-hydra))))
 
 (mmic term-project
   :mykie
