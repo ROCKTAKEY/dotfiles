@@ -1201,6 +1201,24 @@ cases."
         (set-process-coding-system (get-buffer-process (current-buffer)) 'utf-8-dos 'utf-8-dos))
        (_ (set-process-coding-system (get-buffer-process (current-buffer)) 'utf-8-unix 'utf-8-unix))))))
 
+(mmic term
+  :define-key-after-load
+  ((term-raw-map
+    ("M-x" . #'execute-extended-command)
+    ("M-o" . #'ace-window))))
+
+(mmic term-project
+  :mykie
+  ((global-map
+    ("C-x p s" :default term-project-create-or-switch :C-u term-project-create-new)))
+  :eval
+  ((defun term-project-create-or-switch ()
+     (require 'term-project)
+     (call-interactively
+      (if (term-project-get-all-buffers)
+          #'term-project-switch-to
+        #'term-project-create-new)))))
+
 (mmic cmake-mode)
 
 (mmic newsticker
