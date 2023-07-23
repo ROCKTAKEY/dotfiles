@@ -796,10 +796,10 @@ cases."
 (mmic markdown-mode)
 
 (mmic jq-mode
-  :mode-hydra+
-  ( javascript-mode ()
-    ("JSON"
-     (("J" jq-interactively "Interactive jq")))))
+  :mode-hydra
+  (( javascript-mode ()
+     ("JSON"
+      (("J" jq-interactively "Interactive jq"))))))
 
 (mmic cc-mode
   :eval
