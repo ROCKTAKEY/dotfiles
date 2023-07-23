@@ -1703,8 +1703,15 @@ cases."
   ((prog-mode-hook . #'topsy-mode)))
 
 (mmic smartparens
+  :pretty-hydra+
+  (( smartparens-hydra (:color blue :quit-key "q")
+     ("Parens"
+      (("C-]" sp-rewrap-sexp "rewrap")))))
   :define-key-after-load
   ((smartparens-mode-map
+    ("C-]" . #'smartparens-hydra/body)
+    ("C-M-f" . #'sp-forward-sexp)
+    ("C-M-b" . #'sp-backward-sexp)
     ("C-S-h" . #'sp-splice-sexp)
     ("C-S-i" . #'sp-forward-slurp-sexp)
     ("C-S-o" . #'sp-forward-barf-sexp)
@@ -1715,10 +1722,19 @@ cases."
     ("C-M-d" . #'sp-delete-sexp)
     ("M-h" . #'sp-backward-delete-word)
     ("C-M-h" . #'sp-backward-delete-sexp)
-    ("M-k" . #'sp-kill-sexp)))
+    ("M-k" . #'sp-kill-sexp)
+    ("M-l" . #'sp-backward-kill-sexp)
+    ("M-a" . #'sp-backward-up-sexp)
+    ("M-e" . #'sp-down-sexp)
+    ("M-p" . #'sp-beginning-of-previous-sexp)
+    ("M-n" . #'sp-beginning-of-next-sexp)))
+  :mykie
+  ((global-map
+    ("C-w" :default sp-copy-sexp :region kill-region)))
   :custom
   ((sp-highlight-pair-overlay . nil)
-   (sp-base-key-bindings . 'sp))
+   (sp-hybrid-kill-excessive-whitespace . 'kill)
+   (sp-navigate-reindent-after-up . nil))
   :eval
   ((require 'smartparens-config)
    (smartparens-global-mode)
