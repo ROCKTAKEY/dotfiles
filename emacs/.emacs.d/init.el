@@ -1149,6 +1149,11 @@ cases."
   :custom
   ((geiser-guile-load-path . '("~/rhq/git.savannah.gnu.org/guix/"))))
 
+(mmic macrostep-geiser
+  :hook
+  ((geiser-mode-hook . #'macrostep-geiser-setup)
+   (geiser-repl-mode-hook . #'macrostep-geiser-setup)))
+
 (mmic clojure-mode)
 
 (mmic rust-mode)
