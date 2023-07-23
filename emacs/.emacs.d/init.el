@@ -610,15 +610,6 @@ cases."
   :hook
   ((shell-mode-hook . #'shell-imenu-setup)))
 
-(mmic imenu-list
-  :custom
-  ((imenu-list-position . 'left))
-  :face
-  ((imenu-list-entry-face
-    . ((t (:width condensed :height 120))))
-   (imenu-list-entry-subalist-face-0
-    . ((t (:width expanded :height 130))))))
-
 (mmic repeep
   :define-key
   ((global-map
