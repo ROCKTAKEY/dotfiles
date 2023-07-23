@@ -1692,6 +1692,12 @@ cases."
   ((key-translation-map
     ("C-h" . (kbd "DEL")))))
 
+(mmic hungry-delete
+  :custom
+  ((hungry-delete-join-reluctantly . t))
+  :eval
+  ((global-hungry-delete-mode)))
+
 (mmic topsy
   :hook
   ((prog-mode-hook . #'topsy-mode)))
