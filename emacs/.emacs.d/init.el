@@ -407,25 +407,6 @@ how long to wait for a response before giving up."
   :define-key
   ((global-map
     ("C-x 9" . #'split-window-3)))
-  :hydra
-  ((hydra-window-resizer
-    nil
-    ("p" shrink-window "shrink")
-    ("n" enlarge-window "enlarge")
-    ("f" enlarge-window-horizontally "enlarge-horizontally")
-    ("b" shrink-window-horizontally "shrink-horizontally")
-    ;; ("k" shrink-window)
-    ;; ("j" enlarge-window)
-    ;; ("l" enlarge-window-horizontally)
-    ;; ("h" shrink-window-horizontally)
-    ("<down>" shrink-window)
-    ("<up>" enlarge-window)
-    ("<right>" enlarge-window-horizontally)
-    ("<left>" shrink-window-horizontally)
-    ("q" nil "quit")))
-  :mykie
-  ((global-map
-    ("C-w" :default hydra-window-resizer/body :region kill-region)))
   :eval
   ((defun split-window-3 ()
      (interactive)
