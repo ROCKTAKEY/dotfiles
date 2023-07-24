@@ -57,12 +57,14 @@
     user-emacs-directory)))
 
 (prog1 'package
-  (require 'package)
-  (setq package-check-signature nil)
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-  (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/"))
-  (add-to-list 'package-archives '("roquelpa" . "https://rocktakey.github.io/roquelpa/"))
-  (package-initialize))
+  ;; NOTE: Initialize package to suppress warnings by loading `autoload'
+  (eval-and-compile
+    (require 'package)
+    (setq package-check-signature nil)
+    (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+    (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/"))
+    (add-to-list 'package-archives '("roquelpa" . "https://rocktakey.github.io/roquelpa/"))
+    (package-initialize)))
 
 (eval-and-compile
   (unless (package-installed-p 'mic)
