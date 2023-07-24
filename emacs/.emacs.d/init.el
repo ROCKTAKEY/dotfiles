@@ -1238,7 +1238,7 @@ cases."
      (let ((buf-list (term-manager-get-terms term-project-term-manager)))
        (cl-case (length buf-list)
          ((1)
-          (switch-to-buffer (car buf-list)))
+          (pop-to-buffer (car buf-list)))
          ((0)
           (call-interactively #'term-project-create-new))
          (otherwise
