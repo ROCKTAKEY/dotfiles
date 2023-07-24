@@ -38,6 +38,9 @@ This dotfiles can be installed by [[https://www.gnu.org/software/stow/][GNU Stow
 3. Save it as .screenlayout/main.sh
 4. [[file:i3/.config/i3/config][i3/.config/i3/config]] executes the display configuration by ~exec --no-startup-id ~/.screenlayout/main.sh~.
 
+** EXWM window layout
+See [[Multiple display configuration with i3]].
+
 ** Git signing
 1. Make your own gpg key by =gpg --full-gen-key=
 2. Show your own key name by =gpg --list-keys=

@@ -2242,6 +2242,8 @@ See also `sp-backward-kill-sexp' examples."
    list-timers
    upcase-region))
 
+(require 'my-exwm-config)
+
 (when my-profiler-on
   (add-hook 'after-init-hook #'profiler-report 100)
   (add-hook 'after-init-hook #'profiler-stop 110))
