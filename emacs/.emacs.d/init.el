@@ -1036,7 +1036,9 @@ cases."
   :custom
   ((bibtex-command . "pbibtex")))
 
-(mmic auctex
+(mmic* tex
+  :package
+  (auctex)
   :custom-after-load
   ((TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))))
 
