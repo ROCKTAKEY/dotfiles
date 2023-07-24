@@ -1206,7 +1206,8 @@ cases."
   (( term-mode (:color "pink" :quit-key "q")
      ("Mode"
       (("C-j" term-line-mode "Line (emulate)" :toggle (term-in-line-mode))
-       ("C-k" term-char-mode "Char (Emacs)" :toggle (term-in-char-mode)))
+       ("C-k" term-char-mode "Char (Emacs)" :toggle (term-in-char-mode))
+       ("C-q" term-pager-toggle "Pager" :toggle (term-pager-enabled)))
       "Buffer"
       (("C-x k" kill-buffer "Kill buffer")))))
   :define-key-after-load
@@ -1220,12 +1221,28 @@ cases."
   ((global-map
     ("C-x p s" :default term-project-create-or-switch :C-u term-project-create-new)))
   :eval
-  ((defun term-project-create-or-switch ()
+  ((defvar term-project-consult-source
+     `( :name     "Terms"
+        :category buffer
+        :face     consult-buffer
+        :history  buffer-name-history
+        :state    ,#'consult--buffer-state
+        :items
+        ,(lambda ()
+           (mapcar
+            #'buffer-name
+            (term-manager-get-terms term-project-term-manager)))))
+   (defun term-project-create-or-switch ()
+     (interactive)
      (require 'term-project)
-     (call-interactively
-      (if (term-project-get-all-buffers)
-          #'term-project-switch-to
-        #'term-project-create-new)))))
+     (let ((buf-list (term-manager-get-terms term-project-term-manager)))
+       (cl-case (length buf-list)
+         ((1)
+          (switch-to-buffer (car buf-list)))
+         ((0)
+          (call-interactively #'term-project-create-new))
+         (otherwise
+          (consult-buffer '(term-project-consult-source))))))))
 
 (mmic cmake-mode)
 
