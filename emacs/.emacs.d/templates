@@ -259,7 +259,7 @@ scheme-mode
 
 
 
-shell-mode eshell-mode
+shell-mode eshell-mode term-mode
 (cmake-compile-commands-json
  "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON")
 (cmake-build-type-relwithdebinfo
