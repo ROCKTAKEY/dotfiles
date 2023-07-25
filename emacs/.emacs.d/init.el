@@ -686,6 +686,10 @@ cases."
      (cl-pushnew 'yatex-mode (car cons))
      (setf (cdr cons) '("texlab")))))
 
+(mmic eglot-tempel
+  :eval
+  ((eglot-tempel-mode)))
+
 (mmic tree-sitter
   :package tree-sitter-langs
   :defvar-noninitial
