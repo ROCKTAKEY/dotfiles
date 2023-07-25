@@ -1501,6 +1501,13 @@ cases."
        "etc/transient/values.el"
        user-emacs-directory))))
 
+(mmic git-commit
+  :mode-hydra
+  (( text-mode (:color pink :quit-key "q")
+     ("Browse commit message"
+      (("M-p" git-commit-prev-message "Prev")
+       ("M-n" git-commit-next-message "Next"))))))
+
 (mmic magit
   :define-key
   ((global-map
