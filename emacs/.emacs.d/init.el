@@ -1255,6 +1255,19 @@ cases."
   ((flymake-elisp-config-global-mode)
    (flymake-elisp-config-auto-mode)))
 
+(when (version< emacs-version "29.1")
+  (mmic flymake-shellcheck
+    :hook
+    ((sh-mode-hook . #'flymake-shellcheck-load))))
+
+(mmic flymake-actionlint
+  :hook
+  ((yaml-mode-hook . #'flymake-actionlint-action-load-when-actions-file)))
+
+(mmic flylisp
+  :hook
+  ((lisp-mode-hook . #'flylisp-mode)))
+
 (mmic flyspell
   :mykie
   ((global-map
