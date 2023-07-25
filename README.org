@@ -61,5 +61,13 @@ See [[Multiple display configuration with i3]].
 5. Rename ~./config/gh/hosts.yml~ to ID (e.g. ~anotherid.yml~)
 6. Now you can switch to =<ID>= account by =ghs <ID>= (e.g. ~ghs yourid~ or ~ghs anotherid~)
 
+
+** OCR image and export to PDF
+#+BEGIN_SRC sh
+  stow pdfocr
+  guix install tessert-ocr stapler
+#+END_SRC
+=pdfocr dir png= does OCR all file with extension =pdf= in =dir= directory, then export PDF named =${dir}.pdf=.
+
 * License
 This dotfiles are basically published under [[file:LICENSE][GPLv3]].
