@@ -612,85 +612,48 @@ cases."
   :hook
   ((shell-mode-hook . #'shell-imenu-setup)))
 
-(mmic repeep
-  :define-key
-  ((global-map
-    ("C-=" . #'repeep)))
+(mmic lsp-mode
+  :hook ((tex-mode . #'lsp)
+         (latex-mode . #'lsp)
+         (bibtex-mode . #'lsp))
+  :declare-function (lsp-register-client make-lsp-client lsp-stdio-connection)
+  :defvar-noninitial (lsp--formatting-indent-alist)
+  :define-key-after-load
+  ((lsp-mode-map
+    ("M-r" . #'lsp-rename)
+    ("M-c" . #'lsp-execute-code-action)))
+  :custom
+  ((lsp-session-file
+    . (expand-file-name
+       "etc/.lsp-session-v1"
+       user-emacs-directory))
+   (lsp-log-io . nil)
+   (lsp-log-max . nil)
+   (lsp--formatting-indent-alist . (cons '(web-mode . web-mode-code-indent-offset)
+                                         (default-value #'lsp--formatting-indent-alist))))
   :eval
-  ((repeep-macro-mode)))
+  (
+   ;; shut-up view-mode message on lsp-mode.
+   (defun ad:view-lsp (orig &rest aaa)
+     (if (string= (buffer-name) " *temp*")
+         (shut-up
+           (apply orig aaa))
+       (apply orig aaa)))
+   (advice-add #'view-mode-enter :around #'ad:view-lsp))
+  :eval-after-load
+  ((mmic lsp-latex
+     :require t)) )
 
-;; (leaf lsp-mode
-;;   :emacs>=  "25.1"
-;;   :hook ((c-mode-hook           . lsp)
-;;          (c++-mode-hook         . lsp)
-;;          (web-mode-hook         . lsp)
-;;          (dockerfile-mode-hook  . lsp)
-;;          (yaml-mode-hook        . lsp)
-;;          (r-mode-hook           . lsp)
-;;          (javascript-mode-hook  . lsp)
-;;          (js-mode-hook          . lsp)
-;;          (typescript-mode-hook  . lsp)
-;;          (sh-mode-hook          . lsp)
-;;          (common-lisp-mode-hook . lsp)
-;;          (yatex-mode-hook       . lsp)
-;;          (tex-mode-hook         . lsp)
-;;          (latex-mode-hook       . lsp)
-;;          (bibtex-mode-hook      . lsp)
-;;          (java-mode-hook        . lsp)
-;;          (clojure-mode-hook     . lsp)
-;;          (rust-mode-hook        . lsp))
-;;   :defun (lsp-register-client make-lsp-client lsp-stdio-connection)
-;;   :defvar (lsp--formatting-indent-alist)
-;;   :bind
-;;   (lsp-mode-map
-;;    ("M-r" . lsp-rename)
-;;    ("M-c" . lsp-execute-code-action))
-;;   :custom
-;;   `((lsp-session-file
-;;      . ,(expand-file-name
-;;          "etc/.lsp-session-v1"
-;;          user-emacs-directory))
-;;     (lsp-log-io . nil)
-;;     (lsp-log-max . nil))
-;;   :preface
-;;   ;; shut-up view-mode message on lsp-mode.
-;;   (defun ad:view-lsp (orig &rest aaa)
-;;     (if (string= (buffer-name) " *temp*")
-;;         (shut-up
-;;           (apply orig aaa))
-;;       (apply orig aaa)))
-;;   :advice (:around view-mode-enter ad:view-lsp)
-;;   :config
-;;   (add-to-list 'lsp--formatting-indent-alist '(web-mode . web-mode-code-indent-offset))
+(mmic dap-mode
+  :custom
+  ((dap-breakpoints-file
+    . (expand-file-name "etc/.dap-breakpoints" user-emacs-directory))))
 
-;;   (leaf lsp-ui
-;;     :hook (lsp-mode-hook . lsp-ui-mode)
-;;     :bind
-;;     (:lsp-ui-mode-map
-;;      ("M-d" . lsp-ui-doc-mode))
-;;     :custom
-;;     ((lsp-ui-sideline-ignore-duplicate . t)
-;;      (lsp-ui-sideline-show-hover . t))
-;;     :custom-face
-;;     (lsp-ui-sideline-symbol-info
-;;      . '((t (:foreground "#6060dd" :background nil)))))
-
-;;   (leaf ccls
-;;     :require t
-;;     :after cc-mode)
-
-;;   (leaf lsp-latex
-;;     :require t)
-
-;;   (leaf lsp-java
-;;     :custom
-;;     `((lsp-java-project-referenced-libraries
-;;        . ["lib/**/*.jar" ,(expand-file-name "~/Fiji.app/jars/*.jar")])))
-
-;;   (leaf dap-mode
-;;     :custom
-;;     `((dap-breakpoints-file
-;;        . ,(expand-file-name "etc/.dap-breakpoints" user-emacs-directory)))))
+(mmic lsp-ui
+  :hook ((lsp-mode-hook . lsp-ui-mode))
+  :custom
+  ((lsp-ui-sideline-ignore-duplicate . t)
+   (lsp-ui-sideline-show-hover . t)))
 
 (mmic eglot
   :hook-list-maybe
@@ -705,10 +668,6 @@ cases."
      typescript-mode-hook
      sh-mode-hook
      common-lisp-mode-hook
-     yatex-mode-hook
-     tex-mode-hook
-     latex-mode-hook
-     bibtex-mode-hook
      java-mode-hook
      clojure-mode-hook
      rust-mode-hook
@@ -723,8 +682,7 @@ cases."
             '("ccls" "clangd")))
    (let ((cons (assoc '(tex-mode context-mode texinfo-mode bibtex-mode) eglot-server-programs)))
      (cl-pushnew 'yatex-mode (car cons))
-     (setf (cdr cons) '("texlab")))
-   (add-to-list 'eglot-server-programs '(yatex-mode . ("texlab")))))
+     (setf (cdr cons) '("texlab")))))
 
 (mmic tree-sitter
   :package tree-sitter-langs
