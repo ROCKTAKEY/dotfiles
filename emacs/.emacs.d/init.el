@@ -1902,7 +1902,7 @@ See also `sp-backward-kill-sexp' examples."
   :custom
   ((find-function-C-source-directory
     . (expand-file-name
-       "../src" (invocation-directory)))))
+       "../src" invocation-directory))))
 
 (mmic helpful
   :define-key
