@@ -1,0 +1,12 @@
+#!/bin/sh
+
+targetDir="$1"
+PDFName="$1.pdf"
+ext="$2"
+
+for entry in "${targetDir}"/*."${ext}"
+do
+    tesseract "${entry}" "${entry}" -l eng+jpn pdf
+done
+
+stapler zip "${targetDir}"/*."${ext}".pdf "${PDFName}"
