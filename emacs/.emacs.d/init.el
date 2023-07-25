@@ -537,7 +537,7 @@ how long to wait for a response before giving up."
 (mmic async
   :eval
   ((defun my-async-variables-noprops (sequence)
-    "Remove text properties in SEQUENCE.
+     "Remove text properties in SEQUENCE.
 
 Argument SEQUENCE may be a list or a string, if anything else it
 is returned unmodified.
@@ -545,14 +545,14 @@ is returned unmodified.
 Note that this is a naive function that \"DOES\" remove text properties
 in SEQUENCE \"RECURSIVELY\", only at the first level which suffice in most
 cases."
-    (cond ((stringp sequence)
-           (substring-no-properties sequence))
-          ((listp sequence)
-           (cl-loop for elm in sequence
-                    if (stringp elm)
-                    collect (substring-no-properties elm)
-                    else collect (my-async-variables-noprops elm)))
-          (t sequence))))
+     (cond ((stringp sequence)
+            (substring-no-properties sequence))
+           ((listp sequence)
+            (cl-loop for elm in sequence
+                     if (stringp elm)
+                     collect (substring-no-properties elm)
+                     else collect (my-async-variables-noprops elm)))
+           (t sequence))))
   :custom
   ((async-variables-noprops-function . #'my-async-variables-noprops)))
 
@@ -921,30 +921,30 @@ cases."
         (search . " %i %-12:c"))))
   :eval
   ((defun my:org-agenda-color-todo-state (&optional _)
-    (remove-overlays)
-    (let ((start 0) ov)
-      (mapc
-       (lambda (arg)
-         (let ((regexp (car arg))
-               (face (cdr arg)))
-           (save-excursion
-             (goto-char (point-min))
-             (while (string-match regexp (buffer-string) start)
-               (setq ov (make-overlay (1+ (match-beginning 0)) (1+ (match-end 0))))
-               (overlay-put ov 'face face)
-               (setq start (match-end 0)))
-             (setq start 0))))
-       '(("\\_<\\(TODO\\|WAIT\\)\\_>" . org-todo)
-         ("\\_<\\(DONE\\|OBSOLETED\\)\\_>" . org-done)))
-      (save-excursion
-        (goto-char (point-min))
-        (while (string-match
-                "\\(TODO\\|WAIT\\|DONE\\|OBSOLETED\\)[^\n]*?\\(\\1 \\)[^\n]*$"
-                (buffer-string) start)
-          (setq ov (make-overlay (1+ (match-beginning 2)) (1+ (match-end 2))))
-          (overlay-put ov 'display "")
-          (setq start (match-end 0)))
-        (setq start 0)))))
+     (remove-overlays)
+     (let ((start 0) ov)
+       (mapc
+        (lambda (arg)
+          (let ((regexp (car arg))
+                (face (cdr arg)))
+            (save-excursion
+              (goto-char (point-min))
+              (while (string-match regexp (buffer-string) start)
+                (setq ov (make-overlay (1+ (match-beginning 0)) (1+ (match-end 0))))
+                (overlay-put ov 'face face)
+                (setq start (match-end 0)))
+              (setq start 0))))
+        '(("\\_<\\(TODO\\|WAIT\\)\\_>" . org-todo)
+          ("\\_<\\(DONE\\|OBSOLETED\\)\\_>" . org-done)))
+       (save-excursion
+         (goto-char (point-min))
+         (while (string-match
+                 "\\(TODO\\|WAIT\\|DONE\\|OBSOLETED\\)[^\n]*?\\(\\1 \\)[^\n]*$"
+                 (buffer-string) start)
+           (setq ov (make-overlay (1+ (match-beginning 2)) (1+ (match-end 2))))
+           (overlay-put ov 'display "")
+           (setq start (match-end 0)))
+         (setq start 0)))))
   :eval-after-load
   ((advice-add #'org-agenda-todo :after #'my:org-agenda-color-todo-state))
   :hook
@@ -1136,7 +1136,7 @@ cases."
 (mmic qml-mode
   :eval
   ((add-to-list 'auto-mode-alist
-                 '("\\.qbs\\'" . qml-mode))))
+                '("\\.qbs\\'" . qml-mode))))
 
 (mmic keg-mode)
 
@@ -1874,6 +1874,12 @@ See also `sp-backward-kill-sexp' examples."
     ("C-/" . #'hydra-undo/undo-tree-undo)))
   :eval
   ((global-undo-tree-mode)))
+
+(mmic snap-indent
+  :custom
+  ((snap-indent-on-save . t))
+  :hook
+  ((prog-mode-hook . #'snap-indent-mode)))
 
 (mmic* mule-cmds
   :define-key
