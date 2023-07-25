@@ -689,10 +689,12 @@ cases."
   :defvar-noninitial
   (tree-sitter-major-mode-language-alist)
   :hook ((tree-sitter-after-on-hook . #'tree-sitter-hl-mode))
+  :custom
+  ((tree-sitter-major-mode-language-alist . (cons '(typescript-mode . tsx)
+                                                  (default-value 'tree-sitter-major-mode-language-alist))))
   :eval
   ((global-tree-sitter-mode)
-   (tree-sitter-require 'tsx)
-   (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-mode . tsx))))
+   (tree-sitter-require 'tsx)))
 
 (mmic dumb-jump
   :eval
