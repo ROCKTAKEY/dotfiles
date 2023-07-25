@@ -1000,7 +1000,7 @@ cases."
   :package
   (auctex)
   :custom-after-load
-  ((TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))))
+  ((TeX-view-program-list . '(("PDF Tools" TeX-pdf-tools-sync-view)))))
 
 (mmic auctex-latexmk
   :eval
