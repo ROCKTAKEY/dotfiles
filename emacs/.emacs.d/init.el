@@ -94,6 +94,7 @@
       mic-filter-pretty-hydra
       mic-filter-pretty-hydra+
       mic-filter-mode-hydra
+      mic-filter-mode-hydra+
       mic-filter-mykie))
 
   (mic-defmic mmic mic
@@ -110,6 +111,7 @@
       mic-filter-pretty-hydra
       mic-filter-pretty-hydra+
       mic-filter-mode-hydra
+      mic-filter-mode-hydra+
       mic-filter-mykie)))
 
 (mmic* straight
@@ -1502,7 +1504,7 @@ cases."
        user-emacs-directory))))
 
 (mmic git-commit
-  :mode-hydra
+  :mode-hydra+
   (( text-mode (:color pink :quit-key "q")
      ("Browse commit message"
       (("M-p" git-commit-prev-message "Prev")
