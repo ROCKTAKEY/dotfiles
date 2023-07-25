@@ -1325,7 +1325,7 @@ cases."
     ("h" . #'helpful-command))
    (embark-variable-map
     ("h" . #'helpful-variable)))
-  :eval
+  :eval-after-load
   ;; https://karthinks.com/software/fifteen-ways-to-use-embark/
   ((defmacro my/embark-ace-action (fn)
      `(defun ,(intern (concat "my/embark-ace-" (symbol-name fn))) ()
