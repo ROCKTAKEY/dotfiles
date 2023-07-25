@@ -70,4 +70,4 @@ See [[Multiple display configuration with i3]].
 =pdfocr dir png= does OCR all file with extension =pdf= in =dir= directory, then export PDF named =${dir}.pdf=.
 
 * License
-This dotfiles are basically published under [[file:LICENSE][GPLv3]].
+This dotfiles are basically published under [[file:LICENSE][The GNU General Public License verson 3 or later]].
