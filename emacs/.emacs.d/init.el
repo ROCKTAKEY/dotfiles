@@ -632,9 +632,10 @@ cases."
        "etc/.lsp-session-v1"
        user-emacs-directory))
    (lsp-log-io . nil)
-   (lsp-log-max . nil)
-   (lsp--formatting-indent-alist . (cons '(web-mode . web-mode-code-indent-offset)
-                                         (default-value #'lsp--formatting-indent-alist))))
+   (lsp-log-max . nil))
+  :custom-after-load
+  ((lsp--formatting-indent-alist . (cons '(web-mode . web-mode-code-indent-offset)
+                                         (default-value 'lsp--formatting-indent-alist))))
   :eval
   (
    ;; shut-up view-mode message on lsp-mode.
@@ -654,7 +655,7 @@ cases."
     . (expand-file-name "etc/.dap-breakpoints" user-emacs-directory))))
 
 (mmic lsp-ui
-  :hook ((lsp-mode-hook . lsp-ui-mode))
+  :hook ((lsp-mode-hook . #'lsp-ui-mode))
   :custom
   ((lsp-ui-sideline-ignore-duplicate . t)
    (lsp-ui-sideline-show-hover . t)))
