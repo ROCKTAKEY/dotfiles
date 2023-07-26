@@ -95,7 +95,8 @@
       mic-filter-pretty-hydra+
       mic-filter-mode-hydra
       mic-filter-mode-hydra+
-      mic-filter-mykie))
+      mic-filter-mykie)
+    :error-protection? t)
 
   (mic-defmic mmic mic
     :filters
@@ -112,7 +113,8 @@
       mic-filter-pretty-hydra+
       mic-filter-mode-hydra
       mic-filter-mode-hydra+
-      mic-filter-mykie)))
+      mic-filter-mykie)
+    :error-protection? t))
 
 (mmic* straight
   :eval-installation
