@@ -2091,7 +2091,7 @@ See also `sp-backward-kill-sexp' examples."
 (mmic tempel
   :define-key
   ((global-map
-    ("M-i" . #'tempel-complete)))
+    ("M-i" . #'tempel-insert)))
   :define-key-after-load
   ((tempel-map
     ("M-p" . #'tempel-previous)
