@@ -1772,7 +1772,7 @@ backward direction.
 
 See also `sp-kill-sexp' examples."
      (interactive "*p")
-     (let* ((kill-ring kill-ring)
+     (let* ((kill-ring nil)
             (select-enable-clipboard nil))
        (sp-kill-sexp arg)))
    (defun sp-backward-delete-sexp (&optional arg)
@@ -1788,9 +1788,17 @@ forward direction.
 
 See also `sp-backward-kill-sexp' examples."
      (interactive "*p")
-     (let* ((kill-ring kill-ring)
+     (let* ((kill-ring nil)
             (select-enable-clipboard nil))
-       (sp-backward-kill-sexp arg)))))
+       (sp-backward-kill-sexp arg))) )
+  :eval-after-load
+  (
+   ;; Bug fix
+   (defun ad:run-without-kill-ring (f &rest args)
+     (let (kill-ring)
+       (apply f args)))
+   (advice-add #'sp-backward-delete-symbol :around #'ad:run-without-kill-ring)
+   (advice-add #'sp-delete-symbol :around #'ad:run-without-kill-ring)))
 
 (mmic rainbow-delimiters
   :hook ((lisp-mode-hook . #'rainbow-delimiters-mode)
