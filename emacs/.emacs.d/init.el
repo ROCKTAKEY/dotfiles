@@ -1750,11 +1750,15 @@ cases."
     ("M-n" . #'sp-beginning-of-next-sexp)))
   :mykie
   ((global-map
-    ("C-w" :default sp-copy-sexp :region kill-region)))
+    ("C-w" :default sp-kill-sexp :region kill-region)
+    ("M-w" :default sp-copy-sexp :region kill-ring-save)))
   :custom
   ((sp-highlight-pair-overlay . nil)
    (sp-hybrid-kill-excessive-whitespace . 'kill)
-   (sp-navigate-reindent-after-up . nil))
+   (sp-navigate-reindent-after-up . nil)
+   (sp-no-reindent-after-kill-modes . (append
+                                       '(yaml-mode)
+                                       (default-value 'sp-no-reindent-after-kill-modes))))
   :eval
   ((require 'smartparens-config)
    (smartparens-global-mode)
