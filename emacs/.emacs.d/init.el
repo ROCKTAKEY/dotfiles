@@ -779,10 +779,6 @@ cases."
 (mmic modern-cpp-font-lock
   :hook ((c++-mode-hook . #'modern-c++-font-lock-mode)))
 
-(mmic clang-format+
-  :hook
-  ((c++-mode-hook . #'clang-format+-mode)))
-
 (mmic slime
   :hook
   ((lisp-mode-hook . #'slime-mode)
