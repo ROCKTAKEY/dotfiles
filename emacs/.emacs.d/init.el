@@ -1893,7 +1893,7 @@ See also `sp-backward-kill-sexp' examples."
   :custom
   ((snap-indent-on-save . t))
   :hook
-  ((prog-mode-hook . #'snap-indent-mode)))
+  ((emacs-lisp-mode-hook . #'snap-indent-mode)))
 
 (mmic* mule-cmds
   :define-key
