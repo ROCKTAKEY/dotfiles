@@ -1308,6 +1308,9 @@ cases."
     ("M-g a" . #'consult-org-agenda)
     ("M-g e" . #'consult-flymake)
     ("C-r" . #'consult-ripgrep)))
+  :define-key-after-load
+  ((minibuffer-mode-map
+    ("<f1> <f1>" . #'consult-narrow-help)))
   :custom
   ((xref-show-xrefs-function . #'consult-xref))
   :eval-after-load
