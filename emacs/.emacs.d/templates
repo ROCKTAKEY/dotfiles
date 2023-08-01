@@ -164,7 +164,9 @@ emacs-lisp-mode
 org-mode
 (hl ":hl_lines " (p "1,2-3"))
 
-(begin "#+begin_" (s name) n> r> n "#+end_" name)
+(begin  "#+begin_" (s name) n>
+        r> n>
+        "#+end_" name)
 
 (quote "#+BEGIN_QUOTE" n>
        r> n
