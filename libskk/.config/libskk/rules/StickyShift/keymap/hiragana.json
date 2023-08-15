@@ -1,0 +1,14 @@
+{
+    "include": [
+        "azik/hiragana"
+    ],
+    "define": {
+        "keymap": {
+          "Henkan": "start-preedit-no-delete",
+          "@": "set-input-mode-katakana",
+          ":": "insert-kana-ー",
+          "l": "set-input-mode-latin",
+          "L": "set-input-mode-wide-latin"
+        }
+    }
+}
