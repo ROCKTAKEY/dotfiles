@@ -1892,6 +1892,8 @@ See also `sp-backward-kill-sexp' examples."
 (mmic snap-indent
   :custom
   ((snap-indent-on-save . t))
+  :autoload-interactive
+  (snap-indent-mode)
   :hook
   ((emacs-lisp-mode-hook . #'snap-indent-mode)))
 
