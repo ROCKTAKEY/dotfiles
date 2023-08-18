@@ -682,10 +682,7 @@ cases."
   ((eglot-mode-map
     ("M-r" . #'eglot-rename)))
   :eval-after-load
-  ((setcdr (assoc '(c++-mode c-mode) eglot-server-programs)
-           (eglot-alternatives
-            '("ccls" "clangd")))
-   (let ((cons (assoc '(tex-mode context-mode texinfo-mode bibtex-mode) eglot-server-programs)))
+  ((let ((cons (assoc '(tex-mode context-mode texinfo-mode bibtex-mode) eglot-server-programs)))
      (cl-pushnew 'yatex-mode (car cons))
      (setf (cdr cons) '("texlab")))))
 
