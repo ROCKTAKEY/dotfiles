@@ -746,6 +746,8 @@ cases."
 
 (mmic npm)
 
+(mmic cwl-mode)
+
 (mmic cask-mode)
 
 (mmic csv-mode)
