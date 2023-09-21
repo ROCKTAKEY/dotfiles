@@ -536,6 +536,8 @@ how long to wait for a response before giving up."
     ("C-x p l" . #'package-list-packages)
     ("C-x p r" . #'package-refresh-contents))))
 
+(mmic wgrep)
+
 (mmic async
   :eval
   ((defun my-async-variables-noprops (sequence)
