@@ -1788,6 +1788,7 @@ backward direction.
 See also `sp-kill-sexp' examples."
      (interactive "*p")
      (let* ((kill-ring nil)
+            (kill-ring-yank-pointer nil)
             (select-enable-clipboard nil))
        (sp-kill-sexp arg)))
    (defun sp-backward-delete-sexp (&optional arg)
@@ -1804,13 +1805,15 @@ forward direction.
 See also `sp-backward-kill-sexp' examples."
      (interactive "*p")
      (let* ((kill-ring nil)
+            (kill-ring-yank-pointer nil)
             (select-enable-clipboard nil))
        (sp-backward-kill-sexp arg))) )
   :eval-after-load
   (
    ;; Bug fix
    (defun ad:run-without-kill-ring (f &rest args)
-     (let (kill-ring)
+     (let (kill-ring
+           (kill-ring-yank-pointer nil))
        (apply f args)))
    (advice-add #'sp-backward-delete-symbol :around #'ad:run-without-kill-ring)
    (advice-add #'sp-delete-symbol :around #'ad:run-without-kill-ring)))
