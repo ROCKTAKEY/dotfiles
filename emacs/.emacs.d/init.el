@@ -1308,15 +1308,21 @@ cases."
     ("C-M-@" . #'consult-register-store)
     ("M-g h" . #'consult-org-heading)
     ("M-g a" . #'consult-org-agenda)
-    ("M-g e" . #'consult-flymake)
-    ("C-r" . #'consult-ripgrep)))
+    ("M-g e" . #'consult-flymake)))
+  :mykie
+  ((global-map
+    ("C-r" :default consult-ripgrep :C-u*2 consult-ripgrep-without-ignoring)))
   :define-key-after-load
   ((minibuffer-mode-map
     ("<f1> <f1>" . #'consult-narrow-help)))
   :custom
   ((xref-show-xrefs-function . #'consult-xref))
   :eval-after-load
-  ((add-to-list 'consult-buffer-sources 'rhq-consult-source-project-directory 'append)))
+  ((defun consult-ripgrep-without-ignoring ()
+     (interactive)
+     (let ((consult-ripgrep-args (concat (default-value 'consult-ripgrep-args) " -uuu")))
+       (consult-ripgrep)))
+   (add-to-list 'consult-buffer-sources 'rhq-consult-source-project-directory 'append)))
 
 ;; (leaf consult-flycheck
 ;;   :bind
