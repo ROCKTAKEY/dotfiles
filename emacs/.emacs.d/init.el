@@ -1145,7 +1145,7 @@ cases."
 
 (mmic gdb-mi
   :custom
-  ((gud-gdb-command-name . "gdb")))
+  ((gud-gdb-command-name . "gdb -i=mi")))
 
 (mmic coterm
   :eval
