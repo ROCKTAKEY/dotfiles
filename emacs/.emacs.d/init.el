@@ -2054,7 +2054,7 @@ See also `sp-backward-kill-sexp' examples."
    (skk-sticky-key . (kbd
                       (pcase system-type
                         (`windows-nt "<non-convert>")
-                        (_ "<muhenkan>"))))
+                        (_ "<henkan>"))))
    (skk-search-katakana . t)
    (skk-japanese-message-and-error . t)))
 
