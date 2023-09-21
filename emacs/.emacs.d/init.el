@@ -1862,8 +1862,8 @@ See also `sp-backward-kill-sexp' examples."
   :pretty-hydra+
   (( my-hydra (:color blue)
      ("Winner"
-      (("j" winner-undo "Undo")
-       (";" winner-redo "Redo"))))))
+      (("j" winner-undo "Undo" :color pink)
+       (";" winner-redo "Redo":color pink))))))
 
 (mmic undo-tree
   :custom
