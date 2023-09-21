@@ -1138,7 +1138,10 @@ cases."
 
 (mmic keg-mode)
 
-(mmic gnuplot)
+(mmic gnuplot
+  :eval
+  ((add-to-list 'auto-mode-alist
+                '("\\.gnuplot\\'" . gnuplot-mode))))
 
 (mmic gdb-mi
   :custom
