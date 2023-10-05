@@ -794,7 +794,8 @@ cases."
     ("TAB" . #'dired-hide-details-mode)))
   :custom
   ((ls-lisp-dirs-first . t)
-   (dired-dwim-target . t))
+   (dired-dwim-target . t)
+   (dired-listing-switches . (concat (default-value 'dired-listing-switches) "h")))
   :eval
   ((put 'dired-find-alternate-file 'disabled nil)))
 
