@@ -1772,7 +1772,10 @@ cases."
    (sp-navigate-reindent-after-up . nil)
    (sp-no-reindent-after-kill-modes . (append
                                        '(yaml-mode)
-                                       (default-value 'sp-no-reindent-after-kill-modes))))
+                                       (default-value 'sp-no-reindent-after-kill-modes)))
+   (sp-ignore-modes-list . (append
+                            '(shell-mode)
+                            (default-value 'sp-ignore-modes-list))))
   :eval
   ((require 'smartparens-config)
    (smartparens-global-mode)
