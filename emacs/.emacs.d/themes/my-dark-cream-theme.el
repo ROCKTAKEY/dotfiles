@@ -13,6 +13,9 @@
  '(show-paren-match ((t (:background "DodgerBlue4"))))
  ;; `ansi-color'
  '(ansi-color-blue  ((t (:foreground "#aaaaff" :background "#aaaaff"))))
+ '(ansi-color-red ((t (:foreground "#ff5522" :background "#ff5522"))))
+ '(ansi-color-magenta ((t (:foreground "#ef6fff" :background "#ef6fff"))))
+ '(ansi-color-green ((t (:foreground "#aaffaa" :background "#aaffaa"))))
  ;; `ace-window'
  '(aw-leading-char-face ((t (:foreground "red"))))
  '(aw-mode-line-face ((t (:background "#006000" :foreground "white"))))
