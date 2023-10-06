@@ -2021,7 +2021,8 @@ See also `sp-backward-kill-sexp' examples."
   :define-key-after-load
   ((skk-j-mode-map
     ("\\" . #'self-insert-command)
-    ("$"  . #'self-insert-command)))
+    ("$"  . #'self-insert-command)
+    ("<hiragana-katakana>" . #'skk-sticky-set-henkan-point)))
   :hook
   ((skk-mode-hook . #'skk-yatex-hook))
   :eval
