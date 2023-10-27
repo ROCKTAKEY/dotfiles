@@ -5,6 +5,7 @@
     "define": {
         "keymap": {
           "Henkan": "start-preedit-no-delete",
+          "Hiragana_Katakana": "start-preedit-no-delete",
           "@": "set-input-mode-katakana",
           ":": "insert-kana-ー",
           "l": "set-input-mode-latin",
