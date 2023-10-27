@@ -1406,7 +1406,10 @@ cases."
   :eval
   ((vertico-mode))
   :custom
-  ((vertico-count . 30)))
+  ((vertico-count . 30))
+  :define-key-after-load
+  ((vertico-map
+    ("M-h" . #'vertico-directory-up))))
 
 (mmic orderless
   :custom
