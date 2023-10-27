@@ -205,9 +205,9 @@
       (concat
        " "
        (propertize " " 'face 'flycheck-modeline-color)
-       (let ((error (substring-no-properties (cadadr (flymake--mode-line-counter :error t))))
-             (warning (substring-no-properties (cadadr (flymake--mode-line-counter :warning t))))
-             (note (substring-no-properties (or (cadadr (flymake--mode-line-counter :note t)) "0"))))
+       (let ((error (substring-no-properties (cadadr (flymake--mode-line-counter :error))))
+             (warning (substring-no-properties (cadadr (flymake--mode-line-counter :warning))))
+             (note (substring-no-properties (or (cadadr (flymake--mode-line-counter :note)) "0"))))
          (if (not (cl-every (apply-partially #'string= "0") (list error warning note)))
              (concat
               (propertize error
