@@ -1127,6 +1127,8 @@ cases."
 
 (mmic clojure-mode)
 
+(mmic adoc-mode)
+
 (mmic rust-mode)
 
 (mmic yaml-mode
