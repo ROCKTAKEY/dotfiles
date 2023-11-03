@@ -2030,14 +2030,17 @@ See also `sp-backward-kill-sexp' examples."
   ((skk-j-mode-map
     ("\\" . #'self-insert-command)
     ("$"  . #'self-insert-command)
-    ("<hiragana-katakana>" . #'skk-sticky-set-henkan-point)))
+    ("<hiragana-katakana>" . #'skk-sticky-set-henkan-point)
+    ("<henkan>" . #'skk-sticky-set-henkan-point)
+    ("<muhenkan>" . #'skk-sticky-set-henkan-point)))
   :hook
   ((skk-mode-hook . #'skk-yatex-hook))
   :eval
   ((defun skk-yatex-hook ()
      (when (eq major-mode 'YaTeX-mode)
        (make-local-variable 'skk-j-mode-map)
-       (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar))))
+       (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar)))
+   (autoload #'skk-sticky-set-henkan-point '"skk-sticky.el"))
   :custom
   ((skk-inhibit-ja-dic-search . t)
    (skk-jisyo-code . 'utf-8)
@@ -2066,10 +2069,6 @@ See also `sp-backward-kill-sexp' examples."
    ;; Input/Output
    (skk-egg-like-newline . t)
    (skk-henkan-strict-okuri-precedence . t)
-   (skk-sticky-key . (kbd
-                      (pcase system-type
-                        (`windows-nt "<non-convert>")
-                        (_ "<henkan>"))))
    (skk-search-katakana . t)
    (skk-japanese-message-and-error . t)))
 
