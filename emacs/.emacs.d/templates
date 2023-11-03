@@ -56,7 +56,7 @@ yatex-mode LaTeX-mode latex-mode tex-mode TeX-mode
  "\\end{tabular}" n>
  "\\end{table}")
 
-(template-lualatexn
+(template-lualatex
  "\\documentclass" (p "[titlepage]") "{" (p (completing-read "documentclass: " '("jlreq" "ltjsarticle" "ltjsbook" "ltjsreport" "ltjspf" "ltjskiyou" "beamer"))) "}" n
  "\\usepackage{luatexja}" n
  "\\usepackage{graphicx}" n
