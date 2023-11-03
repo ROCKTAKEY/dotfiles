@@ -331,3 +331,30 @@ js-mode
   ]
 }
 ")
+
+adoc-mode
+(template
+ "= " p n
+":doctype: " (p (completing-read "doctype: " '("book" "article"))) n
+":scripts: cjk" n
+":pdf-theme: default-with-font-fallbacks" n
+":sectnumlevels: 4" n
+":sectnums:" n
+":chapter-signifier:" n
+":preface-title: まえがき" n
+":appendix-caption: 付録" n
+":toc: left" n
+":toclevels: 4" n
+":toc-title: 目次" n
+":figure-caption: 図" n
+":table-caption: 表" n
+":listing-caption: リスト" n
+":example-caption: 例" n
+":note-caption: 注記" n
+":tip-caption: ヒント" n
+":coution-caption: 注意" n
+":warning-caption: 警告" n
+":important-caption: 重要" n
+":version-label: Ver." n
+":last-update-label: 最終更新" n
+)
