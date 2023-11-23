@@ -1152,9 +1152,9 @@ cases."
   :custom
   ((gud-gdb-command-name . "gdb -i=mi")))
 
-(mmic coterm
-  :eval
-  ((coterm-mode)))
+;; (mmic coterm
+;;   :eval
+;;   ((coterm-mode)))
 
 (mmic* comint
   :custom
