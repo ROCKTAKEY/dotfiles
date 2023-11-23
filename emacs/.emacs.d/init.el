@@ -1757,7 +1757,7 @@ cases."
     ("M-I" . #'sp-backward-slurp-sexp)
     ("M-O" . #'sp-backward-barf-sexp)
     ("M-s r" . #'sp-rewrap-sexp)
-    ("M-d" . #'sp-delete-symbol)
+    ("M-d" . #'sp-delete-word)
     ("C-M-d" . #'sp-delete-hybrid-sexp)
     ("M-h" . #'sp-backward-delete-word)
     ("C-M-h" . #'sp-backward-delete-sexp)
