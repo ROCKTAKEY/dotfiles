@@ -1757,8 +1757,8 @@ cases."
     ("M-I" . #'sp-backward-slurp-sexp)
     ("M-O" . #'sp-backward-barf-sexp)
     ("M-s r" . #'sp-rewrap-sexp)
-    ("M-d" . #'sp-delete-word)
-    ("C-M-d" . #'sp-delete-sexp)
+    ("M-d" . #'sp-delete-symbol)
+    ("C-M-d" . #'sp-delete-hybrid-sexp)
     ("M-h" . #'sp-backward-delete-word)
     ("C-M-h" . #'sp-backward-delete-sexp)
     ("M-k" . #'sp-kill-sexp)
@@ -1785,49 +1785,16 @@ cases."
   ((require 'smartparens-config)
    (smartparens-global-mode)
    (smartparens-global-strict-mode)
-   (defun sp-delete-sexp (&optional arg)
-     "Delete the balanced expression following point.
+   (defun sp-delete-hybrid-sexp (&optional arg)
+     "Delete a line as if with kill-line, but respecting delimiters.
 
-This is exactly like calling `sp-kill-sexp'
+This is exactly like calling `sp-kill-hybrid-sexp'
 except deleted sexp does not go to the clipboard or kill ring.
 
-With ARG being positive number N, repeat that many times.
-
-With ARG being Negative number -N, repeat that many times in
-backward direction.
-
-See also `sp-kill-sexp' examples."
+See also `sp-kill-hybrid-sexp' examples."
      (interactive "*p")
-     (let* ((kill-ring nil)
-            (kill-ring-yank-pointer nil)
-            (select-enable-clipboard nil))
-       (sp-kill-sexp arg)))
-   (defun sp-backward-delete-sexp (&optional arg)
-     "Delete the balanced expression preceding point.
-
-This is exactly like calling `sp-backword-kill-sexp'
-except deleted sexp does not go to the clipboard or kill ring.
-
-With ARG being positive number N, repeat that many times.
-
-With ARG being Negative number -N, repeat that many times in
-forward direction.
-
-See also `sp-backward-kill-sexp' examples."
-     (interactive "*p")
-     (let* ((kill-ring nil)
-            (kill-ring-yank-pointer nil)
-            (select-enable-clipboard nil))
-       (sp-backward-kill-sexp arg))) )
-  :eval-after-load
-  (
-   ;; Bug fix
-   (defun ad:run-without-kill-ring (f &rest args)
-     (let (kill-ring
-           (kill-ring-yank-pointer nil))
-       (apply f args)))
-   (advice-add #'sp-backward-delete-symbol :around #'ad:run-without-kill-ring)
-   (advice-add #'sp-delete-symbol :around #'ad:run-without-kill-ring)))
+     (sp-save-kill-ring
+       (sp-kill-hybrid-sexp arg)))))
 
 (mmic rainbow-delimiters
   :hook ((lisp-mode-hook . #'rainbow-delimiters-mode)
