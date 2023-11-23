@@ -1549,12 +1549,12 @@ cases."
   :define-key
   ((global-map
     ("M-g M-g" . #'magit-status)))
-  :hook
-  ((fundamental-mode . #'magit-wip-mode))
   :pretty-hydra+
   (( my-hydra nil
      ("Magit"
-      (("w" magit-wip-log "Show wip commit log"))))))
+      (("w" magit-wip-log "Show wip commit log")))))
+  :eval
+  ((magit-wip-mode)))
 
 ;; (mmic magit-todos
 ;;   :eval
