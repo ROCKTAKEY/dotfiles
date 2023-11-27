@@ -43,6 +43,23 @@
                                        dir)))
      url-list)))
 
+(defmacro mapcart (func &rest lists)
+  "Apply FUNC to each elements of all cartesian products of LISTS."
+  `(mapcart-inner (,func) ,@lists))
+
+(defmacro mapcart-inner (func &rest lists)
+  "Same as `mapcart' except FUNC meanings is different.
+
+FUNC should be (FUNCTION ARG...), where Nth element of ARGs is passed
+to FUNCTION as Nth argument, and rest of arguments are choosed from LISTS."
+  (let ((arg (make-symbol "arg")))
+    `(mapcar
+      (lambda (,arg)
+        ,(if (cdr lists)
+             `(mapcart-inner (,@func ,arg) ,@(cdr lists))
+           `(funcall ,@func ,arg)))
+      ,(car lists))))
+
 ;; load-path
 
 (add-to-list 'load-path (expand-file-name "conf" user-emacs-directory))
