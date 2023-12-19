@@ -699,7 +699,8 @@ cases."
     . eglot-ensure))
   :define-key-after-load
   ((eglot-mode-map
-    ("M-r" . #'eglot-rename)))
+    ("M-r" . #'eglot-rename)
+    ("M-c" . #'eglot-code-actions)))
   :eval-after-load
   ((when-let ((cons (assoc '(tex-mode context-mode texinfo-mode bibtex-mode) eglot-server-programs)))
      (cl-pushnew 'yatex-mode (car cons))
