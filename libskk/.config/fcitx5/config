@@ -1,0 +1,61 @@
+[Hotkey]
+# トリガーキーを押すたびに切り替える
+EnumerateWithTriggerKeys=True
+# 一時的に第1入力メソッドに切り替える
+AltTriggerKeys=
+# 次の入力メソッドに切り替える
+EnumerateForwardKeys=
+# 前の入力メソッドに切り替える
+EnumerateBackwardKeys=
+# 切り替え時は第1入力メソッドをスキップする
+EnumerateSkipFirst=False
+# 次の入力メソッドグループに切り替える
+EnumerateGroupForwardKeys=
+# 前の入力メソッドグループに切り替える
+EnumerateGroupBackwardKeys=
+# 入力メソッドを有効にする
+ActivateKeys=
+# 入力メソッドをオフにする
+DeactivateKeys=
+# デフォルトの前ページ
+PrevPage=
+# デフォルトの次ページ
+NextPage=
+# デフォルトの前候補
+PrevCandidate=
+# デフォルトの次候補
+NextCandidate=
+# プリエディットの埋め込みを切り替える
+TogglePreedit=
+
+[Hotkey/TriggerKeys]
+0=Zenkaku_Hankaku
+
+[Behavior]
+# デフォルトで有効にする
+ActiveByDefault=False
+# 入力状態を共有する
+ShareInputState=No
+# アプリケーションにプリエディットを表示する
+PreeditEnabledByDefault=True
+# 入力メソッドを切り替える際に入力メソッドの情報を表示する
+ShowInputMethodInformation=True
+# フォーカスを変更する際に入力メソッドの情報を表示する
+showInputMethodInformationWhenFocusIn=False
+# 入力メソッドの情報をコンパクトに表示する
+CompactInputMethodInformation=True
+# 第1入力メソッドの情報を表示する
+ShowFirstInputMethodInformation=True
+# デフォルトのページサイズ
+DefaultPageSize=5
+# XKB オプションより優先する
+OverrideXkbOption=False
+# カスタム XKB オプション
+CustomXkbOption=
+# Force Enabled Addons
+EnabledAddons=
+# Force Disabled Addons
+DisabledAddons=
+# Preload input method to be used by default
+PreloadInputMethod=True
+
