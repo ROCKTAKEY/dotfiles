@@ -15,10 +15,10 @@ bibtex-mode
 
 yatex-mode LaTeX-mode latex-mode tex-mode TeX-mode
 (def
- "\newcommand{" p "}{" p "}")
+ "\\newcommand{" p "}{" p "}")
 
 (def-with-arg
-  "\newcommand{" p "}[" p "]{" p "}")
+  "\\newcommand{" p "}[" p "]{" p "}")
 
 (figure
  "\\begin{figure}[h]" n>
@@ -26,10 +26,10 @@ yatex-mode LaTeX-mode latex-mode tex-mode TeX-mode
  r>
  "\\caption{" r> "}" n>
  "\\label{" p "}" n>
- "\end{figure}")
+ "\\end{figure}")
 
 (image
- "\\includegraphics[width=0.8\hsize]{" p "}")
+ "\\includegraphics[width=0.8\\hsize]{" p "}")
 
 (minipage
  "\\begin{minipage}[c]{" (p "1") "\\hsize}" n>
