@@ -1584,6 +1584,15 @@ cases."
     . (expand-file-name "etc/forge-database.sqlite"
                         user-emacs-directory))))
 
+(mmic* git
+  :eval
+  ((defun gh-auth-switch ()
+     (interactive)
+     (shell-command "gh auth switch")))
+  :define-key
+  ((global-map
+    ("M-g s" . #'gh-auth-switch))))
+
 (mmic series
   :require t
   :define-key-after-load
