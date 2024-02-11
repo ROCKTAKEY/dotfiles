@@ -121,6 +121,8 @@
                  (auto-suspend? #f)
                  (gnome-shell-assets
                   (cons* (specification->package "font-google-noto")
+                         (specification->package "font-google-noto-sans-cjk")
+                         (specification->package "font-google-noto-serif-cjk")
                          (list adwaita-icon-theme font-abattis-cantarell)))))
      (network-manager-service-type
       config =>
