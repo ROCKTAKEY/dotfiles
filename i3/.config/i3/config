@@ -184,6 +184,8 @@ mode "resize" {
         bindsym $mod+r mode "default"
 }
 
+bindsym $mod+Ctrl+l exec "gdmflexiserver"
+
 bindsym $mod+r mode "resize"
 
 gaps inner 10px
