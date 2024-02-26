@@ -1317,7 +1317,6 @@ cases."
   :define-key
   ((global-map
     ("C-s" . #'consult-line)
-    ("C-x b" . #'consult-buffer)
     ("M-y" . #'consult-yank-pop)
     ("M-g g" . #'consult-goto-line)
     ("M-g o" . #'consult-outline)
