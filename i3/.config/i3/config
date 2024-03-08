@@ -184,9 +184,12 @@ mode "resize" {
         bindsym $mod+r mode "default"
 }
 
+# Lock
 bindsym $mod+Ctrl+l exec "gdmflexiserver"
 
 bindsym $mod+r mode "resize"
+
+for_window [class="Emacs" title="^$"]  floating enable
 
 gaps inner 10px
 
