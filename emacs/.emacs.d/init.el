@@ -1874,7 +1874,9 @@ See also `sp-kill-hybrid-sexp' examples."
 
 (mmic undo-tree
   :custom
-  ((undo-tree-auto-save-history . nil))
+  ((undo-tree-auto-save-history . nil)
+   (undo-tree-visualizer-diff . t)
+   (undo-tree-visualizer-timestamps . t))
   :hydra
   ((hydra-undo
     (:hint nil :color pink :foreign-keys 'nil
