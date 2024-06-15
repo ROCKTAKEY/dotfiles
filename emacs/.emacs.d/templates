@@ -261,7 +261,7 @@ scheme-mode
 
 
 
-shell-mode eshell-mode term-mode
+shell-mode eshell-mode term-mode mistty-mode
 (cmake-compile-commands-json
  "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON")
 (cmake-build-type-relwithdebinfo
