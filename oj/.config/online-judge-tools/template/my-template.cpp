@@ -1,7 +1,3 @@
-<%!
-    import onlinejudge_template.generator.cplusplus as cplusplus
-    import onlinejudge_template.generator.about as about
-%>\
 <%
     data['config']['using_namespace_std'] = True
     data['config']['long_long_int'] = 'll'
@@ -829,8 +825,6 @@ using vpll = vector<pair<ll, ll>>;
 //// Main is here!
 signed main(void){
     cin.tie(0); ios::sync_with_stdio(false);cout<<fixed<<setprecision(10);
-
-${cplusplus.read_input(data)}
 
 
 
