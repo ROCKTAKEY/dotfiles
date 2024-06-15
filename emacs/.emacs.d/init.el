@@ -681,6 +681,9 @@ cases."
   ((lsp-ui-sideline-ignore-duplicate . t)
    (lsp-ui-sideline-show-hover . t)))
 
+(mmic consult-lsp
+  :require-after ((lsp . (consult-lsp))))
+
 (mmic eglot
   :hook-list-maybe
   (((c-mode-hook
@@ -711,6 +714,13 @@ cases."
 (mmic eglot-tempel
   :eval
   ((eglot-tempel-mode)))
+
+(mmic consult-eglot
+  :require-after ((eglot . (consult-eglot))))
+
+(mmic consult-eglot-embark
+  :eval
+  ((consult-eglot-embark-mode)))
 
 (mmic tree-sitter
   :package tree-sitter-langs
@@ -758,12 +768,12 @@ cases."
 
 (mmic quickrun
   :eval
-  ((quickrun-add-command "c++/g++/c++17"
+  ((quickrun-add-command "c++/g++/c++23"
      '((:command . "g++")
-       (:exec    . ("%c -std=c++17 %o -o %e %s -g3 -O0"
+       (:exec    . ("%c -std=c++23 %o -o %e %s -g3 -O0"
                     "%e %a"))
        (:remove  . ("%e"))
-       (:description . "Compile C++ file with g++ -std=c++17 and execute"))
+       (:description . "Compile C++ file with g++ -std=c++23 and execute"))
      :default "c++")))
 
 (mmic npm)
