@@ -76,6 +76,7 @@ to FUNCTION as Nth argument, and rest of arguments are choosed from LISTS."
 (prog1 'package
   ;; NOTE: Initialize package to suppress warnings by loading `autoload'
   (eval-and-compile
+    (custom-set-variables '(package-user-dir (concat "~/.emacs.d/elpa/" emacs-version)))
     (require 'package)
     (setq package-check-signature nil)
     (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
