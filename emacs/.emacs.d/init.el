@@ -158,7 +158,7 @@ to FUNCTION as Nth argument, and rest of arguments are choosed from LISTS."
 
 (mmic pretty-hydra
   :pretty-hydra+
-  (( my-hydra (:color blue)
+  (( my-hydra (:color blue :quit-key "q")
      ("File/Directory"
       (("f" my-copy-file-name "File Name")
        ("p" my-copy-file-name-with-absolute-path "Path")
@@ -168,6 +168,8 @@ to FUNCTION as Nth argument, and rest of arguments are choosed from LISTS."
     ("M-m" . #'my-hydra/body))))
 
 (mmic major-mode-hydra
+  :custom
+  ((major-mode-hydra-invisible-quit-key . ?q))
   :define-key
   ((global-map
     ("M-q" . #'major-mode-hydra))))
