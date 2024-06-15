@@ -1223,9 +1223,6 @@ cases."
     ("M-q" . #'major-mode-hydra))))
 
 (mmic term-project
-  :mykie
-  ((global-map
-    ("C-x p s" :default term-project-create-or-switch :C-u term-project-create-new)))
   :eval
   ((defvar term-project-consult-source
      `( :name     "Terms"
@@ -1249,6 +1246,31 @@ cases."
           (call-interactively #'term-project-create-new))
          (otherwise
           (consult-buffer '(term-project-consult-source))))))))
+
+(mmic eat
+  :define-key
+  ((global-map
+    ("C-x p s" . #'eat-project-other-window))))
+
+(mmic mistty
+  :define-key
+  ((global-map
+    ("C-x p s" . #'mistty-in-project-other-window)))
+  :eval
+  ((defun mistty-in-project-other-window ()
+     "Start or go to a MisTTY buffer in the project's root in another window.
+
+See the documentation of the function `mistty-other-window' and
+`mistty-in-project' for details."
+     (interactive)
+     (let* ((pr (project-current t))
+            (bufs (project-buffers pr))
+            (default-directory (project-root pr))
+            (mistty-buf (mistty 'other-window (lambda (buf) (memq buf bufs)))))
+       (unless (memq mistty-buf bufs)
+         (rename-buffer (generate-new-buffer-name
+                         (project-prefixed-buffer-name "mistty"))))
+       mistty-buf))))
 
 (mmic cmake-mode)
 
