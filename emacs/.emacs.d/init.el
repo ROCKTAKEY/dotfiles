@@ -787,6 +787,11 @@ cases."
 
 (mmic markdown-mode)
 
+(mmic casual-calc
+  :define-key
+  ((calc-mode-map
+    ("?" . #'casual-calc-tmenu))))
+
 (mmic jq-mode
   :mode-hydra
   (( javascript-mode ()
