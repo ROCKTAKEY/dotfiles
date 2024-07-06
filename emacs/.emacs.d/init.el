@@ -769,12 +769,12 @@ cases."
 
 (mmic quickrun
   :eval
-  ((quickrun-add-command "c++/g++/c++23"
-     '((:command . "g++")
+  ((quickrun-add-command "c++/clang++/c++23"
+     '((:command . "clang++")
        (:exec    . ("%c -std=c++23 %o -o %e %s -g3 -O0"
                     "%e %a"))
        (:remove  . ("%e"))
-       (:description . "Compile C++ file with g++ -std=c++23 and execute"))
+       (:description . "Compile C++ file with clang++ -std=c++23 and execute"))
      :default "c++")))
 
 (mmic npm)
