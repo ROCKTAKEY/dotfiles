@@ -641,9 +641,11 @@ cases."
   ((shell-mode-hook . #'shell-imenu-setup)))
 
 (mmic lsp-mode
-  :hook ((tex-mode . #'lsp)
-         (latex-mode . #'lsp)
-         (bibtex-mode . #'lsp))
+  :hook ((tex-mode-hook . #'lsp)
+         (latex-mode-hook . #'lsp)
+         (bibtex-mode-hook . #'lsp)
+         (javascript-mode-hook . #'lsp)
+         (typescript-mode-hook . #'lsp))
   :declare-function (lsp-register-client make-lsp-client lsp-stdio-connection)
   :defvar-noninitial (lsp--formatting-indent-alist)
   :define-key-after-load
@@ -695,9 +697,6 @@ cases."
      dockerfile-mode-hook
      yaml-mode-hook
      r-mode-hook
-     javascript-mode-hook
-     js-mode-hook
-     typescript-mode-hook
      sh-mode-hook
      common-lisp-mode-hook
      java-mode-hook
