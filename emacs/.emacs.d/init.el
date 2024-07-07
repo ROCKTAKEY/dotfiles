@@ -2068,7 +2068,8 @@ See also `sp-kill-hybrid-sexp' examples."
     ("$"  . #'self-insert-command)
     ("<hiragana-katakana>" . #'skk-sticky-set-henkan-point)
     ("<henkan>" . #'skk-sticky-set-henkan-point)
-    ("<muhenkan>" . #'skk-sticky-set-henkan-point)))
+    ("<muhenkan>" . #'skk-sticky-set-henkan-point)
+    ("<F17>" . #'skk-sticky-set-henkan-point)))
   :hook
   ((skk-mode-hook . #'skk-yatex-hook))
   :eval
