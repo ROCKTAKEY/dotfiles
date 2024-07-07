@@ -406,7 +406,9 @@ how long to wait for a response before giving up."
 
 (mmic* cus-edit
   :custom
-  ((custom-file . (expand-file-name "etc/custom.el" user-emacs-directory))))
+  ((custom-file . (expand-file-name "etc/custom.el" user-emacs-directory)))
+  :eval
+  ((load custom-file)))
 
 (mmic* load
   :custom
