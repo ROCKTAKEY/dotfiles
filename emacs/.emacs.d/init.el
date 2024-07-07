@@ -513,7 +513,9 @@ how long to wait for a response before giving up."
   :custom
   ((scroll-conservatively . 35)
    (scroll-margin . 0)
-   (scroll-step . 1)))
+   (scroll-step . 1))
+  :eval
+  ((pixel-scroll-precision-mode)))
 
 (mmic* scroll-bar
   :eval
