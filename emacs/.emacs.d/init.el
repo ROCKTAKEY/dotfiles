@@ -407,7 +407,7 @@ how long to wait for a response before giving up."
 (mmic* cus-edit
   :custom
   ((custom-file . (expand-file-name "etc/custom.el" user-emacs-directory)))
-  :eval
+  :eval-after-others
   ((load custom-file)))
 
 (mmic* load
@@ -1660,7 +1660,7 @@ See the documentation of the function `mistty-other-window' and
      (beginning-of-line)
      (forward-char (string-match
                     (concat "[ \t]*\\(\\(" (regexp-quote comment-start) ".*?$\\)\\|$\\)")
-                    (buffer-substring (point-at-bol) (point-at-eol)))))
+                    (buffer-substring (pos-bol) (pos-eol)))))
 
    (defun forward-to-not-whitespace ()
      (interactive)
