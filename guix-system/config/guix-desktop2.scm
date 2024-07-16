@@ -45,7 +45,6 @@
                           (specification->package "ratpoison")
                           (specification->package "xterm")
                           (specification->package "sway")
-                          (specification->package "nss-certs")
 
                           (specification->package "font-cica")
                           (specification->package "font-google-noto")
@@ -103,9 +102,10 @@ COMMIT
                              config => (guix-configuration
                                         (inherit config)
                                         (substitute-urls
-                                         (cons*  "https://substitutes.nonguix.org"
-                                                 "https://guix.bordeaux.inria.fr"
-                                                 %default-substitute-urls))
+                                         (cons* "https://substitutes.nonguix.org"
+                                                "https://guix.bordeaux.inria.fr"
+                                                "https://cuirass.tail09c0.ts.net"
+                                                %default-substitute-urls))
                                         (authorized-keys
                                          (cons*
                                           (plain-file "nonguix.pub"
@@ -124,6 +124,13 @@ COMMIT
   (q #89FBA276A976A8DE2A69774771A92C8C879E0F24614AAAAE23119608707B3F06#)))\
 "
                                                       )
+                                          (plain-file "cuirass.pub"
+                                                      "(public-key
+ (ecc
+  (curve Ed25519)
+  (q #9EF17DBD1777BF3BA48A7E5931C01FB1C28335D625D192E85170F163F2EB422C#)
+  )
+ )")
                                           %default-authorized-guix-keys))))
                             (gdm-service-type
                              config => (gdm-configuration
