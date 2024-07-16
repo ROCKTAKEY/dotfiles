@@ -159,7 +159,7 @@ to FUNCTION as Nth argument, and rest of arguments are choosed from LISTS."
 
 (mmic pretty-hydra
   :pretty-hydra+
-  (( my-hydra (:color blue :quit-key "q")
+  (( my-hydra (:color blue)
      ("File/Directory"
       (("f" my-copy-file-name "File Name")
        ("p" my-copy-file-name-with-absolute-path "Path")
@@ -170,7 +170,7 @@ to FUNCTION as Nth argument, and rest of arguments are choosed from LISTS."
 
 (mmic major-mode-hydra
   :custom
-  ((major-mode-hydra-invisible-quit-key . ?q))
+  ((major-mode-hydra-invisible-quit-key . "q"))
   :define-key
   ((global-map
     ("M-q" . #'major-mode-hydra))))
@@ -791,9 +791,10 @@ cases."
 (mmic markdown-mode)
 
 (mmic casual-calc
-  :define-key
-  ((calc-mode-map
-    ("?" . #'casual-calc-tmenu))))
+  :define-key-after-load
+  ((calc
+    (calc-mode-map
+     ("?" . #'casual-calc-tmenu)))))
 
 (mmic jq-mode
   :mode-hydra
@@ -853,7 +854,7 @@ cases."
 (mmic org
   :package org-contrib
   :mode-hydra
-  (( org-mode (:color pink :quit-key "q")
+  (( org-mode (:color pink)
      ("Export"
       (("C" org-commentary-update "Export to Commentary" :color blue))
       "Same Level Heading"
@@ -1218,7 +1219,7 @@ cases."
 
 (mmic term
   :mode-hydra
-  (( term-mode (:color "pink" :quit-key "q")
+  (( term-mode (:color "pink")
      ("Mode"
       (("C-j" term-line-mode "Line (emulate)" :toggle (term-in-line-mode))
        ("C-k" term-char-mode "Char (Emacs)" :toggle (term-in-char-mode))
@@ -1600,7 +1601,7 @@ See the documentation of the function `mistty-other-window' and
 
 (mmic git-commit
   :mode-hydra+
-  (( text-mode (:color pink :quit-key "q")
+  (( text-mode (:color pink)
      ("Browse commit message"
       (("M-p" git-commit-prev-message "Prev")
        ("M-n" git-commit-next-message "Next"))))))
@@ -1812,7 +1813,7 @@ See the documentation of the function `mistty-other-window' and
 
 (mmic smartparens
   :pretty-hydra+
-  (( smartparens-hydra (:color blue :quit-key "q")
+  (( smartparens-hydra (:color blue)
      ("Parens"
       (("C-]" sp-rewrap-sexp "rewrap")))))
   :define-key-after-load
