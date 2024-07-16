@@ -782,6 +782,11 @@ cases."
 
 (mmic npm)
 
+(mmic python
+  :custom
+  ((python-shell-interpreter . "poetry")
+   (python-shell-interpreter-args . "run python -i")))
+
 (mmic cwl-mode)
 
 (mmic cask-mode)
