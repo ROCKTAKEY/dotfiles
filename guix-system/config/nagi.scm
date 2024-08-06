@@ -22,7 +22,7 @@
                                     #:options
                                     '("ctrl:nocaps"
                                       "caps:ctrl_modifier")))
-  (host-name "guix-desktop2")
+  (host-name "nagi")
 
   ;; The list of user accounts ('root' is implicit).
   (users (cons* (user-account
@@ -41,12 +41,11 @@
                           (specification->package "i3-wm")
                           (specification->package "i3status")
                           (specification->package "dmenu")
-                          (specification->package "st")
                           (specification->package "ratpoison")
                           (specification->package "xterm")
                           (specification->package "sway")
-
                           (specification->package "font-cica")
+                          (specification->package "st")
                           (specification->package "font-google-noto")
                           (specification->package "font-google-noto-sans-cjk")
                           (specification->package "font-google-noto-serif-cjk"))
@@ -88,6 +87,7 @@ COMMIT
 
                  (service syncthing-service-type
                           (syncthing-configuration (user "rocktakey")))
+                 (service containerd-service-type)
                  (service docker-service-type)
                  (service libvirt-service-type
                           (libvirt-configuration
@@ -156,7 +156,7 @@ COMMIT
                 (keyboard-layout keyboard-layout)))
   (mapped-devices (list (mapped-device
                           (source (uuid
-                                   "ce5f3d71-cc82-4530-a759-bf82ad798092"))
+                                   "65d2b709-62e5-4a86-8aad-6f142044ab31"))
                           (target "cryptroot")
                           (type luks-device-mapping))))
 
@@ -165,7 +165,7 @@ COMMIT
   ;; by running 'blkid' in a terminal.
   (file-systems (cons* (file-system
                          (mount-point "/boot/efi")
-                         (device (uuid "BCF4-EF63"
+                         (device (uuid "944D-FB38"
                                        'fat32))
                          (type "vfat"))
                        (file-system
