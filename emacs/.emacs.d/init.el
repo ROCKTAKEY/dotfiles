@@ -1359,6 +1359,8 @@ See the documentation of the function `mistty-other-window' and
     '("\"\\([^\000-\377]\\|[ \n\t.,()0-9@:;/\\\\`{}*+<>?_]\\)+\""))))
 
 (mmic apheleia
+  :custom
+  ((apheleia-formatters-respect-indent-level . nil))
   :eval
   ((apheleia-global-mode)))
 
