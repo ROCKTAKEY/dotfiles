@@ -408,7 +408,8 @@ how long to wait for a response before giving up."
   :custom
   ((custom-file . (expand-file-name "etc/custom.el" user-emacs-directory)))
   :eval-after-others
-  ((load custom-file)))
+  ((and custom-file
+        (load custom-file))))
 
 (mmic* load
   :custom
