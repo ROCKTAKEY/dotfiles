@@ -1281,6 +1281,8 @@ cases."
   :define-key
   ((global-map
     ("C-x p s" . #'mistty-in-project-other-window-with-name)))
+  :autoload-noninteractive
+  (mistty-list-live-buffers)
   :eval
   ((defun my-project-mistty-tags (project)
      "Get mistty buffer tag list for PROJECT."
