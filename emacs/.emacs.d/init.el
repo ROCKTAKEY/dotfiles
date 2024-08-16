@@ -6,6 +6,14 @@
 (when my-profiler-on
   (profiler-start 'cpu))
 
+(setq gc-cons-threshold 80000000)
+
+(defconst my-file-name-hander-alist file-name-handler-alist)
+
+(add-hook 'after-init-hook
+          (defun my-file-handler-alist-restore ()
+            (setq file-name-handler-alist my-file-name-hander-alist)))
+
 (require 'cl-lib)
 (require 'seq)
 
