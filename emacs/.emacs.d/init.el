@@ -1280,21 +1280,47 @@ cases."
 (mmic mistty
   :define-key
   ((global-map
-    ("C-x p s" . #'mistty-in-project-other-window)))
+    ("C-x p s" . #'mistty-in-project-other-window-with-name)))
   :eval
-  ((defun mistty-in-project-other-window ()
-     "Start or go to a MisTTY buffer in the project's root in another window.
+  ((defun my-project-mistty-tags (project)
+     "Get mistty buffer tag list for PROJECT."
+     (let* ((buffers (project-buffers project))
+            (mistty-buffers (mistty-list-live-buffers (lambda (buffer) (memq buffer buffers))))
+            (tags (mapcan (lambda (buffer)
+                            (let* ((name (buffer-name buffer)))
+                              (save-match-data
+                                (when (string-match "mistty\\[\\(.*?\\)\\]" name)
+                                  (list (match-string 1 name))))))
+                          mistty-buffers)))
+       tags))
 
-See the documentation of the function `mistty-other-window' and
-`mistty-in-project' for details."
-     (interactive)
+   (defun my-mistty-buffer-name-with-tag (project tag)
+     "Generate buffer name for mistty buffer with TAG in PROJECT."
+     (let ((default-directory (project-root project)))
+       (project-prefixed-buffer-name
+        (format "mistty[%s]" tag))))
+
+   (defun mistty-in-project-other-window-with-name (tag)
+     "Same as `mistty-in-project-other-window' except TAG is used for buffer name."
+     (interactive
+      (list
+       (completing-read "Buffer tag name: " (my-project-mistty-tags (project-current t)))))
      (let* ((pr (project-current t))
             (bufs (project-buffers pr))
-            (default-directory (project-root pr))
-            (mistty-buf (mistty 'other-window (lambda (buf) (memq buf bufs)))))
+            (mistty-buf
+             ;; Copied from`mistty'. Some changed.
+             (let ((existing (mistty-list-live-buffers (lambda (buf) (string=
+                                                                      (buffer-name buf)
+                                                                      (my-mistty-buffer-name-with-tag pr tag))))))
+               (if (or current-prefix-arg         ; command prefix was given
+                       (null existing)            ; there are no mistty buffers
+                       (and (null (cdr existing)) ; the current buffer is the only mistty buffer
+                            (eq (current-buffer) (car existing))))
+                   ;; create a new one
+                   (mistty-create nil 'other-window)
+                 (mistty--goto-next existing 'other-window)))))
        (unless (memq mistty-buf bufs)
-         (rename-buffer (generate-new-buffer-name
-                         (project-prefixed-buffer-name "mistty"))))
+         (rename-buffer (generate-new-buffer-name (my-mistty-buffer-name-with-tag pr tag))))
        mistty-buf))))
 
 (mmic cmake-mode)
