@@ -16,3 +16,5 @@ bookmarks
 leaf-plstore.plist
 eln-cache
 flycheck_*.el
+projects
+tramp
