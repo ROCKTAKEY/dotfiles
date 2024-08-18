@@ -1325,6 +1325,7 @@ cases."
        (completing-read "Buffer tag name: " (my-project-mistty-tags (project-current t)))))
      (let* ((pr (project-current t))
             (bufs (project-buffers pr))
+            (default-directory (project-root pr))
             (mistty-buf
              ;; Copied from`mistty'. Some changed.
              (let ((existing (mistty-list-live-buffers (lambda (buf) (string=
