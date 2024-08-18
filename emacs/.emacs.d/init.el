@@ -1932,6 +1932,7 @@ See also `sp-kill-hybrid-sexp' examples."
 (mmic electric-operator
   :hook ((c-mode-common-hook . #'electric-operator-mode)
          (typescript-mode-hook . #'electric-operator-mode)
+         (typescript-ts-mode-hook . #'electric-operator-mode)
          (ess-r-mode-hook . #'electric-operator-mode)))
 
 (mmic expand-region
