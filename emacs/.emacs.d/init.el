@@ -1134,6 +1134,12 @@ cases."
    (add-to-list 'auto-mode-alist
                 '("\\.ts\\'" . typescript-ts-mode))))
 
+(mmic jsdoc
+  :mode-hydra+
+  (( typescript-ts-mode ()
+     ("Snippets"
+      (("d" jsdoc "Insert TSDoc"))))))
+
 (mmic css-mode
   :custom
   ((css-indent-offset . 2)))
