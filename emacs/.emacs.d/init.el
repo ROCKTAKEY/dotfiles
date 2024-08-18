@@ -656,7 +656,7 @@ cases."
          (latex-mode-hook . #'lsp)
          (bibtex-mode-hook . #'lsp)
          (javascript-mode-hook . #'lsp)
-         (typescript-mode-hook . #'lsp))
+         (typescript-ts-mode-hook . #'lsp))
   :declare-function (lsp-register-client make-lsp-client lsp-stdio-connection)
   :defvar-noninitial (lsp--formatting-indent-alist)
   :define-key-after-load
@@ -745,8 +745,16 @@ cases."
   ((tree-sitter-major-mode-language-alist . (cons '(typescript-mode . tsx)
                                                   (default-value 'tree-sitter-major-mode-language-alist))))
   :eval
-  ((global-tree-sitter-mode)
+  (
+   ;; (global-tree-sitter-mode)
    (tree-sitter-require 'tsx)))
+
+(mmic treesit-auto
+  :require t
+  :custom
+  ((treesit-auto-install . t))
+  :eval-after-load
+  ((global-treesit-auto-mode)))
 
 (mmic dumb-jump
   :eval
@@ -1119,10 +1127,12 @@ cases."
   :custom
   ((js-indent-level . 2)))
 
-(mmic typescript-mode
+(mmic typescript-ts-mode
   :eval
   ((add-to-list 'auto-mode-alist
-                '("\\.tsx\\'" . typescript-mode))))
+                '("\\.tsx\\'" . typescript-ts-mode))
+   (add-to-list 'auto-mode-alist
+                '("\\.ts\\'" . typescript-ts-mode))))
 
 (mmic css-mode
   :custom
