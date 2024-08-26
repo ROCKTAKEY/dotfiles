@@ -1394,7 +1394,8 @@ cases."
 
 (mmic flymake-actionlint
   :hook
-  ((yaml-mode-hook . #'flymake-actionlint-action-load-when-actions-file)))
+  ((yaml-mode-hook . #'flymake-actionlint-action-load-when-actions-file)
+   (yaml-ts-mode-hook . #'flymake-actionlint-action-load-when-actions-file)))
 
 (mmic flylisp
   :hook
