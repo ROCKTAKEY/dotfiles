@@ -187,6 +187,10 @@ to FUNCTION as Nth argument, and rest of arguments are choosed from LISTS."
 
 
 
+(mmic exec-path-from-shell
+  :eval
+  ((exec-path-from-shell-initialize)))
+
 (defun get-wsl-user-directory ()
   "Get Windows home directory in WSL."
   (cl-some
