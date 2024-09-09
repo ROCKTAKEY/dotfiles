@@ -2164,6 +2164,7 @@ See also `sp-kill-hybrid-sexp' examples."
         (_
          (cons (cl-some (lambda (arg) (when (file-exists-p arg) (expand-file-name arg)))
                         '("/usr/share/skk/SKK-JISYO.L"
+                          "~/.local/share/skk/SKK-JISYO.L"
                           "~/.guix-profile/share/skk/SKK-JISYO.L"))
                'euc-jp))))
    ;; annotation
