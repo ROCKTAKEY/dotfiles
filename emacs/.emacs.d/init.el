@@ -2266,10 +2266,11 @@ See also `sp-kill-hybrid-sexp' examples."
 
 (mmic highlight-indent-guides
   :hook
-  ((yaml-mode-hook . #'highlight-indent-guides-mode))
+  ((yaml-mode-hook . #'highlight-indent-guides-mode)
+   (python-mode-hook . #'highlight-indent-guides-mode))
   :custom
-  ((highlight-indent-guides-method . 'fill)
-   (highlight-indent-guides-auto-enabled . t)
+  ((highlight-indent-guides-method . 'column)
+   (highlight-indent-guides-auto-enabled . nil)
    (highlight-indent-guides-responsive . t)
    (highlight-indent-guides-delay . 0.9)))
 
