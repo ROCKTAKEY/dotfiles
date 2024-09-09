@@ -230,6 +230,15 @@ to FUNCTION as Nth argument, and rest of arguments are choosed from LISTS."
 (defgroup mine nil "My group."
   :group 'lisp)
 
+(mmic* global-set-key
+  :define-key
+  ((global-map
+    ("M-¥" . #'insert-backslash)))
+  :eval
+  ((defun insert-backslash ()
+     (interactive)
+     (insert "\\"))))
+
 
 
 (mmic dash)
