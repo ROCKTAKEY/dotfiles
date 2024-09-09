@@ -2386,7 +2386,8 @@ See also `sp-kill-hybrid-sexp' examples."
      (hs-hide-level 0)))
   :define-key-after-load
   ((hs-minor-mode-map
-    ("C-\\"  . #'hs-toggle-hiding)
+    ("C-\\" . #'hs-toggle-hiding)
+    ("C-_" . #'hs-toggle-hiding)
     ("M-s s" . #'hs-show-all)))
   :eval-after-load
   ((mykie:define-key hs-minor-mode-map "M-s h"
