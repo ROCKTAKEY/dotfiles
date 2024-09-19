@@ -25,7 +25,7 @@
               %default-channels)))
      (specification
       (name "guix-jp")
-      (build '(channels roquix))
+      (build '(channels guix-jp))
       (channels
        (cons* (channel
                (name 'guix-jp)
