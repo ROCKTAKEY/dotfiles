@@ -697,7 +697,16 @@ cases."
    (advice-add #'view-mode-enter :around #'ad:view-lsp))
   :eval-after-load
   ((mmic lsp-latex
-     :require t)) )
+     :require t)
+
+   (mmic* lsp-pylsp
+     :custom
+     ((lsp-pylsp-configuration-sources . ["flake8" "mypy"])
+      (lsp-pylsp-plugins-ruff-enabled . t)
+      (lsp-pylsp-plugins-mypy-enabled . t)
+      (lsp-pylsp-plugins-rope-autoimport-enabled . t)))) )
+
+
 
 (mmic dap-mode
   :custom
