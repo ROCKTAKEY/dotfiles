@@ -2278,15 +2278,17 @@ See also `sp-kill-hybrid-sexp' examples."
   ((use-dialog-box . nil)
    (echo-keystrokes . 0.01)))
 
-(mmic highlight-indent-guides
-  :hook
-  ((yaml-mode-hook . #'highlight-indent-guides-mode)
-   (python-mode-hook . #'highlight-indent-guides-mode))
+(mmic indent-bars
   :custom
-  ((highlight-indent-guides-method . 'column)
-   (highlight-indent-guides-auto-enabled . nil)
-   (highlight-indent-guides-responsive . t)
-   (highlight-indent-guides-delay . 0.9)))
+  ((indent-bars-treesit-support . t)
+   (indent-bars-treesit-ignore-blank-lines-types . '("module"))
+   (indent-bars-treesit-scope
+    . '((python function_definition class_definition for_statement
+                if_statement with_statement while_statement))))
+  :hook ((python-mode-hook . #'indent-bars-mode)
+         (yaml-mode-hook . #'indent-bars-mode))
+  :eval
+  ((require 'indent-bars-ts)))
 
 (mmic highlight-defined
   :hook
