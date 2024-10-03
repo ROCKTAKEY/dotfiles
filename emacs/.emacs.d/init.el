@@ -448,7 +448,8 @@ how long to wait for a response before giving up."
   :custom
   ((confirm-kill-emacs . #'y-or-n-p)
    (require-final-newline . t)
-   (view-read-only . t)))
+   (view-read-only . t)
+   (delete-by-moving-to-trash . t)))
 
 (mmic* window
   :define-key-general
