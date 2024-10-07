@@ -702,12 +702,11 @@ cases."
 
    (mmic* lsp-pylsp
      :custom
-     ((lsp-pylsp-configuration-sources . ["flake8" "mypy"])
+     ((lsp-pylsp-configuration-sources . ["flake8"])
       (lsp-pylsp-plugins-ruff-enabled . t)
       (lsp-pylsp-plugins-mypy-enabled . t)
-      (lsp-pylsp-plugins-rope-autoimport-enabled . t)))) )
-
-
+      (lsp-pylsp-plugins-mypy-report-progress . t)
+      (lsp-pylsp-plugins-rope-autoimport-enabled . t)))))
 
 (mmic dap-mode
   :custom
