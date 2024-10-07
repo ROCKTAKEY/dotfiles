@@ -706,7 +706,11 @@ cases."
       (lsp-pylsp-plugins-ruff-enabled . t)
       (lsp-pylsp-plugins-mypy-enabled . t)
       (lsp-pylsp-plugins-mypy-report-progress . t)
-      (lsp-pylsp-plugins-rope-autoimport-enabled . t)))))
+      (lsp-pylsp-plugins-rope-autoimport-enabled . t)))
+
+   (mmic lsp-pyright
+     :custom
+     ((lsp-pyright-langserver-command . "basedpyright")))))
 
 (mmic dap-mode
   :custom
