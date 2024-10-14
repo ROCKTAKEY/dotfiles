@@ -683,7 +683,8 @@ cases."
        "etc/.lsp-session-v1"
        user-emacs-directory))
    (lsp-log-io . nil)
-   (lsp-log-max . nil))
+   (lsp-log-max . nil)
+   (lsp-inlay-hint-enable . t))
   :custom-after-load
   ((lsp--formatting-indent-alist . (cons '(web-mode . web-mode-code-indent-offset)
                                          (default-value 'lsp--formatting-indent-alist))))
