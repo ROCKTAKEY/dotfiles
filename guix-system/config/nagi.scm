@@ -13,7 +13,9 @@
              (gnu packages fonts)
              (gnu packages gnome)
              (roquix services tailscale))
-(use-service-modules cups desktop networking ssh xorg docker virtualization syncthing)
+(use-service-modules cups desktop networking ssh xorg docker virtualization syncthing nix)
+(use-package-modules package-management)
+
 
 (operating-system
   (locale "ja_JP.utf8")
@@ -48,7 +50,8 @@
                           (specification->package "st")
                           (specification->package "font-google-noto")
                           (specification->package "font-google-noto-sans-cjk")
-                          (specification->package "font-google-noto-serif-cjk"))
+                          (specification->package "font-google-noto-serif-cjk")
+                          nix)
                     %base-packages))
 
   ;; Below is the list of system services.  To search for available
@@ -93,7 +96,8 @@ COMMIT
                           (libvirt-configuration
                            (unix-sock-group "libvirt")))
                  (service virtlog-service-type)
-                 (service tailscale-service-type))
+                 (service tailscale-service-type)
+                 (service nix-service-type))
 
            ;; This is the default list of services we
            ;; are appending to.
