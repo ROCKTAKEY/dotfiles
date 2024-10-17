@@ -867,7 +867,22 @@ cases."
 (mmic python
   :custom
   ((python-shell-interpreter . "poetry")
-   (python-shell-interpreter-args . "run python -i")))
+   (python-shell-interpreter-args . "run python -i"))
+  :define-key-after-load
+  ((python-ts-mode-map
+    ("M-a" . #'indent-tools-goto-parent)
+    ("M-e" . #'indent-tools-goto-child)
+    ("M-p" . #'python-nav-backward-statement)
+    ("M-n" . #'python-nav-forward-statement)
+    ("C-M-n" . #'indent-tools-goto-next-sibling)
+    ("C-M-p" . #'indent-tools-goto-previous-sibling))
+   (python-mode-map
+    ("M-a" . #'indent-tools-goto-parent)
+    ("M-e" . #'indent-tools-goto-child)
+    ("M-p" . #'python-nav-backward-statement)
+    ("M-n" . #'python-nav-forward-statement)
+    ("C-M-n" . #'indent-tools-goto-next-sibling)
+    ("C-M-p" . #'indent-tools-goto-previous-sibling))))
 
 (mmic cwl-mode)
 
@@ -1041,7 +1056,23 @@ cases."
     ("C-M-p" . #'org-metadown)
     ("C-M-n" . #'org-metaup)
     ("C-M-<non-convert>" . #'org-meta-return)
-    ("<windows>" . #'org-cycle))))
+    ("<windows>" . #'org-cycle)))
+  :eval
+  ((defun ad:org-link--file-link-to-here ()
+     "Return as (LINK . DESC) a file link with search string to here."
+     (let ((link (concat "file:"
+                         (abbreviate-file-name
+                          (buffer-file-name (buffer-base-buffer)))))
+           desc)
+       (when org-link-context-for-files
+         (pcase (org-link-precise-link-target)
+           (`nil nil)
+           (`(,_search-string ,search-desc ,position)
+            (setq link (format "%s::%s" link (line-number-at-pos position)))
+            (setq desc search-desc))))
+       (cons link desc))))
+  :eval-after-load
+  ((advice-add #'org-link--file-link-to-here :override #'ad:org-link--file-link-to-here)))
 
 (mmic* org-agenda
   :define-key
@@ -1747,7 +1778,7 @@ cases."
   (( my-hydra nil
      ("Magit"
       (("w" magit-wip-log "Wip commit")
-       ("b" magit-blame "Blame")))))
+       ("g" magit-file-dispatch "Magit")))))
   :mode-hydra+
   (( text-mode (:color pink)
      ("Browse commit message"
@@ -1846,10 +1877,14 @@ cases."
   ((bm-repository-file
     . (expand-file-name "etc/.bm-repository" user-emacs-directory))
    (bm-buffer-persistence . t))
-  :define-key-general
-  ((override
-    ("C-M-n" . #'bm-next)
-    ("C-M-p" . #'bm-previous)))
+  :pretty-hydra+
+  (( my-hydra nil
+     ("Bookmark"
+      (("m" bm-toggle "Toggle Bookmark" : color pink)
+       ("M-n" bm-next "Next" :color pink)
+       ("M-p" bm-previous  "Previous" :color pink)
+       ("b" bm-show "Show")
+       ("B" bm-show-all "Show All")))))
   :hook
   ((after-init-hook . #'bm-repository-load)
    (find-file-hook  . #'bm-buffer-restore)
@@ -1971,11 +2006,7 @@ cases."
     ("M-h" . #'sp-backward-delete-word)
     ("C-M-h" . #'sp-backward-delete-sexp)
     ("M-k" . #'sp-kill-sexp)
-    ("M-l" . #'sp-backward-kill-sexp)
-    ("M-a" . #'sp-backward-up-sexp)
-    ("M-e" . #'sp-down-sexp)
-    ("M-p" . #'sp-beginning-of-previous-sexp)
-    ("M-n" . #'sp-beginning-of-next-sexp)))
+    ("M-l" . #'sp-backward-kill-sexp)))
   :mykie
   ((global-map
     ("C-w" :default sp-kill-sexp :region kill-region)
@@ -2351,9 +2382,19 @@ See also `sp-kill-hybrid-sexp' examples."
     . '((python function_definition class_definition for_statement
                 if_statement with_statement while_statement))))
   :hook ((python-mode-hook . #'indent-bars-mode)
+         (python-ts-mode-hook . #'indent-bars-mode)
          (yaml-mode-hook . #'indent-bars-mode))
   :eval
   ((require 'indent-bars-ts)))
+
+(mmic indent-tools
+  :autoload-interactive
+  (indent-tools-goto-parent
+   indent-tools-goto-child
+   python-nav-backward-statement
+   python-nav-forward-statement
+   indent-tools-goto-next-sibling
+   indent-tools-goto-previous-sibling))
 
 (mmic highlight-defined
   :hook
