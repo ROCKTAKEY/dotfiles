@@ -682,6 +682,10 @@ cases."
   :hook
   ((shell-mode-hook . #'shell-imenu-setup)))
 
+(mmic direnv
+  :eval
+  ((direnv-mode)))
+
 (mmic lsp-mode
   :hook ((tex-mode-hook . #'lsp)
          (latex-mode-hook . #'lsp)
