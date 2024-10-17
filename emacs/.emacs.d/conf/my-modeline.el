@@ -10,7 +10,6 @@
 (defconst my:color-battery-danger               "#ff0000")
 (defconst my:color-battery-middle               "#dddd00")
 (defconst my:color-battery-safe                 "#32cd32")
-(defconst my:color-view-mode-enabled            "#2e8b57")
 (defconst my:color-modeline-background          "maroon4")
 (defconst my:color-modeline-foreground          "#fffacd")
 (defconst my:color-modeline-inactive-background "thistle4")
@@ -259,11 +258,5 @@
  :foreground my:color-modeline-foreground
  :background my:color-modeline-inactive-background
  :box nil)
-
-(make-face 'mode-line-view-mode-enabled)
-(set-face-attribute
- 'mode-line-view-mode-enabled nil
- :foreground my:color-modeline-foreground
- :background my:color-view-mode-enabled)
 
 (provide 'my-modeline)
