@@ -956,7 +956,8 @@ cases."
      ("Org"
       (("l" org-store-link)))))
   :custom
-  ((org-agenda-sticky . t)
+  ((org-return-follows-link . t)
+   (org-agenda-sticky . t)
    (org-directory . my-org-directory)
    (org-log-done . 'time)
    (org-default-notes-file . (expand-file-name "inbox.org" my-org-directory))
@@ -1038,8 +1039,7 @@ cases."
     ("C-M-p" . #'org-metadown)
     ("C-M-n" . #'org-metaup)
     ("C-M-<non-convert>" . #'org-meta-return)
-    ("<windows>" . #'org-cycle)))
-  )
+    ("<windows>" . #'org-cycle))))
 
 (mmic* org-agenda
   :define-key
