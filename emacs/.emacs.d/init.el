@@ -955,6 +955,8 @@ cases."
   (( my-hydra nil
      ("Org"
       (("l" org-store-link)))))
+  :autoload-interactive
+  (org-store-link)
   :custom
   ((org-return-follows-link . t)
    (org-agenda-sticky . t)
@@ -1085,6 +1087,8 @@ cases."
 (mmic org-commentary
   :autoload-interactive
   (org-commentary-update))
+
+(mmic orgit)
 
 (mmic org-appear
   :hook
