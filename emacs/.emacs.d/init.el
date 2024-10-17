@@ -2431,21 +2431,7 @@ See also `sp-kill-hybrid-sexp' examples."
 (mmic view
   :define-key
   ((global-map
-    ("<f9>" . view-mode)))
-  :eval
-  ((defvar view-mode-off-hook nil)
-   (defun my:view-mode-off-hook (&rest _)
-     (run-hooks 'view-mode-off-hook))
-   (advice-add #'view--disable :after #'my:view-mode-off-hook)
-   (defun my:view-color ()
-     (if view-mode
-         (face-remap-add-relative 'mode-line
-                                  :background my:color-view-mode-enabled)
-       (face-remap-add-relative 'mode-line
-                                :background my:color-modeline-background))))
-  :hook
-  ((view-mode-hook .  #'my:view-color)
-   (view-mode-off-hook . #'my:view-color)))
+    ("<f9>" . view-mode))))
 
 (mmic hideshow
   :hook
