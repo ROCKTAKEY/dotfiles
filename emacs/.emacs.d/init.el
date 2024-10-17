@@ -1479,6 +1479,11 @@ cases."
 (mmic apheleia
   :custom
   ((apheleia-formatters-respect-indent-level . nil))
+  :eval-after-load
+  ((mapc
+    (apply-partially #'add-to-list 'apheleia-mode-alist)
+    '((python-mode . ruff)
+      (python-ts-mode . ruff))))
   :eval
   ((apheleia-global-mode)))
 
