@@ -24,17 +24,33 @@
 (defun my-copy-file-name-with-absolute-path ()
   "Add absolute path to `kill-ring'."
   (interactive)
-  (message "Copy \"%s\"" (kill-new (buffer-file-name))))
+  (let ((filename (buffer-file-name)))
+    (kill-new filename)
+    (message "Copy \"%s\"" filename)))
 
 (defun my-copy-file-name ()
   "Add file name to `kill-ring'."
   (interactive)
-  (message "Copy \"%s\"" (kill-new (file-name-nondirectory (buffer-file-name)))))
+  (let ((filename (file-name-nondirectory (buffer-file-name))))
+    (kill-new filename)
+    (message "Copy \"%s\"" filename)))
 
 (defun my-copy-directory ()
   "Add directory name to `kill-ring'."
   (interactive)
-  (message "Copy \"%s\"" (kill-new (file-name-directory (buffer-file-name)))))
+  (let ((filename (file-name-directory (buffer-file-name))))
+    (kill-new filename)
+    (message "Copy \"%s\"" filename)))
+
+(defun my-copy-file-relative-to-project ()
+  "Add to `kill-ring' file path relative to project root."
+  (interactive)
+  (require 'project)
+  (when-let* ((project (project-current))
+              (filename (file-relative-name (buffer-file-name)
+                                            (project-root project))))
+    (kill-new filename)
+    (message "Copy \"%s\"" filename)))
 
 (defun download-all (url-list dir)
   "Download all files from url in URL-LIST in directory DIR."
@@ -168,9 +184,10 @@ to FUNCTION as Nth argument, and rest of arguments are choosed from LISTS."
 (mmic pretty-hydra
   :pretty-hydra+
   (( my-hydra (:color blue)
-     ("File/Directory"
+     ("Copy Path"
       (("f" my-copy-file-name "File Name")
-       ("p" my-copy-file-name-with-absolute-path "Path")
+       ("p" my-copy-file-relative-to-project "Relative to Project")
+       ("a" my-copy-file-name-with-absolute-path "Absolute")
        ("d" my-copy-directory "Directory")))))
   :define-key
   ((global-map
@@ -1714,7 +1731,8 @@ cases."
   :pretty-hydra+
   (( my-hydra nil
      ("Magit"
-      (("w" magit-wip-log "Show wip commit log")))))
+      (("w" magit-wip-log "Wip commit")
+       ("b" magit-blame "Blame")))))
   :mode-hydra+
   (( text-mode (:color pink)
      ("Browse commit message"
