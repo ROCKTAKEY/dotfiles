@@ -676,7 +676,8 @@ cases."
   :define-key-after-load
   ((lsp-mode-map
     ("M-r" . #'lsp-rename)
-    ("M-c" . #'lsp-execute-code-action)))
+    ("M-c" . #'lsp-execute-code-action)
+    ("M-u" . #'lsp-hydra/body)))
   :custom
   ((lsp-session-file
     . (expand-file-name
@@ -688,6 +689,19 @@ cases."
   :custom-after-load
   ((lsp--formatting-indent-alist . (cons '(web-mode . web-mode-code-indent-offset)
                                          (default-value 'lsp--formatting-indent-alist))))
+  :pretty-hydra
+  (( lsp-hydra nil
+     ("Edit"
+      (("r" lsp-rename "Rename symbol"))
+      "Find"
+      (("." xref-goto-xref "Goto definition")
+       ("," lsp-find-references "Goto reference")
+       ("s" consult-lsp-file-symbols "Search symbol in file")
+       ("S" consult-lsp-symbols "Search symbol in workspace")
+       ("l" lsp-ui-imenu "Imenu"))
+      "Error"
+      (("e" consult-lsp-diagnostics "Find error")
+       ("E" lsp-treemacs-errors-list "List error")))))
   :eval
   (
    ;; shut-up view-mode message on lsp-mode.
@@ -914,6 +928,10 @@ cases."
       (("C-p" org-previous-visible-heading "Previous")
        ("C-n" org-next-visible-heading "Next")
        ("C-u" outline-up-heading "Parent")))))
+  :pretty-hydra+
+  (( my-hydra nil
+     ("Org"
+      (("l" org-store-link)))))
   :custom
   ((org-agenda-sticky . t)
    (org-directory . my-org-directory)
