@@ -1523,8 +1523,8 @@ cases."
   :eval-after-load
   ((mapc
     (apply-partially #'add-to-list 'apheleia-mode-alist)
-    '((python-mode . ruff)
-      (python-ts-mode . ruff))))
+    '((python-mode . (ruff ruff-isort))
+      (python-ts-mode . (ruff ruff-isort)))))
   :eval
   ((apheleia-global-mode)))
 
