@@ -747,8 +747,20 @@ cases."
       (lsp-pylsp-plugins-rope-autoimport-enabled . t)))
 
    (mmic lsp-pyright
+     :require t
      :custom
-     ((lsp-pyright-langserver-command . "basedpyright")))))
+     ((lsp-pyright-langserver-command . "basedpyright")
+      (lsp-pyright-basedpyright-inlay-hints-generic-types . t))
+     :eval
+     ((defcustom lsp-pyright-basedpyright-inlay-hints-generic-types nil
+        "Whether to show inlay hints on inferred generic types.
+
+Basedpyright only."
+        :type 'boolean
+        :group 'lsp-pyright))
+     :eval-after-load
+     ((lsp-register-custom-settings
+       `(("basedpyright.analysis.inlayHints.genericTypes" lsp-pyright-basedpyright-inlay-hints-generic-types t)))))))
 
 (mmic dap-mode
   :custom
