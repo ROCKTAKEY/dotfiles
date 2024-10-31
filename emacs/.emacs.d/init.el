@@ -1533,10 +1533,17 @@ Basedpyright only."
   :custom
   ((apheleia-formatters-respect-indent-level . nil))
   :eval-after-load
-  ((mapc
+  ((add-to-list
+    'apheleia-formatters
+    '(ruff-check . ("ruff" "check"
+                    "-n"
+                    "--fix" "--fix-only"
+                    "--stdin-filename" filepath
+                    "-")))
+   (mapc
     (apply-partially #'add-to-list 'apheleia-mode-alist)
-    '((python-mode . (ruff ruff-isort))
-      (python-ts-mode . (ruff ruff-isort)))))
+    '((python-mode . (ruff ruff-isort ruff-check))
+      (python-ts-mode . (ruff ruff-isort ruff-check)))))
   :eval
   ((apheleia-global-mode)))
 
