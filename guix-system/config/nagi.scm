@@ -12,12 +12,17 @@
 (use-modules (gnu)
              (gnu packages fonts)
              (gnu packages gnome)
-             (roquix services tailscale))
+             (roquix services tailscale)
+             (nongnu packages linux)
+             (nongnu system linux-initrd))
 (use-service-modules cups desktop networking ssh xorg docker virtualization syncthing nix)
 (use-package-modules package-management)
 
 
 (operating-system
+  (kernel linux)
+  (initrd microcode-initrd)
+  (firmware (list linux-firmware))
   (locale "ja_JP.utf8")
   (timezone "Asia/Tokyo")
   (keyboard-layout (keyboard-layout "jp"
