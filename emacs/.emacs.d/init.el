@@ -1311,6 +1311,35 @@ Basedpyright only."
 
 (mmic clojure-mode)
 
+(mmic scheme
+  :eval-after-load
+  ((defun geiser-switch-to-module-current-buffer ()
+     (when-let ((module (geiser-guile--get-module))
+                (cmd (geiser-repl--enter-cmd geiser-impl--implementation module)))
+       (cl-letf (((symbol-function 'switch-to-buffer) #'set-buffer)
+                 ((symbol-function 'switch-to-buffer-other-window) #'set-buffer))
+         (save-current-buffer
+           (geiser-repl-switch)
+           (geiser-repl--send cmd))))))
+
+  :mode-hydra
+  (( scheme-mode (:title "Scheme Mode")
+     ("Eval"
+      (("b" geiser-eval-buffer "Eval Buffer")
+       ("r" geiser-eval-region "Eval Region"))
+      "Edit"
+      (("s" string-edit-at-point "Edit string"))
+      "Debug"
+      (("e" macrostep-expand "Expand")
+       ("c" macrostep-collapse "Collapse"))
+      "REPL"
+      (("g" geiser-mode-switch-to-repl "Open REPL")
+       ("m" geiser-repl-switch-to-module "Switch module"))))))
+
+(mmic flymake-guile
+  :hook
+  ((scheme-mode-hook . #'flymake-guile)))
+
 (mmic adoc-mode)
 
 (mmic rust-mode)
