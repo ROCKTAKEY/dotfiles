@@ -1302,9 +1302,7 @@ Basedpyright only."
 
 (mmic geiser)
 
-(mmic geiser-guile
-  :custom
-  ((geiser-guile-load-path . '("~/rhq/git.savannah.gnu.org/guix/"))))
+(mmic geiser-guile)
 
 (mmic macrostep-geiser
   :hook
