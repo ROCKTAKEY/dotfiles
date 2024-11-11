@@ -1277,8 +1277,8 @@ Basedpyright only."
   :mode-hydra
   (( emacs-lisp-mode (:title "Emacs Lisp Mode")
      ("Eval"
-      (("b" eval-buffer "Eval Buffer")
-       ("r" eval-buffer "Eval region"))
+      (("b" eval-buffer "Eval buffer")
+       ("r" eval-region "Eval region"))
       "Edit"
       (("s" string-edit-at-point "Edit string")
        ("l" edit-list "Edit list"))
