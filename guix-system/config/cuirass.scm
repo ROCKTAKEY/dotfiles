@@ -74,6 +74,7 @@
 
                  (service tailscale-service-type)
 
+                 (service unattended-upgrade-service-type)
                  (service cuirass-service-type
                           (cuirass-configuration
                            (specifications %cuirass-specs)
