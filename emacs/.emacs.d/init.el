@@ -406,6 +406,12 @@ how long to wait for a response before giving up."
      (setq url-proxy-services `(("http" . ,server-name)))
      (setenv "http_proxy" server-name))))
 
+(mmic browse-url
+  :pretty-hydra+
+  (( my-hydra nil
+     ("URL"
+      (("u" browse-url-xdg-open "Open URL"))))))
+
 (mmic eww
   :define-key-after-load
   ((eww-mode-map
@@ -1441,6 +1447,10 @@ Basedpyright only."
   :define-key
   ((global-map
     ("C-x p s" . #'mistty-in-project-other-window-with-name)))
+  :pretty-hydra+
+  (( my-hydra nil
+     ("Mistty"
+      (("!" mistty-create "Create")))))
   :autoload-noninteractive
   (mistty-list-live-buffers)
   :eval
