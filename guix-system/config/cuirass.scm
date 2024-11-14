@@ -11,7 +11,7 @@
 ;; used in this configuration.
 (use-modules (gnu)
              (roquix services tailscale))
-(use-service-modules cups cuirass desktop networking ssh web xorg admin)
+(use-service-modules cups cuirass desktop networking ssh web xorg admin virtualization)
 
 (define %cuirass-specs
   #~(list
