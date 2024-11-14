@@ -75,6 +75,7 @@
                  (service tailscale-service-type)
 
                  (service unattended-upgrade-service-type)
+                 (service qemu-guest-agent-service-type)
                  (service cuirass-service-type
                           (cuirass-configuration
                            (specifications %cuirass-specs)
