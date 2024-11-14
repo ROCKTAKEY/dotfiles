@@ -1302,7 +1302,9 @@ Basedpyright only."
 
 (mmic geiser)
 
-(mmic geiser-guile)
+(mmic geiser-guile
+  :custom
+  ((geiser-guile-load-path . (list (expand-file-name "~/.config/guix/current/share/guile/site/3.0")))))
 
 (mmic macrostep-geiser
   :hook
