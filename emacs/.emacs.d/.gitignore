@@ -18,3 +18,4 @@ eln-cache
 flycheck_*.el
 projects
 tramp
+tree-sitter
