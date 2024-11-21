@@ -777,7 +777,8 @@ Basedpyright only."
   :hook ((lsp-mode-hook . #'lsp-ui-mode))
   :custom
   ((lsp-ui-sideline-ignore-duplicate . t)
-   (lsp-ui-sideline-show-hover . t)))
+   (lsp-ui-sideline-show-hover . t)
+   (lsp-ui-sideline-show-code-actions . t)))
 
 (mmic consult-lsp
   :require-after ((lsp . (consult-lsp))))
