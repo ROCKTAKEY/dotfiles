@@ -714,7 +714,8 @@ cases."
        user-emacs-directory))
    (lsp-log-io . nil)
    (lsp-log-max . nil)
-   (lsp-inlay-hint-enable . t))
+   (lsp-inlay-hint-enable . t)
+   (lsp-ruff-log-level . "info"))
   :custom-after-load
   ((lsp--formatting-indent-alist . (cons '(web-mode . web-mode-code-indent-offset)
                                          (default-value 'lsp--formatting-indent-alist))))
@@ -743,14 +744,6 @@ cases."
   :eval-after-load
   ((mmic lsp-latex
      :require t)
-
-   (mmic* lsp-pylsp
-     :custom
-     ((lsp-pylsp-configuration-sources . ["flake8"])
-      (lsp-pylsp-plugins-ruff-enabled . t)
-      (lsp-pylsp-plugins-mypy-enabled . t)
-      (lsp-pylsp-plugins-mypy-report-progress . t)
-      (lsp-pylsp-plugins-rope-autoimport-enabled . t)))
 
    (mmic lsp-pyright
      :require t
