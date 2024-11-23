@@ -1605,7 +1605,8 @@ Basedpyright only."
   ((minibuffer-mode-map
     ("<f1> <f1>" . #'consult-narrow-help)))
   :custom
-  ((xref-show-xrefs-function . #'consult-xref))
+  ((xref-show-xrefs-function . #'consult-xref)
+   (consult-line-start-from-top . t))
   :eval-after-load
   ((defun consult-ripgrep-without-ignoring ()
      (interactive)
