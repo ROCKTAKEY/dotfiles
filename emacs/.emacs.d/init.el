@@ -1619,6 +1619,8 @@ Basedpyright only."
 ;;   (("M-g e" . consult-flycheck)))
 
 (mmic embark
+  :custom
+  ((embark-mixed-indicator-delay . 0))
   :define-key
   ((global-map
     ("C-." . #'embark-act)
