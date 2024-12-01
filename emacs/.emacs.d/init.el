@@ -732,15 +732,6 @@ cases."
       "Error"
       (("e" consult-lsp-diagnostics "Find error")
        ("E" lsp-treemacs-errors-list "List error")))))
-  :eval
-  (
-   ;; shut-up view-mode message on lsp-mode.
-   (defun ad:view-lsp (orig &rest aaa)
-     (if (string= (buffer-name) " *temp*")
-         (shut-up
-           (apply orig aaa))
-       (apply orig aaa)))
-   (advice-add #'view-mode-enter :around #'ad:view-lsp))
   :eval-after-load
   ((mmic lsp-latex
      :require t)
