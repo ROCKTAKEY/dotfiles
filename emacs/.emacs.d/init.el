@@ -762,7 +762,9 @@ Basedpyright only."
   :custom
   ((lsp-ui-sideline-ignore-duplicate . t)
    (lsp-ui-sideline-show-hover . t)
-   (lsp-ui-sideline-show-code-actions . t)))
+   (lsp-ui-sideline-show-code-actions . t)
+   (lsp-ui-sideline-code-actions-prefix . "💡 ")
+   (lsp-auto-execute-action . nil)))
 
 (mmic consult-lsp
   :require-after ((lsp . (consult-lsp))))
