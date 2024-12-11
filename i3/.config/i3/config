@@ -195,9 +195,6 @@ gaps inner 10px
 
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 
-exec-always --no-startup-id xinput set-prop 'ELECOM CO., LTD. ELECOM OpticalMouse' 'libinput Accel Speed' -0.8
-exec_always --no-startup-id xmodmap $HOME/.Xmodmap
-
 exec --no-startup-id xset dpms 0 0 0
 exec --no-startup-id xset s off
 

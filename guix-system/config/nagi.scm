@@ -68,7 +68,16 @@
                  (service enlightenment-desktop-service-type)
                  (service cups-service-type)
                  (set-xorg-configuration
-                  (xorg-configuration (keyboard-layout keyboard-layout)))
+                  (xorg-configuration
+                   (keyboard-layout keyboard-layout)
+                   (extra-config (list "
+Section \"InputClass\"
+  Identifier \"Change Mouse Speed\"
+  MatchDriver \"libinput\"
+  MatchProduct \"ELECOM CO., LTD. ELECOM OpticalMouse\"
+  Option \"AccelSpeed\" \"-0.8\"
+EndSection
+"))))
 
                  (service iptables-service-type
                           (iptables-configuration
