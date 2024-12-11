@@ -2352,7 +2352,7 @@ See also `sp-kill-hybrid-sexp' examples."
           (file-name-directory (locate-file "cmigemo.exe" exec-path))))
         (`darwin
          (expand-file-name
-          "dict/utf-8/migemo-dict"
+          "../share/migemo/utf-8/migemo-dict"
           (file-name-directory (locate-file "cmigemo" exec-path))))
         (_ (cl-some (lambda (arg) (when (file-exists-p arg) (expand-file-name arg)))
                     '("/usr/share/cmigemo/utf-8/migemo-dict"
