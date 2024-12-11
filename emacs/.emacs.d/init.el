@@ -897,7 +897,7 @@ Basedpyright only."
 
 (mmic markdown-mode)
 
-(mmic casual-calc
+(mmic casual
   :define-key-after-load
   ((calc
     (calc-mode-map
