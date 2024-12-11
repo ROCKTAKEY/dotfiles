@@ -198,6 +198,8 @@ to FUNCTION as Nth argument, and rest of arguments are choosed from LISTS."
   ((major-mode-hydra-invisible-quit-key . "q"))
   :define-key
   ((global-map
+    ("M-q" . #'major-mode-hydra))
+   (prog-mode-map
     ("M-q" . #'major-mode-hydra))))
 
 (mmic general)
