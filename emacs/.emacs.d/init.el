@@ -1524,7 +1524,7 @@ Basedpyright only."
   ((flymake-elisp-config-global-mode)
    (flymake-elisp-config-auto-mode)))
 
-(when (version< emacs-version "29.1")
+(when (version< "29.1" emacs-version)
   (mmic flymake-shellcheck
     :hook
     ((sh-mode-hook . #'flymake-shellcheck-load))))
