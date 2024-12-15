@@ -1504,7 +1504,16 @@ Basedpyright only."
   :custom
   ((eldoc-idle-delay . 1)
    (eldoc-echo-area-use-multiline-p . t)
-   (eldoc-documentation-strategy . #'eldoc-documentation-compose-eagerly)))
+   (eldoc-documentation-strategy . #'eldoc-documentation-compose-eagerly))
+  :eval-after-load
+  ((eldoc-add-command #'jaword-forward
+                      #'jaword-backward
+                      #'magit-next-line
+                      #'magit-previous-line
+                      #'magit-section-forward
+                      #'magit-section-backward
+                      #'magit-section-forward-sibling
+                      #'magit-section-backward-sibling)))
 
 (mmic eldoc-diffstat
   :hook
