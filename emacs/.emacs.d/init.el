@@ -2540,7 +2540,7 @@ See also `sp-kill-hybrid-sexp' examples."
   (( my-hydra (:color blue)
      ("Hide/Show"
       (("t" hs-toggle-hiding "Toggle")
-       ("S" hs-show-all "Show All")
+       ("s" hs-show-all "Show All")
        ("h" hs-hide-level "Hide Level")
        ("H" hs-hide-all "Hide All")))))
   :eval
@@ -2550,11 +2550,7 @@ See also `sp-kill-hybrid-sexp' examples."
   :define-key-after-load
   ((hs-minor-mode-map
     ("C-\\" . #'hs-toggle-hiding)
-    ("C-_" . #'hs-toggle-hiding)
-    ("M-s s" . #'hs-show-all)))
-  :eval-after-load
-  ((mykie:define-key hs-minor-mode-map "M-s h"
-     :default my-hs-hide-level :C-u hs-hide-all)))
+    ("C-_" . #'hs-toggle-hiding))))
 
 (mapc
  (lambda (arg)
