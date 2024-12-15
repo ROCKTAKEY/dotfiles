@@ -1506,6 +1506,11 @@ Basedpyright only."
    (eldoc-echo-area-use-multiline-p . t)
    (eldoc-documentation-strategy . #'eldoc-documentation-compose-eagerly)))
 
+(mmic eldoc-diffstat
+  :hook
+  ((magit-mode-hook . #'eldoc-diffstat-setup)
+   (magit-blame-mode-hook . #'eldoc-diffstat-setup)))
+
 ;; (leaf flycheck
 ;;   :defun (global-flycheck-mode flycheck-error-message)
 ;;   :global-minor-mode global-flycheck-mode
