@@ -1685,15 +1685,13 @@ Basedpyright only."
 
 (mmic orderless
   :custom
-  ((completion-styles . '(orderless basic))
+  ((completion-styles . '(orderless))
    (completion-category-overrides
     .
     '(
-      ;; https://github.com/minad/vertico#tramp-hostname-and-username-completion
-      ;; For ssh hostname and username completion, the order basic -> orderless is used.
-      (file (styles basic orderless-migemo partial-completion))
-      (consult-location (styles orderless-migemo basic partial-completion))
-      (consult-org-heading (styles orderless-migemo basic partial-completion)))))
+      (file (styles orderless-migemo partial-completion))
+      (consult-location (styles orderless-migemo partial-completion))
+      (consult-org-heading (styles orderless-migemo partial-completion)))))
   :eval-after-load
   (
    ;; 1 character migemo regexp is too long
