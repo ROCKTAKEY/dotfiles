@@ -1515,21 +1515,6 @@ Basedpyright only."
   ((magit-mode-hook . #'eldoc-diffstat-setup)
    (magit-blame-mode-hook . #'eldoc-diffstat-setup)))
 
-;; (leaf flycheck
-;;   :defun (global-flycheck-mode flycheck-error-message)
-;;   :global-minor-mode global-flycheck-mode
-;;   :custom
-;;   (((flycheck-display-errors-function
-;;      . 'flycheck-display-error-messages))
-;;    (flycheck-idle-change-delay . 2)
-;;    (flycheck-check-syntax-automatically
-;;     . '(save idle-change new-line mode-enabled))
-;;    (flycheck-disabled-checkers
-;;     ;; too late
-;;     . '(emacs-lisp-checkdoc
-;;         ;; no include file
-;;         c/c++-clang))))
-
 (mmic flymake
   :hook
   ((prog-mode-hook . #'flymake-mode)))
