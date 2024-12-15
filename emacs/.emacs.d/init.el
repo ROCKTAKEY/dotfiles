@@ -1597,7 +1597,9 @@ Basedpyright only."
 
 (mmic embark
   :custom
-  ((embark-mixed-indicator-delay . 0))
+  ((embark-mixed-indicator-delay . 0)
+   (embark-target-finders . (append (cl-remove #'embark-target-flymake-at-point embark-target-finders)
+                                    (list #'embark-target-flymake-at-point))))
   :define-key
   ((global-map
     ("C-." . #'embark-act)
