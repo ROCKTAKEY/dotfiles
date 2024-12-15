@@ -1599,10 +1599,6 @@ Basedpyright only."
        (consult-ripgrep)))
    (add-to-list 'consult-buffer-sources 'rhq-consult-source-project-directory 'append)))
 
-;; (leaf consult-flycheck
-;;   :bind
-;;   (("M-g e" . consult-flycheck)))
-
 (mmic embark
   :custom
   ((embark-mixed-indicator-delay . 0))
