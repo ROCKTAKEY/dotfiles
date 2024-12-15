@@ -2438,9 +2438,11 @@ See also `sp-kill-hybrid-sexp' examples."
   :hook
   ((emacs-lisp-mode-hook . #'highlight-defined-mode)))
 
-(mmic volatile-highlights
-  :eval
-  ((volatile-highlights-mode)))
+(mmic goggles
+  :hook ((prog-mode-hook . #'goggles-mode)
+         (text-mode-hook . #'goggles-mode))
+  :custom
+  ((goggles-pulse . nil)))
 
 (mmic whitespace
   :custom
