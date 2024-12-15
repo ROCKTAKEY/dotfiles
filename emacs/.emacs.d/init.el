@@ -1362,10 +1362,6 @@ Basedpyright only."
   :custom
   ((gud-gdb-command-name . "gdb -i=mi")))
 
-;; (mmic coterm
-;;   :eval
-;;   ((coterm-mode)))
-
 (mmic* comint
   :custom
   ((comint-scroll-show-maximum-output . t)))
