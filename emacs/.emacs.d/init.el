@@ -1534,10 +1534,6 @@ Basedpyright only."
   ((yaml-mode-hook . #'flymake-actionlint-action-load-when-actions-file)
    (yaml-ts-mode-hook . #'flymake-actionlint-action-load-when-actions-file)))
 
-(mmic flylisp
-  :hook
-  ((lisp-mode-hook . #'flylisp-mode)))
-
 (mmic flyspell
   :mykie
   ((global-map
