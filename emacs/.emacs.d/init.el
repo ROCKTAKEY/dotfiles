@@ -1427,11 +1427,6 @@ Basedpyright only."
          (otherwise
           (consult-buffer '(term-project-consult-source))))))))
 
-(mmic eat
-  :define-key
-  ((global-map
-    ("C-x p s" . #'eat-project-other-window))))
-
 (mmic mistty
   :define-key
   ((global-map
