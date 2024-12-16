@@ -1678,6 +1678,7 @@ Basedpyright only."
     ("M-h" . #'vertico-directory-up))))
 
 (mmic orderless
+  :require t
   :custom
   ((completion-styles . '(orderless))
    (completion-category-overrides
