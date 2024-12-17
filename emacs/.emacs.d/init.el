@@ -1600,13 +1600,16 @@ Basedpyright only."
   ((embark-mixed-indicator-delay . 0)
    (embark-target-finders . (append (cl-remove #'embark-target-flymake-at-point embark-target-finders)
                                     (list #'embark-target-flymake-at-point))))
-  :define-key
-  ((global-map
+  :define-key-general
+  ((override
     ("C-." . #'embark-act)
     ("M-." . #'embark-dwim)
     ("<help> B" . #'embark-bindings)))
   :define-key-after-load
-  ((embark-file-map
+  ((embark-general-map
+    ("C-s" . #'consult-line)
+    ("C-r" . #'consult-ripgrep))
+   (embark-file-map
     ("o" . (my/embark-ace-action find-file))
     ("2" . (my/embark-split-action find-file split-window-below))
     ("3" . (my/embark-split-action find-file split-window-right))
