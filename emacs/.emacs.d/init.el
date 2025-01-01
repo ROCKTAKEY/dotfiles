@@ -899,12 +899,6 @@ Basedpyright only."
 
 (mmic markdown-mode)
 
-(mmic casual
-  :define-key-after-load
-  ((calc
-    (calc-mode-map
-     ("?" . #'casual-calc-tmenu)))))
-
 (mmic jq-mode
   :mode-hydra
   (( javascript-mode ()
