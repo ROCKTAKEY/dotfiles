@@ -701,7 +701,8 @@ cases."
          (javascript-mode-hook . #'lsp)
          (typescript-ts-mode-hook . #'lsp)
          (python-mode-hook . #'lsp)
-         (python-ts-mode-hook . #'lsp))
+         (python-ts-mode-hook . #'lsp)
+         (terraform-mode-hook . #'lsp))
   :declare-function (lsp-register-client make-lsp-client lsp-stdio-connection)
   :defvar-noninitial (lsp--formatting-indent-alist)
   :define-key-after-load
