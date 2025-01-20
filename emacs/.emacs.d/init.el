@@ -721,7 +721,10 @@ cases."
    (lsp-enable-links . t)
    (lsp-semantic-tokens-enable . t)
    (lsp-semantic-tokens-honor-refresh-requests . t)
+   (lsp-eldoc-render-all . t)
+
    (lsp-ruff-log-level . "info")
+
    (lsp-terraform-ls-enable-show-reference . t)
    (lsp-terraform-ls-enable-show-reference . t)
    (lsp-terraform-ls-prefill-required-fields . t)
