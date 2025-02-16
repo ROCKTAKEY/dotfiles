@@ -37,7 +37,9 @@
                   (comment "ROCKTAKEY")
                   (group "users")
                   (home-directory "/home/rocktakey")
-                  (supplementary-groups '("wheel" "netdev" "audio" "video" "docker" "kvm" "libvirt")))
+                  (supplementary-groups '("wheel" "netdev" "audio" "video" "docker" "kvm" "libvirt"
+                                          ;; Use xremap without sudo
+                                          "input")))
                 %base-user-accounts))
 
   ;; Packages installed system-wide.  Users can also install packages
@@ -167,7 +169,17 @@ COMMIT
                               (vpn-plugins (list
                                             network-manager-openvpn
                                             network-manager-vpnc
-                                            network-manager-openconnect)))))))
+                                            network-manager-openconnect))))
+                            (udev-service-type
+                             config =>
+                             (udev-configuration
+                              (inherit config)
+                              (rules
+                               (list
+                                ;; Use xremap without sudo
+                                (udev-rule
+                                 "50-xremap.rules"
+                                 "KERNEL==\"uinput\", GROUP=\"input\", TAG+=\"uaccess\""))))))))
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
                 (targets (list "/boot/efi"))

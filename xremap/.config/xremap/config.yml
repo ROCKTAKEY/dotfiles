@@ -1,0 +1,41 @@
+modmap:
+  - name: 無変換をAltに
+    remap:
+        KEY_MUHENKAN: Alt_L
+  - name: CapslockをCtrlに
+    remap:
+        KEY_CAPSLOCK: Ctrl_L
+
+keymap:
+  - name: Emacs
+    application:
+        not: [Emacs]
+    remap:
+      # Cursor
+      C-b: { with_mark: left }
+      C-f: { with_mark: right }
+      C-p: { with_mark: up }
+      C-n: { with_mark: down }
+      # Forward/Backward word
+      M-b: { with_mark: C-left }
+      M-f: { with_mark: C-right }
+      # Beginning/End of line
+      C-a: { with_mark: home }
+      C-e: { with_mark: end }
+      # Beginning/End of file
+      M-Shift-comma: { with_mark: C-home }
+      M-Shift-dot: { with_mark: C-end }
+      # Newline
+      C-m: enter
+      # Copy
+      C-w: [C-x, { set_mark: false }]
+      M-w: [C-c, { set_mark: false }]
+      # Delete
+      C-d: [delete, { set_mark: false }]
+      M-d: [C-delete, { set_mark: false }]
+      # Undo
+      C-slash: [C-z, { set_mark: false }]
+      # Mark
+      C-space: { set_mark: true }
+      # Search
+      C-s: C-f
