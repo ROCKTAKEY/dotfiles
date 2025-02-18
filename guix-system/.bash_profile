@@ -50,3 +50,5 @@ export PATH=~/.nix-profile/bin:$PATH
 
 # Prefer dark mode
 export GTK_THEME=Adwaita:dark
+
+xremap --watch=device,config ~/.config/xremap/config.yml &
