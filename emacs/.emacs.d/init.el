@@ -739,6 +739,7 @@ cases."
       "Find"
       (("." xref-goto-xref "Goto definition")
        ("," lsp-find-references "Goto reference")
+       ("t" lsp-find-type-definition "Goto type definition")
        ("s" consult-lsp-file-symbols "Search symbol in file")
        ("S" consult-lsp-symbols "Search symbol in workspace")
        ("l" lsp-ui-imenu "Imenu"))
