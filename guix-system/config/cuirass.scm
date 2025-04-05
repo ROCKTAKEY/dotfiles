@@ -11,7 +11,7 @@
 ;; used in this configuration.
 (use-modules (gnu)
              (roquix services tailscale))
-(use-service-modules cups cuirass desktop networking ssh web xorg admin virtualization)
+(use-service-modules cups cuirass desktop networking ssh web xorg admin virtualization databases)
 
 (define %cuirass-specs
   #~(list
@@ -70,6 +70,9 @@
 
                  (service unattended-upgrade-service-type)
                  (service qemu-guest-agent-service-type)
+                 (service postgresql-service-type
+                          (postgresql-configuration
+                           (postgresql (@ (gnu packages databases) postgresql-15))))
                  (service cuirass-service-type
                           (cuirass-configuration
                            (specifications %cuirass-specs)
