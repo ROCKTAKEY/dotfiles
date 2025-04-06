@@ -185,7 +185,7 @@ mode "resize" {
 }
 
 # Lock
-bindsym $mod+Ctrl+l exec "gdmflexiserver"
+bindsym $mod+Ctrl+l exec xset dpms 10 10 10 && $HOME/.config/i3/lock.sh && xset dpms 0 0 0
 
 bindsym $mod+r mode "resize"
 

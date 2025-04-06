@@ -16,7 +16,7 @@
              (nongnu packages linux)
              (nongnu system linux-initrd))
 (use-service-modules cups desktop networking ssh xorg docker virtualization syncthing nix)
-(use-package-modules package-management)
+(use-package-modules package-management wm)
 
 
 (operating-system
@@ -68,6 +68,11 @@
                  (service xfce-desktop-service-type)
                  (service mate-desktop-service-type)
                  (service enlightenment-desktop-service-type)
+                 (service screen-locker-service-type
+                          (screen-locker-configuration
+                           ;; the `name' property must be same as the name of the executable
+                           (name "i3lock")
+                           (program (file-append i3lock-color "/bin/i3lock"))))
                  (service cups-service-type)
                  (set-xorg-configuration
                   (xorg-configuration
