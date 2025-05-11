@@ -884,9 +884,6 @@ Basedpyright only."
 (mmic npm)
 
 (mmic python
-  :custom
-  ((python-shell-interpreter . "poetry")
-   (python-shell-interpreter-args . "run python -i"))
   :define-key-after-load
   ((python-ts-mode-map
     ("M-a" . #'indent-tools-goto-parent)
@@ -902,6 +899,12 @@ Basedpyright only."
     ("M-n" . #'python-nav-forward-statement)
     ("C-M-n" . #'indent-tools-goto-next-sibling)
     ("C-M-p" . #'indent-tools-goto-previous-sibling))))
+
+(mmic python-pytest
+  :mode-hydra+
+  (( python-mode ()
+     ("Pytest"
+      (("t" python-pytest-dispatch "Menu"))))))
 
 (mmic cwl-mode)
 
