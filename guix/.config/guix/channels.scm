@@ -11,9 +11,9 @@
         (name 'guix-jp)
         (url "https://gitlab.com/guix-jp/channel")
         (branch "main"))
-       (channel
-        (name 'guix-hpc-non-free)
-        (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git"))
+       ;; (channel
+       ;;  (name 'guix-hpc-non-free)
+       ;;  (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git"))
        (channel
         (name 'ccwl)
         (url "https://github.com/arunisaac/ccwl")
