@@ -1800,6 +1800,12 @@ Basedpyright only."
   ((global-map
     ("C-x C-p" . #'rhq-open-project-or-clone))))
 
+(mmic rg
+  :pretty-hydra+
+  (( my-hydra nil
+     ("Search"
+      (("r" rg-menu "Ripgrep Menu"))))))
+
 (mmic transient
   :custom
   ((transient-history-file
