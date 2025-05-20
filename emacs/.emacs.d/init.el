@@ -187,7 +187,7 @@ to FUNCTION as Nth argument, and rest of arguments are choosed from LISTS."
      ("Copy Path"
       (("f" my-copy-file-name "File Name")
        ("p" my-copy-file-relative-to-project "Relative to Project")
-       ("a" my-copy-file-name-with-absolute-path "Absolute")
+       ("/" my-copy-file-name-with-absolute-path "Absolute")
        ("d" my-copy-directory "Directory")))))
   :define-key
   ((global-map
@@ -206,9 +206,9 @@ to FUNCTION as Nth argument, and rest of arguments are choosed from LISTS."
 
 
 
-(mmic exec-path-from-shell
-  :eval
-  ((exec-path-from-shell-initialize)))
+;; (mmic exec-path-from-shell
+;;   :eval
+;;   ((exec-path-from-shell-initialize)))
 
 (defun get-wsl-user-directory ()
   "Get Windows home directory in WSL."
@@ -1671,7 +1671,22 @@ Basedpyright only."
                             (file-remote-p file 'user) "@" (file-remote-p file 'host)
                             "|sudo:root@"
                             (file-remote-p file 'host) ":" (file-remote-p file 'localname))
-                  (concat "/sudo:root@localhost:" file))))))
+                  (concat "/sudo:root@localhost:" file))))
+   (defmacro embarkize (func action)
+     (let ((target (gensym "target"))
+           (default-action (gensym "default-action")))
+       `(defun ,func ()
+          (interactive)
+          (let* ((,target (car (embark--targets)))
+                 (,default-action (embark--default-action
+                                   (plist-get ,target :type)))
+                 (,target (embark--orig-target ,target)))
+            (embark-toggle-quit)
+            (embark--become-command ,action (plist-get ,target :target))))))
+   (embarkize embarkized-find-file #'find-file)
+   (embarkize embarkized-switch-to-buffer #'switch-to-buffer)
+   (define-key minibuffer-mode-map (kbd "C-x C-f") #'embarkized-find-file)
+   (define-key minibuffer-mode-map (kbd "C-x b") #'embarkized-switch-to-buffer)))
 
 (mmic embark-consult
   :hook
@@ -2506,15 +2521,11 @@ See also `sp-kill-hybrid-sexp' examples."
      ((font-info "Courier New")
       "Courier New")
      (t (face-attribute 'default :family))))
-
-  (set-fontset-font
-   "fontset-standard"
-   'unicode
-   (font-spec :family my:font))
+  (defvar my:font-size 12)
 
   (mapc
    (lambda (arg)
-     (eval `(push '(font . "fontset-standard") ,arg)))
+     (eval `(push '(font . ,(format "%s %d" my:font my:font-size)) ,arg)))
    '(initial-frame-alist
      default-frame-alist))
 
