@@ -2252,6 +2252,14 @@ See also `sp-kill-hybrid-sexp' examples."
    (add-to-list 'Info-directory-list
                 (expand-file-name "info/" user-emacs-directory))))
 
+(mmic aidermacs
+  :custom
+  ((aidermacs-show-diff-after-change . nil))
+  :pretty-hydra+
+  (( my-hydra ()
+     ("Aider"
+      (("a" aidermacs-transient-menu "Aider"))))))
+
 (defcustom my-deepl-api-key nil
   "My DeepL API key.")
 
