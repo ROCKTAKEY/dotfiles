@@ -902,9 +902,10 @@ Basedpyright only."
 
 (mmic python-pytest
   :mode-hydra+
-  (( python-mode ()
+  (( python-ts-mode ()
      ("Pytest"
-      (("t" python-pytest-dispatch "Menu"))))))
+      (("t" python-pytest-file "File")
+       ("T" python-pytest-dispatch "Menu"))))))
 
 (mmic cwl-mode)
 
