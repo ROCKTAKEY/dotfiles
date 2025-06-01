@@ -47,4 +47,5 @@ export PATH=~/.nix-profile/bin:$PATH
 # Prefer dark mode
 export GTK_THEME=Adwaita:dark
 
-xremap --watch=device,config ~/.config/xremap/config.yml &
+mkdir -p "$HOME/.local/state/xremap"
+xremap --watch=device,config ~/.config/xremap/config.yml >>"$HOME/.local/state/xremap/xremap.log" &
