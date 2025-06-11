@@ -1270,6 +1270,23 @@ Basedpyright only."
 
 (mmic undercover)
 
+(mmic cov
+  :autoload-interactive
+  (cov-update)
+  :face
+  ((cov-heavy-face . ((((class color)) :foreground "green")))
+   (cov-med-face . ((((class color)) :foreground "yellow")))
+   (cov-light-face . ((((class color)) :foreground "orange")))
+   (cov-none-face . ((((class color)) :foreground "red"))))
+  :eval
+  ((defun cov-export-and-update ()
+     (interactive)
+     (when-let ((default-directory (locate-dominating-file (buffer-file-name) ".coverage")))
+       (set-process-sentinel (start-process "coverage" nil "coverage" "json")
+                             (lambda (_process event)
+                               (if (string= event "finished\n")
+                                   (cov-update)
+                                 (message "`cov-export-and-update': %s" event))))))))
 (mmic cursor-test)
 
 (mmic* elisp-mode
