@@ -1858,6 +1858,9 @@ Basedpyright only."
   :define-key
   ((global-map
     ("M-g M-g" . #'magit-status)))
+  :define-key-after-load
+  ((magit-blob-mode-map
+    ("v" . #'magit-blob-visit-file)))
   :pretty-hydra+
   (( my-hydra nil
      ("Magit"
