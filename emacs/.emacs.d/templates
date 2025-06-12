@@ -151,6 +151,10 @@ edebug-eval-mode
 
 
 
+lisp-data-mode
+(dir-locals.el
+ "((nil . ()))")
+
 emacs-lisp-mode
 (defun "(defun " (p "name") " (" p ")" n>
        "\"" (p "Docstring." )"\"" n>
