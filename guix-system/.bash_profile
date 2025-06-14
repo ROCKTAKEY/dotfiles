@@ -38,12 +38,6 @@ if [ -x "$(command -v rclone)" ]; then
 	done
 fi
 
-PATH="$HOME/.local/bin:$PATH"
-export PATH=~/.npm-global/bin:$PATH
-
-export XDG_DATA_DIRS=~/.nix-profile/share:$XDG_DATA_DIRS
-export PATH=~/.nix-profile/bin:$PATH
-
 # Prefer dark mode
 export GTK_THEME=Adwaita:dark
 
