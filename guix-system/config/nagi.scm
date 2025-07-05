@@ -73,6 +73,11 @@
                            ;; the `name' property must be same as the name of the executable
                            (name "i3lock")
                            (program (file-append i3lock-color "/bin/i3lock"))))
+                 (service screen-locker-service-type
+                          (screen-locker-configuration
+                           ;; the `name' property must be same as the name of the executable
+                           (name "swaylock")
+                           (program (file-append swaylock-effects "/bin/swaylock"))))
                  (service cups-service-type)
                  (set-xorg-configuration
                   (xorg-configuration

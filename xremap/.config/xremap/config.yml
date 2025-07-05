@@ -9,7 +9,7 @@ modmap:
 keymap:
   - name: Emacs
     application:
-        not: [Emacs, Alacritty]
+        not: [Emacs, emacs, Alacritty]
     remap:
       # Cursor
       C-b: { with_mark: left }
