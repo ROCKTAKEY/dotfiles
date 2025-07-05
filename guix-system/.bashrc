@@ -30,6 +30,8 @@ alias ls='ls -p --color=auto'
 alias ll='ls -l'
 alias grep='grep --color=auto'
 
+eval "$(direnv hook bash)"
+
 PATH="$HOME/.local/bin:$PATH"
 export PATH=~/.npm-global/bin:$PATH
 
