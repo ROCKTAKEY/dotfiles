@@ -66,7 +66,6 @@
   (services
    (append (list (service gnome-desktop-service-type)
                  (service xfce-desktop-service-type)
-                 (service mate-desktop-service-type)
                  (service enlightenment-desktop-service-type)
                  (service screen-locker-service-type
                           (screen-locker-configuration
