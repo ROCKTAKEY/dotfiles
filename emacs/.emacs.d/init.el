@@ -915,6 +915,10 @@ Basedpyright only."
 
 (mmic markdown-mode)
 
+(mmic i3wm-config-mode
+  :eval
+  ((add-to-list 'auto-mode-alist '(".*/\\(i3\\|sway\\)/config" . i3wm-config-mode))))
+
 (mmic jq-mode
   :mode-hydra
   (( javascript-mode ()
