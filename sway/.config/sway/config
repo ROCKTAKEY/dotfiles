@@ -67,7 +67,7 @@ input type:keyboard {
 #
 # Basics:
 #
-    bindsym $mod+Ctrl+l exec xset dpms 10 10 10 && swaylock && xset dpms 0 0 0
+    bindsym $mod+Ctrl+l exec xset dpms 10 10 10 && $HOME/.config/sway/lock.sh && xset dpms 0 0 0
 
     # Start a terminal
     bindsym $mod+Return exec $term
