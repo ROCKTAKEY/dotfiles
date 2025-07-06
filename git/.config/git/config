@@ -1,6 +1,5 @@
 [core]
 	editor = emacsclient
-    excludesfile = ~/.config/git/.gitignore_global
 [gpg]
 	program = gpg
 [user]
