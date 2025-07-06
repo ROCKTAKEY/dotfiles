@@ -233,5 +233,3 @@ bar {
         inactive_workspace #32323200 #32323200 #5c5c5c
     }
 }
-
-include /gnu/store/bm9hl2nignyrqjl09jqyb5db6zl4bn03-sway-1.10.1/etc/sway/config.d/*
