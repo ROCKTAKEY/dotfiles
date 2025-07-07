@@ -40,6 +40,3 @@ fi
 
 # Prefer dark mode
 export GTK_THEME=Adwaita:dark
-
-mkdir -p "$HOME/.local/state/xremap"
-xremap --watch=device,config ~/.config/xremap/config.yml >>"$HOME/.local/state/xremap/xremap.log" &

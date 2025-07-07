@@ -32,6 +32,9 @@ output HDMI-A-2 resolution 1920x1080 position 0 540
 output DP-1 resolution 3840x2160 position 1920 0
 output HDMI-A-3 resolution 3840x2160@60Hz position 5760 0 scale 1.5
 
+exec_always mkdir -p "$HOME/.local/state/xremap/xremap.log"
+exec_always xremap --watch=device,config ~/.config/xremap/config.yml >> "$HOME/.local/state/xremap/xremap.log" &
+
 ### Idle configuration
 #
 # Example configuration:
