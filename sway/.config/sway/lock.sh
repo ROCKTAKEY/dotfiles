@@ -10,27 +10,19 @@ VERIFYING='#9999ff'
 
 swaylock \
 	-c "#000000" \
-	--insidever-color=$CLEAR \
-	--ringver-color=$VERIFYING \
+	--inside-ver-color=$CLEAR \
+	--ring-ver-color=$VERIFYING \
 	\
-	--insidewrong-color=$CLEAR \
-	--ringwrong-color=$WRONG \
+	--inside-wrong-color=$CLEAR \
+	--ring-wrong-color=$WRONG \
 	\
 	--inside-color=$BLANK \
 	--ring-color=$DEFAULT \
 	--line-color=$BLANK \
 	--separator-color=$DEFAULT \
 	\
-	--verif-color=$TEXT \
-	--wrong-color=$TEXT \
-	--time-color=$TEXT \
-	--date-color=$TEXT \
-	--layout-color=$TEXT \
-	--keyhl-color=$RIGHT \
-	--bshl-color=$WRONG \
-	\
-	--clock \
-	--indicator \
-	--time-str="%H:%M:%S" \
-	--date-str="%A, %Y-%m-%d" \
-	--keylayout 1
+	--text-ver-color=$TEXT \
+	--text-wrong-color=$TEXT \
+	--layout-text-color=$TEXT \
+	--key-hl-color=$RIGHT \
+	--bs-hl-color=$WRONG
