@@ -58,7 +58,8 @@
                           (specification->package "font-google-noto")
                           (specification->package "font-google-noto-sans-cjk")
                           (specification->package "font-google-noto-serif-cjk")
-                          nix)
+                          nix
+                          swaylock)
                     %base-packages))
 
   ;; Below is the list of system services.  To search for available
@@ -76,7 +77,9 @@
                           (screen-locker-configuration
                            ;; the `name' property must be same as the name of the executable
                            (name "swaylock")
-                           (program (file-append swaylock-effects "/bin/swaylock"))))
+                           (program (file-append swaylock-effects "/bin/swaylock"))
+                           (using-pam? #t)
+                           (using-setuid? #f)))
                  (service cups-service-type)
                  (set-xorg-configuration
                   (xorg-configuration
