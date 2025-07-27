@@ -1849,10 +1849,6 @@ Basedpyright only."
     . (expand-file-name
        "etc/transient/history.el"
        user-emacs-directory))
-   (transient-levels-file
-    . (expand-file-name
-       "etc/transient/levels.el"
-       user-emacs-directory))
    (transient-values-file
     . (expand-file-name
        "etc/transient/values.el"
