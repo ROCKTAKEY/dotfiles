@@ -66,6 +66,10 @@ input type:keyboard {
     xkb_layout jp
 }
 
+input type:pointer {
+    pointer_accel -0.5
+}
+
 ### Key bindings
 #
 # Basics:
