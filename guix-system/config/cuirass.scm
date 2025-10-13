@@ -11,7 +11,17 @@
 ;; used in this configuration.
 (use-modules (gnu)
              (roquix services tailscale))
-(use-service-modules cups cuirass desktop networking ssh web xorg admin virtualization databases)
+(use-service-modules cups cuirass desktop networking ssh web xorg admin virtualization databases shepherd)
+
+
+(define garbage-collection-timer
+  ;; Run 'guix gc' everyday at 5AM.
+  (shepherd-timer '(garbage-collection)
+                  #~(calendar-event #:hours '(5) #:minutes '(0))
+                  #~("/run/current-system/profile/bin/guix"
+                     "gc" "-F" "10G")
+                  #:requirement '(guix-daemon)))
+
 
 (define %cuirass-specs
   #~(list
@@ -76,7 +86,11 @@
                  (service cuirass-service-type
                           (cuirass-configuration
                            (specifications %cuirass-specs)
-                           (host "127.0.0.1"))))
+                           (host "127.0.0.1")))
+
+                 (service (simple-service 'my-timers
+                                   shepherd-root-service-type
+                                   (list garbage-collection-timer))))
 
            ;; This is the default list of services we
            ;; are appending to.
