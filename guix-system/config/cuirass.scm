@@ -71,7 +71,7 @@
   ;; Below is the list of system services.  To search for available
   ;; services, run 'guix system search KEYWORD' in a terminal.
   (services
-   (append (list (service dhcp-client-service-type)
+   (append (list (service dhcpcd-service-type)
                  (service ntp-service-type)
                  (service gpm-service-type)
                  (service cups-service-type)
