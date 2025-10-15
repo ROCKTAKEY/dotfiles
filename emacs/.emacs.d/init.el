@@ -1871,6 +1871,8 @@ Basedpyright only."
      ("Browse commit message"
       (("M-p" git-commit-prev-message "Prev")
        ("M-n" git-commit-next-message "Next")))))
+  :custom
+  ((magit-diff-refine-hunk . t))
   :eval
   ((magit-wip-mode)))
 
