@@ -1,2 +1,3 @@
 *.local
 !.local/
+nix/.config/nix/access-tokens.conf
