@@ -27,6 +27,8 @@ PrevCandidate=
 NextCandidate=
 # 埋め込みプリエディットの切り替え
 TogglePreedit=
+# 修飾キーのショートカットをトリガーするための時間制限（ミリ秒）
+ModifierOnlyKeyTimeout=250
 
 [Hotkey/TriggerKeys]
 0=Zenkaku_Hankaku
