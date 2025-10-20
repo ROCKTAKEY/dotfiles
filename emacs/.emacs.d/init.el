@@ -1876,6 +1876,11 @@ Basedpyright only."
   :eval
   ((magit-wip-mode)))
 
+(mmic magit-delta
+  :eval
+  ((when (executable-find "delta")
+     (magit-delta-mode))))
+
 ;; (mmic magit-todos
 ;;   :eval
 ;;   ((magit-todos-mode)))
