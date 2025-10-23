@@ -275,3 +275,6 @@ bar {
 }
 
 for_window [app_id="Firefox" title="ピクチャーインピクチャー"] floating enable
+
+exec mako
+exec_always nm-applet --indicator
