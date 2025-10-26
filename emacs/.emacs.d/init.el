@@ -2310,20 +2310,6 @@ See also `sp-kill-hybrid-sexp' examples."
 ;;   :pl-custom
 ;;   (my-deepl-api-key))
 
-(mmic go-translate
-  :custom
-  ((gts-translate-list . '(("en" "ja") ("ja" "en"))))
-  :custom-after-load
-  ((my-deepl-api-key . nil)
-   (gts-default-translator
-    . (gts-translator
-       :picker (gts-prompt-picker :texter (gts-current-or-selection-texter))
-       :engines
-       (list
-        (gts-deepl-engine :auth-key my-deepl-api-key :pro nil))
-       :render
-       (gts-buffer-render)))))
-
 (set-language-environment "Japanese")
 
 (mmic* kkc
