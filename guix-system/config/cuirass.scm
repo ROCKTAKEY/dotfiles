@@ -86,6 +86,7 @@
                           (cuirass-configuration
                            (specifications %cuirass-specs)
                            (host "127.0.0.1")))
+                 (service guix-publish-service-type)
 
                  (simple-service 'garbage-collection
                                  shepherd-root-service-type
