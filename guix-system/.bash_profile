@@ -25,10 +25,8 @@ export GUIX_GTK3_IM_MODULE_FILE="$HOME/.guix-profile/lib/gtk-3.0/3.0.0/immodules
 # uim-toolbar-gtk3-systray &
 
 # fcitx
-export GTK_IM_MODULE='fcitx'
 export QT_IM_MODULE='fcitx'
 export XMODIFIERS='@im=fcitx'
-fcitx5 &
 
 if [ -x "$(command -v rclone)" ]; then
 	for remote in $(rclone listremotes); do

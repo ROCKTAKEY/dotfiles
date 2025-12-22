@@ -278,3 +278,5 @@ for_window [app_id="Firefox" title="ピクチャーインピクチャー"] float
 
 exec mako
 exec_always nm-applet --indicator
+
+exec_always --no-startup-id fcitx5 -d
