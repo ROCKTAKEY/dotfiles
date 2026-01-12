@@ -21,6 +21,8 @@
 
 (operating-system
   (kernel linux)
+  (kernel-arguments (cons* "lsm=landlock"
+                           %default-kernel-arguments))
   (initrd microcode-initrd)
   (firmware (list linux-firmware))
   (locale "ja_JP.utf8")
