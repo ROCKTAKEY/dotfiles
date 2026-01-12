@@ -2299,8 +2299,21 @@ See also `sp-kill-hybrid-sexp' examples."
   ((aidermacs-show-diff-after-change . nil))
   :pretty-hydra+
   (( my-hydra ()
-     ("Aider"
+     ("AI"
       (("a" aidermacs-transient-menu "Aider"))))))
+
+(mmic agent-shell
+  :pretty-hydra+
+  (( my-hydra ()
+     ("AI"
+      (("a" agent-shell "Agent Shell")
+       ("A" agent-shell-help-menu "Menu")))))
+  :custom
+  ((agent-shell-openai-codex-command . (list "guix" "shell" "-CWNF"
+                                             "-m" (expand-file-name "~/manifests/codex.scm")
+                                             "-m" (expand-file-name "~/manifests/codex-acp.scm")
+                                             (format "--share=%s/.codex" (getenv "HOME"))
+                                             "node" "--" "npx" "@zed-industries/codex-acp"))))
 
 (defcustom my-deepl-api-key nil
   "My DeepL API key.")
