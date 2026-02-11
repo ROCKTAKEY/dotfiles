@@ -2309,11 +2309,51 @@ See also `sp-kill-hybrid-sexp' examples."
       (("a" agent-shell "Agent Shell")
        ("A" agent-shell-help-menu "Menu")))))
   :custom
-  ((agent-shell-openai-codex-command . (list "guix" "shell" "-CWNF"
-                                             "-m" (expand-file-name "~/manifests/codex.scm")
-                                             "-m" (expand-file-name "~/manifests/codex-acp.scm")
-                                             (format "--share=%s/.codex" (getenv "HOME"))
-                                             "node" "--" "npx" "@zed-industries/codex-acp"))))
+  ((agent-shell-container-command-runner
+    . (pcase system-type
+        (`gnu/linux
+         (defun agent-shell-container-command-runner-guix-shell (buffer)
+           (let* ((config (agent-shell-get-config buffer))
+                  (id (map-elt config :identifier))
+                  (start-dir (if (buffer-live-p buffer)
+                                 (with-current-buffer buffer default-directory)
+                               default-directory))
+                  (project-root
+                   (or (locate-dominating-file
+                        start-dir
+                        (lambda (dir)
+                          (or (file-exists-p (expand-file-name "manifest.scm" dir))
+                              (file-exists-p (expand-file-name "guix.scm" dir)))))
+                       start-dir))
+                  (local-manifest
+                   (cond
+                    ((file-exists-p (expand-file-name "manifest.scm" project-root))
+                     (expand-file-name "manifest.scm" project-root))
+                    ((file-exists-p (expand-file-name "guix.scm" project-root))
+                     (expand-file-name "guix.scm" project-root))
+                    (t nil)))
+                  (base-manifests
+                   (pcase id
+                     ('codex
+                      (list "~/manifests/codex.scm" "~/manifests/codex-acp.scm"))
+                     ('claude-code
+                      (list "~/manifests/claude.scm"))
+                     ('gemini-cli
+                      (list "~/manifests/gemini.scm"))
+                     (_
+                      (list "~/manifests/default.scm"))))
+                  (manifest-args
+                   (mapcan (lambda (m) (list "-m" (expand-file-name m)))
+                           base-manifests)))
+             (append
+              (list "guix" "shell" "-CWNF")
+              manifest-args
+              (when local-manifest
+                (list "-m" local-manifest))
+              (when (memq id '(codex openai-codex))
+                (list (format "--share=%s/.codex" (getenv "HOME"))))
+              (list "--")))))))
+   (agent-shell-openai-codex-command . (list  "npx" "@zed-industries/codex-acp"))))
 
 (defcustom my-deepl-api-key nil
   "My DeepL API key.")
