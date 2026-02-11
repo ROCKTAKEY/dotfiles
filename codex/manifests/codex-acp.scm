@@ -17,5 +17,6 @@
          "gcc-toolchain"
          "glibc"
          "openssl"
-         "node"))
+         "node"
+         "xz"))
   (load (from-here "codex.scm"))))
