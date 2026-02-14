@@ -1542,6 +1542,8 @@ Basedpyright only."
   ((magit-mode-hook . #'eldoc-diffstat-setup)
    (magit-blame-mode-hook . #'eldoc-diffstat-setup)))
 
+(mmic flycheck)
+
 (mmic flymake
   :hook
   ((prog-mode-hook . #'flymake-mode)))
@@ -1625,6 +1627,11 @@ Basedpyright only."
      (let ((consult-ripgrep-args (concat (default-value 'consult-ripgrep-args) " -uuu")))
        (consult-ripgrep)))
    (add-to-list 'consult-buffer-sources 'rhq-consult-source-project-directory 'append)))
+
+(mmic consult-flycheck
+  :define-key-after-load
+  ((flycheck-mode-map
+    ("M-g e" . #'consult-flycheck))))
 
 (mmic embark
   :custom
