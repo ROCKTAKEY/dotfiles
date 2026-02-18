@@ -18,5 +18,7 @@
          "glibc"
          "openssl"
          "node"
-         "xz"))
+         "xz"
+         "libcap"
+         "zlib"))
   (load (from-here "codex.scm"))))
