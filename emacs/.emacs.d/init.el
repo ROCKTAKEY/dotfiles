@@ -2360,6 +2360,7 @@ See also `sp-kill-hybrid-sexp' examples."
               (when (memq id '(codex openai-codex))
                 (list (format "--share=%s/.codex" (getenv "HOME"))))
               (list "--")))))))
+   (agent-shell-session-strategy . 'prompt)
    (agent-shell-openai-codex-command . (list  "npx" "@zed-industries/codex-acp"))))
 
 (defcustom my-deepl-api-key nil
