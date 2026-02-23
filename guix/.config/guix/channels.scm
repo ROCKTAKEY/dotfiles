@@ -11,9 +11,9 @@
         (name 'guix-jp)
         (url "https://gitlab.com/guix-jp/channel")
         (branch "main"))
-       (channel
-        (name 'guix-hpc)
-        (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git"))
+       ;; (channel
+       ;;  (name 'guix-hpc)
+       ;;  (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git"))
        ;; (channel
        ;;  (name 'guix-hpc-non-free)
        ;;  (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git"))
@@ -26,15 +26,15 @@
           "01ec2e0c15a9f7db2b6374e1469a90df30109300"
           (openpgp-fingerprint
            "7F73 0343 F2F0 9F3C 77BF  79D3 2E25 EE8B 6180 2BB3"))))
+       ;; (channel
+       ;;  (name 'rustup)
+       ;;  (url "https://codeberg.org/declantsien/guix-rustup")
+       ;;  (introduction
+       ;;   (make-channel-introduction
+       ;;    "325d3e2859d482c16da21eb07f2c6ff9c6c72a80"
+       ;;    (openpgp-fingerprint
+       ;;     "F695 F39E C625 E081 33B5  759F 0FC6 8703 75EF E2F5"))))
        (channel
-        (name 'rustup)
-        (url "https://github.com/declantsien/guix-rustup")
-        (introduction
-         (make-channel-introduction
-          "325d3e2859d482c16da21eb07f2c6ff9c6c72a80"
-          (openpgp-fingerprint
-           "F695 F39E C625 E081 33B5  759F 0FC6 8703 75EF E2F5"))))
-       (channel
-        (name 'roquix)
+         (name 'roquix)
         (url "https://github.com/ROCKTAKEY/roquix"))
        %default-channels)
