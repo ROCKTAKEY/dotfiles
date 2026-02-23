@@ -128,7 +128,7 @@
   (initrd-modules (append '("virtio_scsi") %base-initrd-modules))
   (swap-devices (list (swap-space
                         (target (uuid
-                                 "40745685-e4af-443d-8bce-db35d143d92c")))))
+                                 "d273e713-bbc0-46c9-892a-1879716663ba")))))
 
   ;; The list of file systems that get "mounted".  The unique
   ;; file system identifiers there ("UUIDs") can be obtained
@@ -136,6 +136,6 @@
   (file-systems (cons* (file-system
                          (mount-point "/")
                          (device (uuid
-                                  "09f0235e-6ecd-4bee-aa4c-4fb8952c9c2b"
+                                  "d273e713-bbc0-46c9-892a-1879716663ba"
                                   'ext4))
                          (type "ext4")) %base-file-systems)))
