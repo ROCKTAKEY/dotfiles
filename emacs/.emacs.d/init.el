@@ -1881,7 +1881,10 @@ Basedpyright only."
   :custom
   ((magit-diff-refine-hunk . t))
   :eval
-  ((magit-wip-mode)))
+  ((magit-wip-mode)
+   (put 'magit-revision-mode 'magit-diff-default-arguments
+        `("--show-signature"
+          ,@(get 'magit-diff-mode 'magit-diff-default-arguments)))))
 
 (mmic magit-delta
   :eval
