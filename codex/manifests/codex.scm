@@ -14,4 +14,5 @@
         "git"
         "python"
         "perl"
-        "ripgrep"))
+        "ripgrep"
+        "curl"))
