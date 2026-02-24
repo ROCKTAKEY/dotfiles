@@ -2318,6 +2318,26 @@ See also `sp-kill-hybrid-sexp' examples."
      ("AI"
       (("a" agent-shell "Agent Shell")
        ("A" agent-shell-help-menu "Menu")))))
+  :mode-hydra
+  (( agent-shell-mode ()
+     ("Default keys"
+      (("C-<tab>" agent-shell-cycle-session-mode "Cycle Mode")
+       ("C-c C-m" agent-shell-set-session-mode "Mode")
+       ("C-c C-v" agent-shell-set-session-model "Model")
+       ("C-c C-c" agent-shell-interrupt "Interrupt")
+       ("C-c C-o" agent-shell-other-buffer "Toggle Viewport"))
+      "Queue"
+      (("q" agent-shell-queue-request "Push")
+       ("r" agent-shell-resume-pending-requests "Resume")
+       ("d" agent-shell-remove-pending-request "Remove"))
+      "Buffer"
+      (("R" agent-shell-rename-buffer "Rename")
+       ("C" agent-shell-clear-buffer "Clear"))
+      "Log"
+      (("L" agent-shell-toggle-logging "Toggle logging")
+       ("l" agent-shell-view-acp-logs "Show logs")
+       ("t" agent-shell-view-traffic "Show traffic")
+       ("u" agent-shell-show-usage "Show usage")))))
   :custom
   ((agent-shell-container-command-runner
     . (pcase system-type
