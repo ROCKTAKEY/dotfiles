@@ -164,7 +164,7 @@ COMMIT
                                                       "(public-key
  (ecc
   (curve Ed25519)
-  (q #9EF17DBD1777BF3BA48A7E5931C01FB1C28335D625D192E85170F163F2EB422C#)
+  (q #5D5477A8C7E5B2432FCD79E576D5FA775C8D8425DA637725D94736374F78A393#)
   )
  )")
                                           %default-authorized-guix-keys))))
