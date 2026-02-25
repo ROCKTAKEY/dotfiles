@@ -490,6 +490,42 @@ how long to wait for a response before giving up."
      (split-window-right)
      (balance-windows))))
 
+(mmic tab-bar
+  :define-key
+  ((global-map
+    ("C-x t" . #'my/tab-bar-transient)))
+  :eval
+  ((transient-define-prefix my/tab-bar-transient ()
+     "Tab operations."
+     [["Create / Delete"
+       ("0" "Close" tab-close)
+       ("1" "Close other" tab-close-other)
+       ("2" "New to right" tab-new)
+       ("N" tab-new-to
+        :description
+        (lambda (_obj)
+          (format "New to %s" (format "%s" tab-bar-new-tab-to))))
+       ("n" "Duplicate" tab-duplicate)
+       ("u" "Undo close" tab-undo)]
+      ["Navigate"
+       ("o"   "Next" tab-next :transient t)
+       ("<right>"   "Next" tab-next :transient t)
+       ("O"   "Previous" tab-previous  :transient t)
+       ("<left>"   "Previous" tab-previous  :transient t)
+       ("RET" "Switch to..." tab-switch)]
+      ["Manage"
+       ("m"   "Move" tab-move :transient t)
+       ("M"   "Move to..." tab-move-to)
+       ("G"   "Group" tab-group)
+       ("r"   "Rename" tab-rename)
+       ("^ f" "Detach (frame)" tab-detach)]
+      ["Open in Other Tab"
+       ("b"   "Buffer in other tab" switch-to-buffer-other-tab)
+       ("f"   "Find file" find-file-other-tab)
+       ("C-f" "Find file" find-file-other-tab)
+       ("C-r" "Find file RO" find-file-read-only-other-tab)
+       ("t"   "Other tab prefix" other-tab-prefix)]])))
+
 (mmic swap-buffers
   :declare-function
   (swap-buffers)
