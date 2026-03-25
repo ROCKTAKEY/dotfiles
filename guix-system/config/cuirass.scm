@@ -43,6 +43,8 @@
      ;;         %default-channels)))
      ))
 
+(define %guix-publish-port 3000)
+
 (define garbage-collection-timer
   ;; Run 'guix gc' everyday at 5AM.
   (shepherd-timer '(garbage-collection)
@@ -89,23 +91,31 @@
 
                  (service guix-publish-service-type
                           (guix-publish-configuration
+                            (host "localhost")
+                            (port %guix-publish-port)
+                            (cache "/var/cache/guix/publish")))
 
-                            ;; NOTE: Serve /nar payloads from the publish cache.
-                            ;; Rationale:
-                            ;; - guix-publish may bypass the cache for small items unless
-                            ;;   cache-bypass-threshold is lowered.
-                            ;; - the live /nar path is implemented separately from the cached path;
-                            ;;   locally, small pre-compressed source tarballs on the live HTTP/1.1 path
-                            ;;   returned 200 but stalled before the client considered the response
-                            ;;   complete.
-                            ;; - forcing these source substitutes through the cache avoids that path.
-                            ;;
-                            ;; References:
-                            ;; - Guix manual, "Invoking guix publish"
-                            ;;   https://guix.gnu.org/manual/devel/en/html_node/Invoking-guix-publish.html
-                            ;; - https://logs.guix.gnu.org/guix/2024-09-08.log
-                            (cache "/var/cache/guix/publish")
-                            (cache-bypass-threshold 0)))
+                 (service nginx-service-type
+                          (nginx-configuration
+                           (server-blocks
+                            (list
+                             (nginx-server-configuration
+                              (listen '("80"))
+                              (root "")
+                              (index '())
+                              (locations
+                               (list
+                                (nginx-location-configuration
+                                 (uri "/")
+                                 (body
+                                  (list
+                                   (string-append
+                                    "proxy_pass http://localhost:"
+                                    (number->string %guix-publish-port)
+                                    ";")
+                                   "proxy_set_header Host $host;"
+                                   "proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
+                                   "proxy_set_header X-Forwarded-Proto $scheme;"))))))))))
 
                  (simple-service 'garbage-collection
                                  shepherd-root-service-type
