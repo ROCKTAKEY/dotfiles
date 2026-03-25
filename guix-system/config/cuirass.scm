@@ -45,6 +45,7 @@
 
 (define %guix-publish-host "localhost")
 (define %guix-publish-port 3000)
+(define %nginx-publish-listen "127.0.0.1:80")
 (define %guix-publish-upstream
   (string-append "http://"
                  %guix-publish-host
@@ -111,7 +112,7 @@
                            (server-blocks
                             (list
                              (nginx-server-configuration
-                              (listen '("80"))
+                              (listen (list %nginx-publish-listen))
                               (root "")
                               (index '())
                               (locations

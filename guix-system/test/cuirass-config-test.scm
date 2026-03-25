@@ -55,10 +55,18 @@
 (assert "nginx service exists"
         nginx-service)
 
+(assert "nginx listens on localhost only"
+        (and nginx-service
+             (any (lambda (server)
+                    (equal? '("127.0.0.1:80")
+                            (nginx-server-configuration-listen server)))
+                  (nginx-configuration-server-blocks
+                   (service-value nginx-service)))))
+
 (assert "nginx proxies requests to guix-publish"
         (and nginx-service
              (any (lambda (server)
-                    (and (member "80"
+                    (and (member "127.0.0.1:80"
                                  (nginx-server-configuration-listen server))
                          (any (lambda (location)
                                 (and (string=? "/"
