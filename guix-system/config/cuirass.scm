@@ -86,7 +86,26 @@
                           (cuirass-configuration
                            (specifications %cuirass-specs)
                            (host "127.0.0.1")))
-                 (service guix-publish-service-type)
+
+                 (service guix-publish-service-type
+                          (guix-publish-configuration
+
+                            ;; NOTE: Serve /nar payloads from the publish cache.
+                            ;; Rationale:
+                            ;; - guix-publish may bypass the cache for small items unless
+                            ;;   cache-bypass-threshold is lowered.
+                            ;; - the live /nar path is implemented separately from the cached path;
+                            ;;   locally, small pre-compressed source tarballs on the live HTTP/1.1 path
+                            ;;   returned 200 but stalled before the client considered the response
+                            ;;   complete.
+                            ;; - forcing these source substitutes through the cache avoids that path.
+                            ;;
+                            ;; References:
+                            ;; - Guix manual, "Invoking guix publish"
+                            ;;   https://guix.gnu.org/manual/devel/en/html_node/Invoking-guix-publish.html
+                            ;; - https://logs.guix.gnu.org/guix/2024-09-08.log
+                            (cache "/var/cache/guix/publish")
+                            (cache-bypass-threshold 0)))
 
                  (simple-service 'garbage-collection
                                  shepherd-root-service-type
