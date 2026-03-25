@@ -43,7 +43,18 @@
      ;;         %default-channels)))
      ))
 
+(define %guix-publish-host "localhost")
 (define %guix-publish-port 3000)
+(define %guix-publish-upstream
+  (string-append "http://"
+                 %guix-publish-host
+                 ":"
+                 (number->string %guix-publish-port)))
+(define %guix-publish-proxy-headers
+  (list
+   "proxy_set_header Host $host;"
+   "proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
+   "proxy_set_header X-Forwarded-Proto $scheme;"))
 
 (define garbage-collection-timer
   ;; Run 'guix gc' everyday at 5AM.
@@ -91,7 +102,7 @@
 
                  (service guix-publish-service-type
                           (guix-publish-configuration
-                            (host "localhost")
+                            (host %guix-publish-host)
                             (port %guix-publish-port)
                             (cache "/var/cache/guix/publish")))
 
@@ -108,14 +119,12 @@
                                 (nginx-location-configuration
                                  (uri "/")
                                  (body
-                                  (list
+                                  (cons
                                    (string-append
-                                    "proxy_pass http://localhost:"
-                                    (number->string %guix-publish-port)
+                                    "proxy_pass "
+                                    %guix-publish-upstream
                                     ";")
-                                   "proxy_set_header Host $host;"
-                                   "proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
-                                   "proxy_set_header X-Forwarded-Proto $scheme;"))))))))))
+                                   %guix-publish-proxy-headers))))))))))
 
                  (simple-service 'garbage-collection
                                  shepherd-root-service-type
