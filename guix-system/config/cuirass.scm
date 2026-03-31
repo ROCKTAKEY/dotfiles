@@ -46,6 +46,8 @@
 (define %guix-publish-host "localhost")
 (define %guix-publish-port 3000)
 (define %nginx-publish-listen "127.0.0.1:80")
+(define %cuirass-swap-uuid
+  "d88c4464-dcae-45b8-bf2a-a4782656c64c")
 (define %guix-publish-upstream
   (string-append "http://"
                  %guix-publish-host
@@ -167,7 +169,7 @@
   (initrd-modules (append '("virtio_scsi") %base-initrd-modules))
   (swap-devices (list (swap-space
                         (target (uuid
-                                 "d273e713-bbc0-46c9-892a-1879716663ba")))))
+                                 %cuirass-swap-uuid)))))
 
   ;; The list of file systems that get "mounted".  The unique
   ;; file system identifiers there ("UUIDs") can be obtained

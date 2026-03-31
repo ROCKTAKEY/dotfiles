@@ -1,8 +1,13 @@
 (use-modules (gnu services)
              (gnu services base)
+             (gnu services cuirass)
              (gnu services web)
              (gnu system)
+             (gnu system file-systems)
+             (guix gexp)
              (srfi srfi-1))
+
+(add-to-load-path "guix-system/test/stubs")
 
 (define (assert label predicate)
   (if predicate
@@ -34,11 +39,31 @@
 (define guix-publish-service
   (service-of-type services guix-publish-service-type))
 
+(define cuirass-service
+  (service-of-type services cuirass-service-type))
+
 (define nginx-service
   (service-of-type services nginx-service-type))
 
+(define swap-devices
+  (operating-system-swap-devices operating-system-configuration))
+
 (assert "guix-publish service exists"
         guix-publish-service)
+
+(assert "cuirass service exists"
+        cuirass-service)
+
+(assert "cuirass uses the default polling interval"
+        (and cuirass-service
+             (=
+              ((@@ (gnu services cuirass)
+                   cuirass-configuration-interval)
+               (cuirass-configuration
+                (specifications #~'())))
+                ((@@ (gnu services cuirass)
+                     cuirass-configuration-interval)
+                 (service-value cuirass-service)))))
 
 (assert "guix-publish listens on localhost only"
         (and guix-publish-service
@@ -78,3 +103,10 @@
                               (nginx-server-configuration-locations server))))
                   (nginx-configuration-server-blocks
                    (service-value nginx-service)))))
+
+(assert "swap targets the dedicated swap partition"
+        (and (= 1 (length swap-devices))
+             (string=?
+              "d88c4464-dcae-45b8-bf2a-a4782656c64c"
+              (file-system-device->string
+               (swap-space-target (first swap-devices))))))
