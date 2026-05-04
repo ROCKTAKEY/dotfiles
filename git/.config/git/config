@@ -29,5 +29,9 @@
   helper =
   helper = !glab auth git-credential
 
+[credential "https://forgejo.tail09c0.ts.net/"]
+  helper = cache --timeout 21600
+  helper = oauth
+
 [include]
 	path = config.local
