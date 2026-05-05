@@ -43,12 +43,14 @@
      ;;         %default-channels)))
      ))
 
+(define %cuirass-store-free-space "80G")
+
 (define garbage-collection-timer
   ;; Run 'guix gc' everyday at 5AM.
   (shepherd-timer '(garbage-collection)
                   #~(calendar-event #:hours '(5) #:minutes '(0))
                   #~("/run/current-system/profile/bin/guix"
-                     "gc" "-F" "10G")
+                     "gc" "-F" #$%cuirass-store-free-space)
                   #:requirement '(guix-daemon)))
 
 (operating-system
