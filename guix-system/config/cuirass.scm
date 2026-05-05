@@ -43,7 +43,21 @@
      ;;         %default-channels)))
      ))
 
+(define %guix-publish-host "localhost")
+(define %guix-publish-port 3000)
+(define %nginx-publish-listen "127.0.0.1:80")
+
+(define %cuirass-swap-uuid "d88c4464-dcae-45b8-bf2a-a4782656c64c")
+(define %cuirass-root-uuid "d273e713-bbc0-46c9-892a-1879716663ba")
+(define %cuirass-store-uuid "89a5a0d8-f551-4c8d-b0fe-62fe9b7f966f")
+
 (define %cuirass-store-free-space "80G")
+
+(define %guix-publish-upstream
+  (string-append "http://"
+                 %guix-publish-host
+                 ":"
+                 (number->string %guix-publish-port)))
 
 (define garbage-collection-timer
   ;; Run 'guix gc' everyday at 5AM.
@@ -91,23 +105,28 @@
 
                  (service guix-publish-service-type
                           (guix-publish-configuration
+                            (host %guix-publish-host)
+                            (port %guix-publish-port)
+                            (cache "/var/cache/guix/publish")))
 
-                            ;; NOTE: Serve /nar payloads from the publish cache.
-                            ;; Rationale:
-                            ;; - guix-publish may bypass the cache for small items unless
-                            ;;   cache-bypass-threshold is lowered.
-                            ;; - the live /nar path is implemented separately from the cached path;
-                            ;;   locally, small pre-compressed source tarballs on the live HTTP/1.1 path
-                            ;;   returned 200 but stalled before the client considered the response
-                            ;;   complete.
-                            ;; - forcing these source substitutes through the cache avoids that path.
-                            ;;
-                            ;; References:
-                            ;; - Guix manual, "Invoking guix publish"
-                            ;;   https://guix.gnu.org/manual/devel/en/html_node/Invoking-guix-publish.html
-                            ;; - https://logs.guix.gnu.org/guix/2024-09-08.log
-                            (cache "/var/cache/guix/publish")
-                            (cache-bypass-threshold 0)))
+                 (service nginx-service-type
+                          (nginx-configuration
+                           (server-blocks
+                            (list
+                             (nginx-server-configuration
+                              (listen (list %nginx-publish-listen))
+                              (root "")
+                              (index '())
+                              (locations
+                               (list
+                                (nginx-location-configuration
+                                 (uri "/")
+                                 (body
+                                  (list
+                                   (string-append
+                                    "proxy_pass "
+                                    %guix-publish-upstream
+                                    ";")))))))))))
 
                  (simple-service 'garbage-collection
                                  shepherd-root-service-type
@@ -149,7 +168,7 @@
   (initrd-modules (append '("virtio_scsi") %base-initrd-modules))
   (swap-devices (list (swap-space
                         (target (uuid
-                                 "d273e713-bbc0-46c9-892a-1879716663ba")))))
+                                 %cuirass-swap-uuid)))))
 
   ;; The list of file systems that get "mounted".  The unique
   ;; file system identifiers there ("UUIDs") can be obtained
@@ -157,6 +176,13 @@
   (file-systems (cons* (file-system
                          (mount-point "/")
                          (device (uuid
-                                  "d273e713-bbc0-46c9-892a-1879716663ba"
+                                  %cuirass-root-uuid
                                   'ext4))
+                         (type "ext4"))
+                       (file-system
+                         (mount-point "/gnu/store")
+                         (device (uuid
+                                  %cuirass-store-uuid
+                                  'ext4))
+                         (needed-for-boot? #t)
                          (type "ext4")) %base-file-systems)))
