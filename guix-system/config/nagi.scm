@@ -13,6 +13,7 @@
              (gnu packages fonts)
              (gnu packages gnome)
              (roquix services tailscale)
+             (roquix services waydroid)
              (nongnu packages linux)
              (nongnu system linux-initrd))
 (use-service-modules cups desktop networking ssh xorg docker virtualization syncthing nix)
@@ -129,6 +130,9 @@ COMMIT
                            (platforms (lookup-qemu-platforms "arm" "aarch64"))))
 
                  (service tailscale-service-type)
+                 (service waydroid-service-type
+                          (waydroid-configuration
+                           (auto-start? #f)))
                  (service nix-service-type))
 
            ;; This is the default list of services we
