@@ -2399,15 +2399,12 @@ See also `sp-kill-hybrid-sexp' examples."
                    (or (locate-dominating-file
                         start-dir
                         (lambda (dir)
-                          (or (file-exists-p (expand-file-name "manifest.scm" dir))
-                              (file-exists-p (expand-file-name "guix.scm" dir)))))
+                          (file-exists-p (expand-file-name "manifest.scm" dir))))
                        start-dir))
                   (local-manifest
                    (cond
                     ((file-exists-p (expand-file-name "manifest.scm" project-root))
                      (expand-file-name "manifest.scm" project-root))
-                    ((file-exists-p (expand-file-name "guix.scm" project-root))
-                     (expand-file-name "guix.scm" project-root))
                     (t nil)))
                   (base-manifests
                    (pcase id
