@@ -2429,7 +2429,7 @@ See also `sp-kill-hybrid-sexp' examples."
                 (list (format "--share=%s/.codex" (getenv "HOME"))))
               (list "--")))))))
    (agent-shell-session-strategy . 'prompt)
-   (agent-shell-openai-codex-acp-command . (list  "npx" "@zed-industries/codex-acp"))))
+   (agent-shell-openai-codex-acp-command . (list  "npx" "-y" "@agentclientprotocol/codex-acp"))))
 
 (defcustom my-deepl-api-key nil
   "My DeepL API key.")
