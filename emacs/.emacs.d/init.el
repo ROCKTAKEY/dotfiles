@@ -1785,6 +1785,8 @@ Basedpyright only."
    (completion-category-overrides
     .
     '(
+      (agent-shell-config
+       (display-sort-function . vertico-sort-history-length-alpha))
       (file (styles orderless-migemo partial-completion))
       (consult-location (styles orderless-migemo partial-completion))
       (consult-org-heading (styles orderless-migemo partial-completion)))))
