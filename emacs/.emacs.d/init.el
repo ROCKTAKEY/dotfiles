@@ -1647,7 +1647,8 @@ Basedpyright only."
     ("C-M-@" . #'consult-register-store)
     ("M-g h" . #'consult-org-heading)
     ("M-g a" . #'consult-org-agenda)
-    ("M-g e" . #'consult-flymake)))
+    ("M-g e" . #'consult-flymake)
+    ("C-c TAB" . #'my-completion-at-point-in-minibuffer)))
   :mykie
   ((global-map
     ("C-r" :default consult-ripgrep :C-u*2 consult-ripgrep-without-ignoring)))
@@ -1657,6 +1658,14 @@ Basedpyright only."
   :custom
   ((xref-show-xrefs-function . #'consult-xref)
    (consult-line-start-from-top . t))
+  :eval
+  ((defun my-completion-at-point-in-minibuffer ()
+     "ポイント位置の補完を minibuffer で選択する。"
+     (interactive)
+     (require 'consult)
+     (let ((completion-in-region-function
+            #'consult-completion-in-region))
+       (completion-at-point))))
   :eval-after-load
   ((defun consult-ripgrep-without-ignoring ()
      (interactive)
