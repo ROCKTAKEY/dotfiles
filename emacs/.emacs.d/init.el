@@ -2419,14 +2419,15 @@ See also `sp-kill-hybrid-sexp' examples."
                   (manifest-args
                    (mapcan (lambda (m) (list "-m" (expand-file-name m)))
                            base-manifests)))
-             (append
-              (list "guix" "shell" "-CWNF")
-              manifest-args
-              (when local-manifest
-                (list "-m" local-manifest))
-              (when (memq id '(codex openai-codex))
-                (list (format "--share=%s/.codex" (getenv "HOME"))))
-              (list "--")))))))
+             `("guix" "shell" "-CWNF"
+               ,@manifest-args
+               ,@(when local-manifest
+                   (list "-m" local-manifest))
+               ,@(pcase id
+                   ('codex
+                    (list (format "--share=%s/.codex" (getenv "HOME"))
+                          (format "--share=%s/.config/agents/AGENTS.md" (getenv "HOME")))))
+               "--"))))))
    (agent-shell-session-strategy . 'prompt)
    (agent-shell-openai-codex-acp-command . (list  "npx" "-y" "@agentclientprotocol/codex-acp"))))
 
