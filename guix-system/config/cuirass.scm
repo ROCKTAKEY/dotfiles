@@ -46,6 +46,7 @@
 (define %guix-publish-host "localhost")
 (define %guix-publish-port 3000)
 (define %nginx-publish-listen "127.0.0.1:80")
+(define %nginx-publish-read-timeout "10m")
 
 (define %cuirass-swap-uuid "d88c4464-dcae-45b8-bf2a-a4782656c64c")
 (define %cuirass-root-uuid "d273e713-bbc0-46c9-892a-1879716663ba")
@@ -127,6 +128,10 @@
                                    (string-append
                                     "proxy_pass "
                                     %guix-publish-upstream
+                                    ";")
+                                   (string-append
+                                    "proxy_read_timeout "
+                                    %nginx-publish-read-timeout
                                     ";")))))))))))
 
                  (simple-service 'garbage-collection
