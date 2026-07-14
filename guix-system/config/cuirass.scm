@@ -52,6 +52,7 @@
 (define %cuirass-store-uuid "89a5a0d8-f551-4c8d-b0fe-62fe9b7f966f")
 
 (define %cuirass-store-free-space "80G")
+(define %cuirass-build-max-silent-time (* 3 60 60))
 
 (define %guix-publish-upstream
   (string-append "http://"
@@ -138,6 +139,7 @@
              (guix-service-type
                              config => (guix-configuration
                                         (inherit config)
+                                        (max-silent-time %cuirass-build-max-silent-time)
                                         (substitute-urls
                                          (cons* "https://substitutes.nonguix.org"
                                                 "https://guix.bordeaux.inria.fr"
