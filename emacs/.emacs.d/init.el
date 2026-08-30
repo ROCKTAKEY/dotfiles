@@ -2439,6 +2439,7 @@ See also `sp-kill-hybrid-sexp' examples."
                ,@manifest-args
                ,@(when local-manifest
                    (list "-m" local-manifest))
+               ,@(my-agent-shell-guix-git-share-arguments start-dir)
                ,@(pcase id
                    ('codex
                     (list (format "--share=%s/.codex" (getenv "HOME"))
@@ -2451,7 +2452,31 @@ See also `sp-kill-hybrid-sexp' examples."
                           (format "--share=%s/.agents" (getenv "HOME")))))
                "--"))))))
    (agent-shell-session-strategy . 'prompt)
-   (agent-shell-openai-codex-acp-command . (list  "npx" "-y" "@agentclientprotocol/codex-acp"))))
+   (agent-shell-openai-codex-acp-command . (list  "npx" "-y" "@agentclientprotocol/codex-acp")))
+  :eval
+  ((defun my-agent-shell-guix--git-common-directory (directory)
+     "Return DIRECTORY's absolute Git common directory, or nil outside Git.
+
+Signal `user-error' when DIRECTORY contains Git metadata that cannot be
+resolved."
+     (let ((directory (file-name-as-directory (expand-file-name directory))))
+       (when (locate-dominating-file directory ".git")
+         ;; `magit-gitdir' is defined in magit-git.el, but its process adapter is
+         ;; loaded by magit-process.el.
+         (require 'magit-process)
+         (if-let ((common-directory (magit-gitdir directory t)))
+             (directory-file-name common-directory)
+           (user-error "Cannot resolve Git metadata for %s" directory)))))
+
+   (defun my-agent-shell-guix-git-share-arguments (directory)
+     "Return Guix arguments needed for Git commands under DIRECTORY.
+
+The current working directory is already shared by `guix shell --container'.
+Only mount the Git common directory when it lies outside that tree."
+     (when-let ((common-directory
+                 (my-agent-shell-guix--git-common-directory directory)))
+       (unless (file-in-directory-p common-directory directory)
+         (list (format "--share=%s" common-directory)))))))
 
 (defcustom my-deepl-api-key nil
   "My DeepL API key.")
