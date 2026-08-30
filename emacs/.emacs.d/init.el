@@ -1929,9 +1929,23 @@ Basedpyright only."
   ((magit-diff-refine-hunk . t))
   :eval
   ((magit-wip-mode)
-   (put 'magit-revision-mode 'magit-diff-default-arguments
-        `("--show-signature"
-          ,@(get 'magit-diff-mode 'magit-diff-default-arguments)))))
+   (defun my-magit-add-signature (mode arguments-property)
+     (let ((args (get mode arguments-property)))
+       (unless (member "--show-signature" args)
+         (put mode arguments-property
+              (cons "--show-signature" args)))))
+
+   (my-magit-add-signature 'magit-revision-mode 'magit-log-default-arguments)
+   (my-magit-add-signature 'magit-log-mode 'magit-log-default-arguments)
+
+
+   (let* ((key 'magit-log:magit-status-mode)
+          (args (or (alist-get key transient-values)
+                    (get 'magit-status-mode
+                         'magit-log-default-arguments))))
+     (setf (alist-get key transient-values)
+           (cons "--show-signature"
+                 (remove "--show-signature" args))))))
 
 (mmic magit-delta
   :eval
