@@ -2441,7 +2441,7 @@ See also `sp-kill-hybrid-sexp' examples."
                    ('codex
                     (list (format "--share=%s/.codex" (getenv "HOME"))
                           (format "--share=%s/.agents" (getenv "HOME"))
-                          (format "--share=%s/dotfiles/ai" (getenv "HOME"))))
+                          (format "--share=%s/dotfiles/agents" (getenv "HOME"))))
                    ('opencode
                     (list (format "--share=%s/.local/share/opencode/" (getenv "HOME"))
                           (format "--share=%s/.local/state/opencode/" (getenv "HOME"))
