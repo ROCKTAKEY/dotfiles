@@ -15,4 +15,6 @@
         "python"
         "perl"
         "ripgrep"
-        "curl"))
+        "curl"
+        "uv"
+        "node"))
