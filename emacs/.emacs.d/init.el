@@ -490,6 +490,19 @@ how long to wait for a response before giving up."
      (split-window-right)
      (balance-windows))))
 
+(mmic transient
+  :custom
+  ((transient-history-file
+    . (expand-file-name
+       "etc/transient/history.el"
+       user-emacs-directory))
+   (transient-values-file
+    . (expand-file-name
+       "etc/transient/values.el"
+       user-emacs-directory)))
+  :autoload-noninteractive
+  (transient-define-prefix))
+
 (mmic tab-bar
   :define-key
   ((global-map
@@ -1896,17 +1909,6 @@ Basedpyright only."
   (( my-hydra nil
      ("Search"
       (("r" rg-menu "Ripgrep Menu"))))))
-
-(mmic transient
-  :custom
-  ((transient-history-file
-    . (expand-file-name
-       "etc/transient/history.el"
-       user-emacs-directory))
-   (transient-values-file
-    . (expand-file-name
-       "etc/transient/values.el"
-       user-emacs-directory))))
 
 (mmic magit
   :define-key
