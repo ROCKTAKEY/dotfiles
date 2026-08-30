@@ -1,13 +1,16 @@
 (use-modules (gnu home)
              (gnu services)
              (gnu home services)
+             (gnu home services desktop)
              (gnu home services shepherd)
+             (gnu home services sound)
              (guix gexp)
              (gnu packages rust-apps))
 
 (home-environment
   (services
    (cons*
+    (service home-dbus-service-type)
     (service home-shepherd-service-type
              (home-shepherd-configuration
                (services
@@ -32,4 +35,5 @@
                                      (string-append "WAYLAND_DISPLAY="
                                                     (fallback "WAYLAND_DISPLAY" "wayland-1")))))))))
                    (stop #~(make-kill-destructor)))))))
+    (service home-pipewire-service-type)
     %base-home-services)))

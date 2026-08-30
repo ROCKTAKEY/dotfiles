@@ -16,8 +16,8 @@
              (roquix services waydroid)
              (nongnu packages linux)
              (nongnu system linux-initrd))
-(use-service-modules cups desktop networking ssh xorg docker virtualization syncthing nix)
-(use-package-modules package-management wm)
+(use-service-modules cups desktop networking ssh xorg docker virtualization syncthing nix sound)
+(use-package-modules linux package-management window-management)
 
 
 (operating-system
@@ -69,6 +69,7 @@
   ;; services, run 'guix system search KEYWORD' in a terminal.
   (services
    (append (list (service gnome-desktop-service-type)
+                 (service gnome-keyring-service-type)
                  (service screen-locker-service-type
                           (screen-locker-configuration
                            ;; the `name' property must be same as the name of the executable
@@ -199,7 +200,8 @@ COMMIT
                                 ;; Use xremap without sudo
                                 (udev-rule
                                  "50-xremap.rules"
-                                 "KERNEL==\"uinput\", GROUP=\"input\", TAG+=\"uaccess\""))))))))
+                                 "KERNEL==\"uinput\", GROUP=\"input\", TAG+=\"uaccess\"")))))
+                            (delete pulseaudio-service-type))))
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
                 (targets (list "/boot/efi"))
