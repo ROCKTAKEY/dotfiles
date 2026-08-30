@@ -1,3 +1,4 @@
 *.local
 !.local/
 nix/.config/nix/access-tokens.conf
+libskk/.config/fcitx5/conf/cached_layouts
