@@ -2,3 +2,6 @@
 .ccls-cache
 .aider*
 .agent-shell
+*.pyc
+*.pyi
+__pycache__/*
