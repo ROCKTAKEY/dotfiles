@@ -2426,7 +2426,13 @@ See also `sp-kill-hybrid-sexp' examples."
                ,@(pcase id
                    ('codex
                     (list (format "--share=%s/.codex" (getenv "HOME"))
-                          (format "--share=%s/.config/agents/AGENTS.md" (getenv "HOME")))))
+                          (format "--share=%s/.agents" (getenv "HOME"))
+                          (format "--share=%s/dotfiles/ai" (getenv "HOME"))))
+                   ('opencode
+                    (list (format "--share=%s/.local/share/opencode/" (getenv "HOME"))
+                          (format "--share=%s/.local/state/opencode/" (getenv "HOME"))
+                          (format "--share=%s/.opencode.json" (getenv "HOME"))
+                          (format "--share=%s/.agents" (getenv "HOME")))))
                "--"))))))
    (agent-shell-session-strategy . 'prompt)
    (agent-shell-openai-codex-acp-command . (list  "npx" "-y" "@agentclientprotocol/codex-acp"))))
