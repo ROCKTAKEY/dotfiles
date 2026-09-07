@@ -1929,6 +1929,10 @@ Basedpyright only."
        ("M-n" git-commit-next-message "Next")))))
   :custom
   ((magit-diff-refine-hunk . t))
+  :face
+  ((magit-signature-good . ((t (:foreground "#44ff00"))))
+   (magit-signature-untrusted . ((t (:foreground "#ffff00"))))
+   (magit-signature-error . ((t (:foreground "#ff4400")))))
   :eval
   ((magit-wip-mode)
    (defun my-magit-add-signature (mode arguments-property)
@@ -1938,8 +1942,8 @@ Basedpyright only."
               (cons "--show-signature" args)))))
 
    (my-magit-add-signature 'magit-revision-mode 'magit-log-default-arguments)
+   (my-magit-add-signature 'magit-revision-mode 'magit-diff-default-arguments)
    (my-magit-add-signature 'magit-log-mode 'magit-log-default-arguments)
-
 
    (let* ((key 'magit-log:magit-status-mode)
           (args (or (alist-get key transient-values)
