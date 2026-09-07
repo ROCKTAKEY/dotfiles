@@ -2425,22 +2425,15 @@ See also `sp-kill-hybrid-sexp' examples."
                    (cond
                     ((file-exists-p (expand-file-name "manifest.scm" project-root))
                      (expand-file-name "manifest.scm" project-root))
-                    (t nil)))
-                  (base-manifests
-                   (pcase id
-                     ('codex
-                      (list "~/manifests/codex.scm" "~/manifests/codex-acp.scm"))
-                     ('claude-code
-                      (list "~/manifests/claude.scm"))
-                     ('gemini-cli
-                      (list "~/manifests/gemini.scm"))
-                     (_
-                      (list "~/manifests/default.scm"))))
-                  (manifest-args
-                   (mapcan (lambda (m) (list "-m" (expand-file-name m)))
-                           base-manifests)))
-             `("guix" "shell" "-CWNF"
-               ,@manifest-args
+                    (t nil))))
+             `("guix" "extra-profile" "shell"
+               ,@(pcase id
+                   ('codex
+                    (list "codex" "codex-acp"))
+                   ('opencode
+                    (list "opencode")))
+               "--"
+               "-CWNF"
                ,@(when local-manifest
                    (list "-m" local-manifest))
                ,@(my-agent-shell-guix-git-share-arguments start-dir)
