@@ -280,6 +280,9 @@ bar {
 for_window [app_id="Firefox" title="ピクチャーインピクチャー"] floating enable
 
 exec mako
+# D-Bus-activated portals need the display environment before autostart apps request them.
+# https://flatpak.github.io/xdg-desktop-portal/docs/system-integration.html
+exec dbus-update-activation-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP=sway && dex --autostart --environment sway
 exec_always nm-applet --indicator
 
 exec_always --no-startup-id fcitx5 -d

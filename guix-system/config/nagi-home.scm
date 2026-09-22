@@ -5,11 +5,30 @@
              (gnu home services shepherd)
              (gnu home services sound)
              (guix gexp)
-             (gnu packages rust-apps))
+             (gnu packages rust-apps)
+             (gnu packages sync)
+             (gnu packages xdisorg))
+
+(define nextcloud-autostart
+  (simple-service
+   'nextcloud-autostart
+   home-xdg-configuration-files-service-type
+   ;; Match Nextcloud's own autostart filename so both settings share one entry.
+   ;; https://github.com/nextcloud/desktop/blob/master/src/common/utility_unix.cpp
+   `(("autostart/com.nextcloud.desktopclient.nextcloud.desktop"
+      ,(mixed-text-file
+        "nextcloud.desktop"
+        "[Desktop Entry]\n"
+        "Type=Application\n"
+        "Name=Nextcloud\n"
+        "Exec=" (file-append nextcloud-client "/bin/nextcloud") " --background\n"
+        "Terminal=false\n")))))
 
 (home-environment
+  (packages (list dex))
   (services
    (cons*
+    nextcloud-autostart
     (service home-dbus-service-type)
     (service home-shepherd-service-type
              (home-shepherd-configuration
