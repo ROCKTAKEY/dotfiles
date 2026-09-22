@@ -62,7 +62,11 @@
                           (specification->package "font-google-noto-sans-cjk")
                           (specification->package "font-google-noto-serif-cjk")
                           nix
-                          swaylock)
+                          swaylock
+                          ;; TPM emulation
+                          (specification->package "swtpm")
+                          ;; Mesa
+                          (specification->package "mesa"))
                     %base-packages))
 
   ;; Below is the list of system services.  To search for available
