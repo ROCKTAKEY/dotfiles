@@ -12,12 +12,15 @@
 (use-modules (gnu)
              (gnu packages fonts)
              (gnu packages gnome)
+             (gnu packages guile)
+             (guix gexp)
+             (roquix packages virtiofsd)
              (roquix services tailscale)
              (roquix services waydroid)
              (nongnu packages linux)
              (nongnu system linux-initrd))
 (use-service-modules cups desktop networking ssh xorg docker virtualization syncthing nix sound)
-(use-package-modules linux package-management window-management)
+(use-package-modules linux package-management window-management virtualization)
 
 
 (operating-system
@@ -63,6 +66,7 @@
                           (specification->package "font-google-noto-serif-cjk")
                           nix
                           swaylock
+                          virtiofsd
                           ;; TPM emulation
                           (specification->package "swtpm")
                           ;; Mesa
@@ -73,7 +77,6 @@
   ;; services, run 'guix system search KEYWORD' in a terminal.
   (services
    (append (list (service gnome-desktop-service-type)
-                 (service gnome-keyring-service-type)
                  (service screen-locker-service-type
                           (screen-locker-configuration
                            ;; the `name' property must be same as the name of the executable
@@ -99,6 +102,9 @@ Section \"InputClass\"
 EndSection
 "))))
 
+                 ;; Reapplying this ruleset replaces libvirt's INPUT hook, so
+                 ;; preserve guest access to the host's DHCP and DNS services.
+                 ;; https://libvirt.org/firewall.html
                  (service iptables-service-type
                           (iptables-configuration
                            (ipv4-rules (plain-file "iptables.rules" "*filter
@@ -107,6 +113,8 @@ EndSection
 :OUTPUT ACCEPT
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 -A INPUT -i lo -j ACCEPT
+-A INPUT -i virbr0 -p udp -m multiport --dports 53,67 -j ACCEPT
+-A INPUT -i virbr0 -p tcp --dport 53 -j ACCEPT
 -A INPUT -p ipv6-icmp -j ACCEPT
 -A INPUT -j REJECT --reject-with icmp-port-unreachable
 COMMIT
@@ -128,7 +136,33 @@ COMMIT
                  (service docker-service-type)
                  (service libvirt-service-type
                           (libvirt-configuration
-                           (unix-sock-group "libvirt")))
+                           (unix-sock-group "libvirt")
+                           ;; Expose QEMU's Secure Boot-capable edk2 metadata
+                           ;; for the Windows 11 VM's UEFI firmware selection.
+                           ;; https://libvirt.org/formatdomain.html
+                           (firmwares (list qemu))))
+                 ;; Libvirt discovers virtiofsd from vhost-user descriptors.
+                 ;; https://github.com/libvirt/libvirt/blob/v11.5.0/src/qemu/qemu_interop_config.c
+                 (simple-service
+                  'virtiofsd-vhost-user etc-service-type
+                  `(("qemu/vhost-user/50-virtiofsd.json"
+                     ,(computed-file
+                       "50-virtiofsd.json"
+                       ;; Build gexps have an isolated module search path.
+                       ;; https://guix.gnu.org/manual/devel/en/guix.pdf
+                       (with-extensions (list guile-json-4)
+                         #~(begin
+                             (use-modules (json builder))
+                             (call-with-output-file #$output
+                               (lambda (port)
+                                 (display
+                                  (scm->json-string
+                                   (list (cons "description" "virtiofsd")
+                                         (cons "type" "fs")
+                                         (cons "binary"
+                                               #$(file-append virtiofsd "/bin/virtiofsd"))))
+                                  port)
+                                 (newline port)))))))))
                  (service virtlog-service-type)
                  (service qemu-binfmt-service-type
                           (qemu-binfmt-configuration
