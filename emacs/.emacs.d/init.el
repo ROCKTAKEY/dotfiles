@@ -1910,6 +1910,10 @@ Basedpyright only."
      ("Search"
       (("r" rg-menu "Ripgrep Menu"))))))
 
+(mmic* diff-mode
+  :face
+  ((diff-refine-added . ((t (:background "#002200"))))))
+
 (mmic magit
   :define-key
   ((global-map
