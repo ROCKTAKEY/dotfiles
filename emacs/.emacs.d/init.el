@@ -1956,6 +1956,14 @@ Basedpyright only."
                  (remove "--show-signature" args))))))
 
 (mmic magit-delta
+  :custom-after-load
+  ((magit-delta-delta-args
+    . (append
+       (my-standard-value 'magit-delta-delta-args)
+       '("--plus-style"       "syntax #1f2b1f"
+         "--plus-emph-style"  "syntax #2d402d"
+         "--minus-style"      "syntax #2b1f1f"
+         "--minus-emph-style" "syntax #402d2d"))))
   :eval
   ((when (executable-find "delta")
      (magit-delta-mode))))
