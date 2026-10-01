@@ -1931,8 +1931,6 @@ Basedpyright only."
      ("Browse commit message"
       (("M-p" git-commit-prev-message "Prev")
        ("M-n" git-commit-next-message "Next")))))
-  :custom
-  ((magit-diff-refine-hunk . t))
   :face
   ((magit-signature-good . ((t (:foreground "#44ff00"))))
    (magit-signature-untrusted . ((t (:foreground "#ffff00"))))
