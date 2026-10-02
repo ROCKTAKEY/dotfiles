@@ -255,8 +255,10 @@ bindsym $mod+r mode "resize"
     bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
     bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
     # Special key to take a screenshot with grim
-    bindsym Print exec grim
-
+    bindsym Print exec grim -g "$(slurp)" - | swappy -f -
+    bindsym $mod+Shift+s exec grim -g "$(slurp)" - | swappy -f -
+    # Screenshot current window
+    bindsym $mod+s exec swaymsg -t get_tree | jq -r 'recurse(.nodes[]?, .floating_nodes[]?) | select(.focused) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | grim -g - - | swappy -f -
 #
 # Status Bar:
 #
