@@ -5,3 +5,4 @@
 *.pyc
 *.pyi
 __pycache__/*
+.guix-shell/
