@@ -17,4 +17,6 @@
         "ripgrep"
         "curl"
         "uv"
-        "node"))
+        "node"
+        "jq"
+        "bubblewrap"))
