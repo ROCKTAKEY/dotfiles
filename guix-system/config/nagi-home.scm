@@ -2,9 +2,11 @@
              (gnu services)
              (gnu home services)
              (gnu home services desktop)
+             (gnu home services fontutils)
              (gnu home services shepherd)
              (gnu home services sound)
              (guix gexp)
+             (gnu packages fonts)
              (gnu packages rust-apps)
              (gnu packages sync)
              (gnu packages xdisorg)
@@ -25,12 +27,20 @@
         "Exec=" (file-append nextcloud-client "/bin/nextcloud") " --background\n"
         "Terminal=false\n")))))
 
+(define monospace-fonts
+  (simple-service 'monospace-fonts home-fontconfig-service-type
+                  (map (lambda (family)
+                         `(alias (family ,family)
+                                 (prefer (family "Cica"))))
+                       '("monospace" "system-monospace"))))
+
 (home-environment
-  (packages (list dex))
+  (packages (list dex font-cica))
   (services
    (cons*
     (service home-t3code-service-type)
     nextcloud-autostart
+    monospace-fonts
     (service home-dbus-service-type)
     (service home-shepherd-service-type
              (home-shepherd-configuration
