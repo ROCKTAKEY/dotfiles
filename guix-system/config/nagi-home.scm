@@ -7,7 +7,8 @@
              (guix gexp)
              (gnu packages rust-apps)
              (gnu packages sync)
-             (gnu packages xdisorg))
+             (gnu packages xdisorg)
+             (roquix home services t3code))
 
 (define nextcloud-autostart
   (simple-service
@@ -28,6 +29,7 @@
   (packages (list dex))
   (services
    (cons*
+    (service home-t3code-service-type)
     nextcloud-autostart
     (service home-dbus-service-type)
     (service home-shepherd-service-type
