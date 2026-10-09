@@ -8,10 +8,7 @@
   (string-append (getcwd) "/guix/.config/guix/extra-profiles"))
 (define profile-file
   (string-append definition-directory "/t3code/shell.scm"))
-(define config
-  (if (file-exists? profile-file)
-      (load profile-file)
-      (shell-configuration)))
+(define config (load profile-file))
 
 (define (preserved? configuration name)
   (any (lambda (pattern) (string-match pattern name))
@@ -28,12 +25,13 @@
   (not (any (lambda (name) (preserved? config name))
             '("OTHER_SECRET" "NOT_T3_MCP_BEARER_TOKEN" "T3CODEX_HOME"))))
 (test-assert "Codex composition retains both T3 credentials and terminal colors"
-  (let ((combined
-         (compose-shell-configurations
-          (list (cons (parse-profile-name "codex")
-                      (load (string-append definition-directory "/codex/shell.scm")))
-                (cons (parse-profile-name "t3code") config)))))
-    (and (preserved? (composed-shell-configuration-settings combined) "T3_MCP_BEARER_TOKEN")
-         (preserved? (composed-shell-configuration-settings combined) "COLORTERM"))))
+  (let* ((combined
+          (compose-shell-configurations
+           (list (cons (parse-profile-name "codex")
+                       (load (string-append definition-directory "/codex/shell.scm")))
+                 (cons (parse-profile-name "t3code") config))))
+         (settings (composed-shell-configuration-settings combined)))
+    (and (preserved? settings "T3_MCP_BEARER_TOKEN")
+         (preserved? settings "COLORTERM"))))
 (test-end "t3code-extra-profile")
 (exit (if (zero? (test-runner-fail-count runner)) 0 1))
