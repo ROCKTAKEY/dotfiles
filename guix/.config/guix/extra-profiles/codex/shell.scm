@@ -25,7 +25,8 @@
           (share project-directory))
          (map (lambda (directory)
                 (share (string-append home "/" directory)))
-              '(".codex" ".agents" "dotfiles" ".config/git/ignore")))))
+              '(".codex" ".agents" "dotfiles" ".config/gh"
+                ".config/git/ignore")))))
 
   (shell-configuration
    (container? #t)

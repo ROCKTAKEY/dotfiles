@@ -12,6 +12,7 @@
         "sed"
         "bash"
         "git"
+        "github-cli"
         "python"
         "perl"
         "ripgrep"
