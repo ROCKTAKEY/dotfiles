@@ -145,6 +145,7 @@
                              config => (guix-configuration
                                         (inherit config)
                                         (max-silent-time %cuirass-build-max-silent-time)
+                                        (timeout (* 7 24 60 60))
                                         (substitute-urls
                                          (cons* "https://substitutes.nonguix.org"
                                                 "https://guix.bordeaux.inria.fr"
