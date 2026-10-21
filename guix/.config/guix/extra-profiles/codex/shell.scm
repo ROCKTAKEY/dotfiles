@@ -25,7 +25,7 @@
           (share project-directory))
          (map (lambda (directory)
                 (share (string-append home "/" directory)))
-              '(".codex" ".agents" "dotfiles" ".config/gh"
+              '(".codex" ".agents" "dotfiles" ".config/gh" ".config/glab-cli"
                 ".config/git/ignore")))))
 
   (shell-configuration

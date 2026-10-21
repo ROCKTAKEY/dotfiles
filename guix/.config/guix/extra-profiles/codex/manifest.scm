@@ -13,6 +13,7 @@
         "bash"
         "git"
         "github-cli"
+        "glab"
         "python"
         "perl"
         "ripgrep"
