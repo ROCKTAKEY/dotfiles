@@ -129,6 +129,10 @@
                                     "proxy_pass "
                                     %guix-publish-upstream
                                     ";")
+                                   ;; Live NAR responses have no length or chunk
+                                   ;; framing, so EOF must delimit the response.
+                                   ;; https://www.rfc-editor.org/rfc/rfc9112.html#section-6.3
+                                   "proxy_set_header Connection close;"
                                    (string-append
                                     "proxy_read_timeout "
                                     %nginx-publish-read-timeout
