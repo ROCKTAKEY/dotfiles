@@ -21,4 +21,5 @@
         "uv"
         "node"
         "jq"
-        "bubblewrap"))
+        "bubblewrap"
+        "gnupg"))

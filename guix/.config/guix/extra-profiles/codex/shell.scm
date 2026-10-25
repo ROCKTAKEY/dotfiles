@@ -6,6 +6,9 @@
         (load (string-append (dirname (current-filename))
                              "/../git-worktree.scm")))
        (state-directory (string-append project-directory "/.guix-shell"))
+       (signing-key-file
+        (string-append home "/.gnupg/private-keys-v1.d/"
+                       "BC20FD0C1F13E0C63A98552620D00C487E3370C2.key"))
        (runtime-directory
         (string-append "/run/user/" (number->string (getuid)))))
   (define (share-state-directory name target)
@@ -16,7 +19,8 @@
   (define (home-mounts)
     ;; At HOME, share the host home so it also remains the working directory.
     (if (string=? project-directory home)
-        (list (share home))
+        (list (share home)
+              (share-state-directory "home/.gnupg" (string-append home "/.gnupg")))
         (append
          (list
           (share-state-directory "home" home)
@@ -26,7 +30,7 @@
          (map (lambda (directory)
                 (share (string-append home "/" directory)))
               '(".codex" ".agents" "dotfiles" ".config/gh" ".config/glab-cli"
-                ".config/git/ignore")))))
+                ".config/git/ignore" ".config/git/config")))))
 
   (shell-configuration
    (container? #t)
@@ -40,4 +44,8 @@
      (home-mounts)
      worktree-mounts
      (list (share-state-directory "tmp" "/tmp")
-           (share-state-directory "runtime" runtime-directory))))))
+           (share-state-directory "runtime" runtime-directory)
+           (expose signing-key-file)
+           (expose (string-append home "/.gnupg/pubring.kbx"))
+           (share (string-append home "/.config/git/config.codex.local")
+                  #:target (string-append home "/.config/git/config.local")))))))
