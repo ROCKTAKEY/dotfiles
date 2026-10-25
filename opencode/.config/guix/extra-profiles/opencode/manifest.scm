@@ -3,7 +3,8 @@
 ;; that accepts a '--manifest' (or '-m') option.
 
 (specifications->manifest
-  (list "nss-certs"
+  (list "opencode"
+        "nss-certs"
         "coreutils"
         "gcc-toolchain"
         "findutils"
