@@ -255,4 +255,11 @@ Match all
                                   %cuirass-store-uuid
                                   'ext4))
                          (needed-for-boot? #t)
-                         (type "ext4")) %base-file-systems)))
+                         (type "ext4"))
+                       (file-system
+                        (mount-point "/var/cache/guix/publish")
+                        (device (uuid "3b680f53-051d-472c-9a24-166420d55d4b"
+                                      'ext4))
+                        (needed-for-boot? #t)
+                        (type "ext4"))
+                       %base-file-systems)))
