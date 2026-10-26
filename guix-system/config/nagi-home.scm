@@ -70,6 +70,9 @@
               (t3code t3code-cli-rocktakey)))
     nextcloud-autostart
     bitwarden-wayland-launcher
+    (simple-service 'bitwarden-ssh-agent
+                    home-environment-variables-service-type
+                    '(("SSH_AUTH_SOCK" . "$HOME/.bitwarden-ssh-agent.sock")))
     monospace-fonts
     (service home-dbus-service-type)
     (service home-shepherd-service-type

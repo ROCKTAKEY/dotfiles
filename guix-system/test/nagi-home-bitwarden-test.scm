@@ -12,6 +12,17 @@
 (define home
   (load (string-append (getcwd) "/guix-system/config/nagi-home.scm")))
 
+(define agent-service
+  (find (lambda (service)
+          (eq? (service-type-name (service-kind service))
+               'bitwarden-ssh-agent))
+        (home-environment-services home)))
+
+(unless (and agent-service
+             (equal? (assoc-ref (service-value agent-service) "SSH_AUTH_SOCK")
+                     "$HOME/.bitwarden-ssh-agent.sock"))
+  (error "SSH clients must use the Bitwarden agent socket in the user's home"))
+
 (define launcher-service
   (find (lambda (service)
           (eq? (service-type-name (service-kind service))
