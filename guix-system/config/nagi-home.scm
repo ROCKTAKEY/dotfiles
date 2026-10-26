@@ -6,10 +6,12 @@
              (gnu home services shepherd)
              (gnu home services sound)
              (guix gexp)
+             (gnu packages base)
              (gnu packages fonts)
              (gnu packages rust-apps)
              (gnu packages sync)
              (gnu packages xdisorg)
+             (nongnu packages password-utils)
              (roquix home services t3code)
              (roquix packages t3code))
 
@@ -28,6 +30,30 @@
         "Exec=" (file-append nextcloud-client "/bin/nextcloud") " --background\n"
         "Terminal=false\n")))))
 
+(define bitwarden-wayland-desktop
+  (computed-file
+   "bitwarden.desktop"
+   (with-imported-modules '((guix build utils))
+     #~(begin
+         (use-modules (guix build utils))
+         (copy-file
+          #$(file-append bitwarden-desktop
+                         "/share/applications/bitwarden.desktop")
+          #$output)
+         (chmod #$output #o644)
+         (substitute* #$output
+           (("^Exec=")
+            (string-append
+             "Exec=" #$(file-append coreutils "/bin/env")
+             " DISPLAY_MODE=WAYLAND ")))))))
+
+(define bitwarden-wayland-launcher
+  (simple-service
+   'bitwarden-wayland-launcher
+   home-files-service-type
+   `((".local/share/applications/bitwarden.desktop"
+      ,bitwarden-wayland-desktop))))
+
 (define monospace-fonts
   (simple-service 'monospace-fonts home-fontconfig-service-type
                   (map (lambda (family)
@@ -43,6 +69,7 @@
              (home-t3code-configuration
               (t3code t3code-cli-rocktakey)))
     nextcloud-autostart
+    bitwarden-wayland-launcher
     monospace-fonts
     (service home-dbus-service-type)
     (service home-shepherd-service-type
