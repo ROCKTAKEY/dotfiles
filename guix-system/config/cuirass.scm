@@ -10,6 +10,7 @@
 ;; Indicate which modules to import to access the variables
 ;; used in this configuration.
 (use-modules (gnu)
+             (gnu packages linux)
              (roquix services tailscale))
 (use-service-modules cups cuirass desktop networking ssh web xorg admin virtualization databases shepherd)
 
@@ -69,6 +70,44 @@
                      "gc" "-F" #$%cuirass-store-free-space)
                   #:requirement '(guix-daemon)))
 
+(define cuirass-ssh-firewall
+  (shepherd-service
+   (provision '(cuirass-ssh-firewall))
+   (requirement '(networking))
+   (documentation "Restrict SSH access to Tailscale.")
+   (one-shot? #t)
+   (start #~(lambda _
+              (invoke #$(file-append nftables "/sbin/nft")
+                      "--file"
+                      #$(local-file "cuirass-ssh-start.nft"))))
+   ;; Tailscale owns separate tables.  Creating the table before deleting it
+   ;; makes cleanup atomic and harmless when the rules are already absent.
+   (stop #~(lambda _
+             (invoke #$(file-append nftables "/sbin/nft")
+                     "--file"
+                     #$(local-file "cuirass-ssh-stop.nft"))
+             #f))))
+
+(define cuirass-openssh-service-type
+  (service-type
+   (inherit openssh-service-type)
+   (extensions
+    (map (lambda (extension)
+           (if (eq? (service-extension-target extension)
+                    shepherd-root-service-type)
+               (service-extension
+                shepherd-root-service-type
+                (lambda (config)
+                  (map (lambda (service)
+                         (shepherd-service
+                          (inherit service)
+                          (requirement
+                           (cons 'cuirass-ssh-firewall
+                                 (shepherd-service-requirement service)))))
+                       ((service-extension-compute extension) config))))
+               extension))
+         (service-type-extensions openssh-service-type)))))
+
 (operating-system
   (locale "ja_JP.utf8")
   (timezone "Asia/Tokyo")
@@ -95,9 +134,14 @@
 
                  (service tailscale-service-type)
 
-                 (service openssh-service-type
+                 (simple-service 'cuirass-ssh-firewall
+                                 shepherd-root-service-type
+                                 (list cuirass-ssh-firewall))
+                 (service cuirass-openssh-service-type
                           (openssh-configuration
                            (public-key-authentication? #t)
+                           (password-authentication? #f)
+                           (challenge-response-authentication? #f)
                            (permit-root-login 'prohibit-password)))
 
                  (service unattended-upgrade-service-type)
