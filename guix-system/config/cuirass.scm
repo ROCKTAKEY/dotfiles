@@ -134,24 +134,10 @@
 
                  (service tailscale-service-type)
 
-                 (simple-service 'cuirass-ssh-firewall
-                                 shepherd-root-service-type
-                                 (list cuirass-ssh-firewall))
-                 (service cuirass-openssh-service-type
+                 (service openssh-service-type
                           (openssh-configuration
-                           (password-authentication? #f)
-                           (challenge-response-authentication? #f)
-                           ;; Shepherd owns the listener in inetd mode, so sshd
-                           ;; checks the accepted socket's peer and destination
-                           ;; even if the host firewall rules have been removed.
-                           ;; https://man.openbsd.org/sshd_config#RefuseConnection
-                           (extra-content
-                            "Match Address *,!100.64.0.0/10
-    RefuseConnection yes
-Match LocalAddress *,!100.64.0.0/10
-    RefuseConnection yes
-Match all
-")))
+                           (public-key-authentication? #t)
+                           (permit-root-login 'prohibit-password)))
 
                  (service unattended-upgrade-service-type)
                  (service qemu-guest-agent-service-type)
