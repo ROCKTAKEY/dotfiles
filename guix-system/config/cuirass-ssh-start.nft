@@ -1,9 +1,0 @@
-table inet cuirass_ssh
-flush table inet cuirass_ssh
-
-table inet cuirass_ssh {
-    chain input {
-        type filter hook input priority 0; policy accept;
-        iifname != "tailscale0" tcp dport 22 drop
-    }
-}
