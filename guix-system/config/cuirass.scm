@@ -88,6 +88,13 @@
                      #$(local-file "cuirass-ssh-stop.nft"))
              #f))))
 
+(define (require-cuirass-ssh-firewall service)
+  (shepherd-service
+   (inherit service)
+   (requirement
+    (cons 'cuirass-ssh-firewall
+          (shepherd-service-requirement service)))))
+
 (define cuirass-openssh-service-type
   (service-type
    (inherit openssh-service-type)
@@ -98,12 +105,7 @@
                (service-extension
                 shepherd-root-service-type
                 (lambda (config)
-                  (map (lambda (service)
-                         (shepherd-service
-                          (inherit service)
-                          (requirement
-                           (cons 'cuirass-ssh-firewall
-                                 (shepherd-service-requirement service)))))
+                  (map require-cuirass-ssh-firewall
                        ((service-extension-compute extension) config))))
                extension))
          (service-type-extensions openssh-service-type)))))
