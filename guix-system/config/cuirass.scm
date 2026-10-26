@@ -88,6 +88,13 @@
                      #$(local-file "cuirass-ssh-stop.nft"))
              #f))))
 
+(define (require-cuirass-ssh-firewall service)
+  (shepherd-service
+   (inherit service)
+   (requirement
+    (cons 'cuirass-ssh-firewall
+          (shepherd-service-requirement service)))))
+
 (define cuirass-openssh-service-type
   (service-type
    (inherit openssh-service-type)
@@ -98,12 +105,7 @@
                (service-extension
                 shepherd-root-service-type
                 (lambda (config)
-                  (map (lambda (service)
-                         (shepherd-service
-                          (inherit service)
-                          (requirement
-                           (cons 'cuirass-ssh-firewall
-                                 (shepherd-service-requirement service)))))
+                  (map require-cuirass-ssh-firewall
                        ((service-extension-compute extension) config))))
                extension))
          (service-type-extensions openssh-service-type)))))
@@ -139,8 +141,10 @@
                                  (list cuirass-ssh-firewall))
                  (service cuirass-openssh-service-type
                           (openssh-configuration
+                           (public-key-authentication? #t)
                            (password-authentication? #f)
                            (challenge-response-authentication? #f)
+                           (permit-root-login 'prohibit-password)
                            ;; Shepherd owns the listener in inetd mode, so sshd
                            ;; checks the accepted socket's peer and destination
                            ;; even if the host firewall rules have been removed.
