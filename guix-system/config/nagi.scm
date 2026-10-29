@@ -58,12 +58,14 @@
                           (specification->package "dmenu")
                           (specification->package "ratpoison")
                           (specification->package "xterm")
-                          (specification->package "sway")
                           (specification->package "font-cica")
                           (specification->package "st")
                           (specification->package "font-google-noto")
                           (specification->package "font-google-noto-sans-cjk")
                           (specification->package "font-google-noto-serif-cjk")
+                          ;; Memory leak bug fix so use roquix variant
+                          (@ (roquix packages sway) sway)
+
                           nix
                           swaylock
                           virtiofsd
