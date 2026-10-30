@@ -229,7 +229,7 @@ COMMIT
                               (inherit config)
                               (vpn-plugins (list
                                             network-manager-openvpn
-                                            network-manager-vpnc
+                                            network-manager-libreswan
                                             network-manager-openconnect))))
                             (udev-service-type
                              config =>
