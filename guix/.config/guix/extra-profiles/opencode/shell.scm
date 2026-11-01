@@ -2,6 +2,12 @@
 
 (shell-configuration
  (container? #t)
+ (network? #t)
  (mounts
-  (load (string-append (dirname (current-filename))
-                       "/../git-worktree.scm"))))
+  (append
+   (list (expose (string-append (getenv "HOME") "/.config/git/config"))
+         (expose (string-append (getenv "HOME") "/.config/git/config.local")
+                 #:on-missing 'skip))
+   (load (string-append (dirname (current-filename)) "/../forgejo.scm"))
+   (load (string-append (dirname (current-filename))
+                        "/../git-worktree.scm")))))

@@ -43,6 +43,7 @@
     (append
      (home-mounts)
      worktree-mounts
+     (load (string-append (dirname (current-filename)) "/../forgejo.scm"))
      (list (share-state-directory "tmp" "/tmp")
            (share-state-directory "runtime" runtime-directory)
            (expose signing-key-file)

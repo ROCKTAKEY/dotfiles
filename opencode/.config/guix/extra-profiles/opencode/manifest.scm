@@ -12,6 +12,8 @@
         "sed"
         "bash"
         "git"
+        "forgejo-cli"
+        "git-credential-oauth"
         "python"
         "perl"
         "ripgrep"

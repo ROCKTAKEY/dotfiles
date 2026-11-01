@@ -14,6 +14,8 @@
         "git"
         "github-cli"
         "glab"
+        "forgejo-cli"
+        "git-credential-oauth"
         "python"
         "perl"
         "ripgrep"
