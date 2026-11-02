@@ -68,6 +68,12 @@
     (service home-t3code-service-type
              (home-t3code-configuration
               (t3code t3code-cli-rocktakey)))
+    (service home-t3code-service-type
+             (home-t3code-configuration
+              (service-name 't3code-local)
+              (t3code t3code-cli-rocktakey)
+              (port 3774)
+              (data-directory "/home/rocktakey/.t3-local")))
     nextcloud-autostart
     bitwarden-wayland-launcher
     (simple-service 'bitwarden-ssh-agent

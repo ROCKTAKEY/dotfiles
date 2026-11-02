@@ -15,17 +15,37 @@
 (define home
   (load (string-append (getcwd) "/guix-system/config/nagi-home.scm")))
 
-(define t3code-service
-  (find (lambda (service)
-          (eq? (service-kind service) home-t3code-service-type))
-        (home-environment-services home)))
+(define configurations
+  (map service-value
+       (filter (lambda (service)
+                 (eq? (service-kind service) home-t3code-service-type))
+               (home-environment-services home))))
 
-(if (and t3code-service
-         (eq? t3code-cli
-              (home-t3code-configuration-t3code
-               (service-value t3code-service))))
-    (display "PASS: T3 Code explicitly selects t3code-cli\n")
-    (begin
-      (display "FAIL: T3 Code must explicitly select t3code-cli\n"
-               (current-error-port))
-      (exit 1)))
+(unless (= 2 (length configurations))
+  (error "Home must run the primary and local LLM T3 Code instances"))
+
+(define (configuration-named name)
+  (find (lambda (config)
+          (eq? name (home-t3code-configuration-service-name config)))
+        configurations))
+
+(define primary (configuration-named 't3code))
+(define local-llm (configuration-named 't3code-local))
+
+(unless (and primary local-llm
+             (every (lambda (config)
+                      (eq? t3code-cli-rocktakey
+                           (home-t3code-configuration-t3code config)))
+                    configurations)
+             (= 3773 (home-t3code-configuration-port primary))
+             (not (home-t3code-configuration-data-directory primary))
+             (= 3774 (home-t3code-configuration-port local-llm))
+             (equal? "/home/rocktakey/.t3-local"
+                     (home-t3code-configuration-data-directory local-llm))
+             (every (lambda (config)
+                      (string=? "127.0.0.1"
+                                (home-t3code-configuration-host config)))
+                    configurations))
+  (error "T3 Code instances must use the fork and independent local endpoints and state"))
+
+(display "PASS: primary and local LLM T3 Code instances are independently configured\n")
