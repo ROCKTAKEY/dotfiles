@@ -19,7 +19,7 @@
              (roquix services waydroid)
              (nongnu packages linux)
              (nongnu system linux-initrd))
-(use-service-modules cups desktop networking ssh xorg docker virtualization syncthing nix sound)
+(use-service-modules cups desktop monitoring networking ssh xorg docker virtualization syncthing nix sound)
 (use-package-modules linux package-management window-management virtualization)
 
 
@@ -134,6 +134,9 @@ COMMIT
 
                  (service syncthing-service-type
                           (syncthing-configuration (user "rocktakey")))
+                 (service prometheus-node-exporter-service-type
+                          (prometheus-node-exporter-configuration
+                           (extra-options '("--collector.drm"))))
                  (service containerd-service-type)
                  (service docker-service-type)
                  (service libvirt-service-type
