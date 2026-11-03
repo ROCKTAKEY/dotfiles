@@ -14,6 +14,11 @@
 
 (define os (load-last-expression "guix-system/config/nagi.scm"))
 
+(unless (find (lambda (service)
+                (eq? 'process-exporter (service-type-name (service-kind service))))
+              (operating-system-services os))
+  (error "nagi must expose process CPU and memory metrics"))
+
 (define exporter
   (find (lambda (service)
           (eq? prometheus-node-exporter-service-type (service-kind service)))

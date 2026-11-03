@@ -16,6 +16,7 @@
              (guix gexp)
              (roquix packages virtiofsd)
              (roquix services tailscale)
+             (roquix services process-exporter)
              (roquix services waydroid)
              (nongnu packages linux)
              (nongnu system linux-initrd))
@@ -137,6 +138,9 @@ COMMIT
                  (service prometheus-node-exporter-service-type
                           (prometheus-node-exporter-configuration
                            (extra-options '("--collector.drm"))))
+                 (service process-exporter-service-type
+                          (process-exporter-configuration
+                           (config-file (local-file "nagi-process-exporter.yml"))))
                  (service containerd-service-type)
                  (service docker-service-type)
                  (service libvirt-service-type

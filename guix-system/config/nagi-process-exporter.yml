@@ -1,0 +1,11 @@
+process_names:
+  - name: strata-engine
+    comm: [strata-host]
+  - name: strata-server
+    exe: [python3, python]
+    cmdline: ['strata/serve/server\.py']
+  - name: 't3code-{{.Matches.Port}}'
+    exe: [node]
+    cmdline: ['t3code-cli/.*/bin\.mjs.*--port\s+(?P<Port>\d+)']
+  - name: '{{.Comm}}'
+    cmdline: ['.*']
