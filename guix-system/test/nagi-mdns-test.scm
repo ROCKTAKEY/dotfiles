@@ -15,10 +15,10 @@
  (lambda (rules)
    (let* ((text (plain-file-content rules))
           (allow (string-contains
-                  text "-A INPUT -i eno1 -p udp --dport 5353 -j ACCEPT\n"))
+                  text "-A INPUT -p udp --dport 5353 -j ACCEPT\n"))
           (reject (string-contains text "-A INPUT -j REJECT")))
      (unless (and allow reject (< allow reject))
-       (error "LAN mDNS must be accepted before the default rejection"
+       (error "mDNS on all interfaces must be accepted before the default rejection"
               (plain-file-name rules)))))
  (list (iptables-configuration-ipv4-rules firewall)
        (iptables-configuration-ipv6-rules firewall)))
