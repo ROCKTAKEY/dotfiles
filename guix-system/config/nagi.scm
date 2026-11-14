@@ -116,6 +116,7 @@ EndSection
 :OUTPUT ACCEPT
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 -A INPUT -i lo -j ACCEPT
+-A INPUT -i eno1 -p udp --dport 5353 -j ACCEPT
 -A INPUT -i virbr0 -p udp -m multiport --dports 53,67 -j ACCEPT
 -A INPUT -i virbr0 -p tcp --dport 53 -j ACCEPT
 -A INPUT -p ipv6-icmp -j ACCEPT
@@ -128,6 +129,7 @@ COMMIT
 :OUTPUT ACCEPT
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 -A INPUT -i lo -j ACCEPT
+-A INPUT -i eno1 -p udp --dport 5353 -j ACCEPT
 -A INPUT -p ipv6-icmp -j ACCEPT
 -A INPUT -j REJECT --reject-with icmp6-port-unreachable
 COMMIT
