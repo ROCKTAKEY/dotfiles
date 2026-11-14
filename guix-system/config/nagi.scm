@@ -64,8 +64,7 @@
                           (specification->package "font-google-noto")
                           (specification->package "font-google-noto-sans-cjk")
                           (specification->package "font-google-noto-serif-cjk")
-                          ;; Memory leak bug fix so use roquix variant
-                          (@ (roquix packages sway) sway)
+                          sway
 
                           nix
                           swaylock
