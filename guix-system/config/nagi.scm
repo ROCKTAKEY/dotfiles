@@ -119,7 +119,7 @@ EndSection
 -A INPUT -p udp --dport 5353 -j ACCEPT
 -A INPUT -i virbr0 -p udp -m multiport --dports 53,67 -j ACCEPT
 -A INPUT -i virbr0 -p tcp --dport 53 -j ACCEPT
--A INPUT -p ipv6-icmp -j ACCEPT
+-A INPUT -p icmp -j ACCEPT
 -A INPUT -j REJECT --reject-with icmp-port-unreachable
 COMMIT
 "))
