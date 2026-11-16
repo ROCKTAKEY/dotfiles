@@ -14,6 +14,7 @@
              (gnu packages gnome)
              (gnu packages guile)
              (guix gexp)
+             (srfi srfi-1)
              (roquix packages virtiofsd)
              (roquix services tailscale)
              (roquix services process-exporter)
@@ -259,6 +260,12 @@ COMMIT
                           (source (uuid
                                    "65d2b709-62e5-4a86-8aad-6f142044ab31"))
                           (target "cryptroot")
+                          (type luks-device-mapping))
+                        (mapped-device
+                          (source (uuid
+                                   "8e70aae9-6e35-4da8-8ee5-0af1cdfdc60d"))
+                          (target "cryptdata")
+                          (arguments '(#:key-file "/root/.keys/cryptdata.key"))
                           (type luks-device-mapping))))
 
   ;; The list of file systems that get "mounted".  The unique
@@ -273,4 +280,16 @@ COMMIT
                          (mount-point "/")
                          (device "/dev/mapper/cryptroot")
                          (type "ext4")
-                         (dependencies mapped-devices)) %base-file-systems)))
+                         (dependencies
+                          (filter (lambda (device)
+                                    (member "cryptroot" (mapped-device-targets device)))
+                                  mapped-devices)))
+                       (file-system
+                         (mount-point "/mnt/data")
+                         (device "/dev/mapper/cryptdata")
+                         (type "ext4")
+                         (dependencies
+                          (filter (lambda (device)
+                                    (member "cryptdata" (mapped-device-targets device)))
+                                  mapped-devices)))
+                       %base-file-systems)))
