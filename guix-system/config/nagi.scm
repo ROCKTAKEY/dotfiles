@@ -244,11 +244,12 @@ COMMIT
                              (udev-configuration
                               (inherit config)
                               (rules
-                               (list
+                               (cons
                                 ;; Use xremap without sudo
                                 (udev-rule
                                  "50-xremap.rules"
-                                 "KERNEL==\"uinput\", GROUP=\"input\", TAG+=\"uaccess\"")))))
+                                 "KERNEL==\"uinput\", GROUP=\"input\", TAG+=\"uaccess\"")
+                                (udev-configuration-rules config)))))
                             (delete pulseaudio-service-type))))
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
