@@ -12,6 +12,7 @@
              (gnu packages sync)
              (gnu packages xdisorg)
              (nongnu packages password-utils)
+             (roquix home services procshelf)
              (roquix home services t3code)
              (roquix packages t3code))
 
@@ -65,6 +66,7 @@
   (packages (list dex font-cica))
   (services
    (cons*
+    (service home-procshelf-service-type)
     (service home-t3code-service-type
              (home-t3code-configuration
               (t3code t3code-cli-rocktakey)))
