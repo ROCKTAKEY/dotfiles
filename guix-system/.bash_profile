@@ -35,6 +35,3 @@ if [ -x "$(command -v rclone)" ]; then
 		rclone mount "${remote}/" "${remoteDir}" --vfs-cache-mode full &
 	done
 fi
-
-# Prefer dark mode
-export GTK_THEME=Adwaita:dark
