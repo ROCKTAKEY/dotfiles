@@ -9,7 +9,7 @@ import subprocess
 import sys
 import tempfile
 
-config = pathlib.Path(__file__).resolve().parents[1] / 'config/nagi-process-exporter.yml'
+config = pathlib.Path('guix-system/config/nagi-process-exporter.yml')
 cases = [
     ('strata-host', ['/opt/strata-host'], 'strata-engine'),
     ('python3', ['/bin/python3', '/opt/strata/serve/server.py'], 'strata-server'),
