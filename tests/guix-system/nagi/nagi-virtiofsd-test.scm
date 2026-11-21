@@ -1,20 +1,15 @@
 (use-modules (gnu services)
              (gnu system)
              (guix gexp)
+             (guix store)
+             (guix derivations)
+             (json)
+             (ice-9 popen)
              (roquix packages virtiofsd)
              (srfi srfi-1))
 
-(define (load-last-expression path)
-  (call-with-input-file path
-    (lambda (port)
-      (let loop ((last #f))
-        (let ((expression (read port)))
-          (if (eof-object? expression)
-              last
-              (loop (eval expression (current-module)))))))))
-
 (define operating-system-configuration
-  (load-last-expression "guix-system/config/nagi.scm"))
+  (primitive-load "guix-system/config/nagi.scm"))
 
 (unless (member virtiofsd
                 (operating-system-packages operating-system-configuration))
@@ -36,5 +31,18 @@
 (unless descriptor
   (error "nagi must install virtiofsd's vhost-user descriptor under /etc"))
 
-(unless (computed-file? (cadr descriptor))
-  (error "nagi must derive the descriptor from the virtiofsd package"))
+(with-store store
+  (let ((drv (run-with-store store (lower-object (cadr descriptor)))))
+    (build-derivations store (list drv))
+    (let* ((fields (call-with-input-file (derivation->output-path drv) json->scm))
+           (binary (assoc-ref fields "binary")))
+      (unless (and (equal? "fs" (assoc-ref fields "type"))
+                   (string? binary)
+                   (string-prefix? "/" binary)
+                   (access? binary X_OK))
+        (error "Invalid filesystem backend descriptor" fields))
+      (let* ((port (open-pipe* OPEN_READ binary "--print-capabilities"))
+             (capabilities (json->scm port)))
+        (unless (and (zero? (close-pipe port))
+                     (equal? "fs" (assoc-ref capabilities "type")))
+          (error "The configured backend must advertise filesystem support"))))))
