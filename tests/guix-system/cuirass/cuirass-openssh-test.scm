@@ -2,6 +2,12 @@
              (gnu services shepherd)
              (gnu services ssh)
              (gnu system)
+             (guix derivations)
+             (guix gexp)
+             (guix store)
+             (guix utils)
+             (ice-9 popen)
+             (ice-9 textual-ports)
              (srfi srfi-1))
 
 (define operating-system-configuration
@@ -20,32 +26,37 @@
 
 (define config (service-value openssh-service))
 
-(unless (openssh-configuration-public-key-authentication? config)
-  (error "Cuirass must allow public key authentication"))
-
-(unless (eq? 'prohibit-password
-             (openssh-configuration-permit-root-login config))
-  (error "Cuirass must allow root login without password authentication"))
-
-(when (openssh-configuration-password-authentication? config)
-  (error "Cuirass must disable password authentication for all users"))
-
-(when (openssh-configuration-challenge-response-authentication? config)
-  (error "Cuirass must disable keyboard-interactive authentication for all users"))
-
-(define connection-policy (openssh-configuration-extra-content config))
-
-(for-each
- (lambda (criterion)
-   (unless (string-contains
-            connection-policy
-            (string-append "Match " criterion
-                           " *,!100.64.0.0/10\n    RefuseConnection yes\n"))
-     (error "sshd must refuse non-Tailscale addresses" criterion)))
- '("Address" "LocalAddress"))
-
-(unless (string-suffix? "Match all\n" connection-policy)
-  (error "The SSH connection policy must restore the global match scope"))
+(with-store store
+  (define (build-file object)
+    (let ((drv (run-with-store store (lower-object object))))
+      (build-derivations store (list drv))
+      (derivation->output-path drv)))
+  (let ((openssh (build-file (openssh-configuration-openssh config)))
+        (file (build-file ((@@ (gnu services ssh) openssh-config-file) config))))
+    (call-with-temporary-directory
+     (lambda (directory)
+       (define key (string-append directory "/host-key"))
+       (define (check-policy peer local refuse?)
+         (let* ((connection (string-append "user=root,addr=" peer ",laddr=" local))
+                (port (open-pipe* OPEN_READ (string-append openssh "/sbin/sshd")
+                                  "-T" "-h" key "-f" file "-C" connection))
+                (settings (string-split (string-downcase (get-string-all port)) #\newline)))
+           (unless (zero? (close-pipe port))
+             (error "sshd rejected its configuration" connection))
+           (for-each
+            (lambda (setting)
+              (unless (member setting settings)
+                (error "Unexpected effective SSH policy" connection setting)))
+            (cons (if refuse? "refuseconnection yes" "refuseconnection no")
+                  '("pubkeyauthentication yes" "permitrootlogin prohibit-password"
+                    "passwordauthentication no" "kbdinteractiveauthentication no")))))
+       (unless (zero? (system* (string-append openssh "/bin/ssh-keygen")
+                               "-q" "-t" "ed25519" "-N" "" "-f" key))
+         (error "Could not create a temporary host key"))
+       (check-policy "100.64.0.1" "100.64.0.2" #f)
+       (check-policy "192.0.2.1" "100.64.0.2" #t)
+       (check-policy "100.64.0.1" "192.0.2.2" #t)
+       (check-policy "192.0.2.1" "192.0.2.2" #t)))))
 
 (unless (any (lambda (service)
                (eq? 'cuirass-ssh-firewall

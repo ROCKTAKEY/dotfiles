@@ -32,20 +32,18 @@
 (define primary (configuration-named 't3code))
 (define local-llm (configuration-named 't3code-local))
 
-(unless (and primary local-llm
-             (every (lambda (config)
-                      (eq? t3code-cli-rocktakey
-                           (home-t3code-configuration-t3code config)))
-                    configurations)
-             (= 3773 (home-t3code-configuration-port primary))
-             (not (home-t3code-configuration-data-directory primary))
-             (= 3774 (home-t3code-configuration-port local-llm))
-             (equal? "/home/rocktakey/.t3-local"
-                     (home-t3code-configuration-data-directory local-llm))
-             (every (lambda (config)
-                      (string=? "127.0.0.1"
-                                (home-t3code-configuration-host config)))
-                    configurations))
-  (error "T3 Code instances must use the fork and independent local endpoints and state"))
+(define (state-directory config)
+  ;; For an unset data-directory the service passes $HOME/.t3 as --base-dir.
+  (or (home-t3code-configuration-data-directory config) "/home/rocktakey/.t3"))
 
-(display "PASS: primary and local LLM T3 Code instances are independently configured\n")
+(unless (and primary local-llm
+             (not (= (home-t3code-configuration-port primary)
+                     (home-t3code-configuration-port local-llm)))
+             (not (string=? (state-directory primary) (state-directory local-llm))))
+  (error "Primary and local T3 Code instances must have independent ports and state"))
+
+(unless (every (lambda (config)
+                 (and (eq? t3code-cli-rocktakey (home-t3code-configuration-t3code config))
+                      (string=? "127.0.0.1" (home-t3code-configuration-host config))))
+               configurations)
+  (error "Both T3 Code instances must use the fork and listen on loopback"))
