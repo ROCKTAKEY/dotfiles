@@ -1,4 +1,7 @@
-(cons* (channel
+(downloaded-channels
+ "https://ci.guix.gnu.org/eval/latest/channels.scm?spec=master"
+ #:append
+ (list (channel
         (name 'nonguix)
         (url "https://gitlab.com/nonguix/nonguix")
         ;; Enable signature verification:
@@ -35,6 +38,5 @@
        ;;    (openpgp-fingerprint
        ;;     "F695 F39E C625 E081 33B5  759F 0FC6 8703 75EF E2F5"))))
        (channel
-         (name 'roquix)
-        (url "https://github.com/ROCKTAKEY/roquix"))
-       %default-channels)
+        (name 'roquix)
+        (url "https://github.com/ROCKTAKEY/roquix"))))
