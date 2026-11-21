@@ -19,3 +19,4 @@ flycheck_*.el
 projects
 tramp
 tree-sitter
+agent/history
