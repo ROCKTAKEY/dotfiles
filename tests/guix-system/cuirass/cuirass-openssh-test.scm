@@ -58,24 +58,15 @@
        (check-policy "100.64.0.1" "192.0.2.2" #t)
        (check-policy "192.0.2.1" "192.0.2.2" #t)))))
 
-(unless (any (lambda (service)
-               (eq? 'cuirass-ssh-firewall
-                    (service-type-name (service-kind service))))
-             services)
-  (error "Cuirass must restrict SSH connections with a dedicated firewall"))
+(define shepherd-services
+  (shepherd-configuration-services
+   (service-value (fold-services services #:target-type shepherd-root-service-type))))
 
-(define shepherd-extension
-  (find (lambda (extension)
-          (eq? shepherd-root-service-type
-               (service-extension-target extension)))
-        (service-type-extensions (service-kind openssh-service))))
+(define (provider name)
+  (find (lambda (service) (memq name (shepherd-service-provision service)))
+        shepherd-services))
 
-(define ssh-daemon
-  (find (lambda (service)
-          (memq 'ssh-daemon (shepherd-service-provision service)))
-        ((service-extension-compute shepherd-extension) config)))
-
-(unless (and ssh-daemon
-             (memq 'cuirass-ssh-firewall
-                   (shepherd-service-requirement ssh-daemon)))
-  (error "The SSH listener must wait for the Tailscale firewall"))
+(unless (and (provider 'cuirass-ssh-firewall)
+             (provider 'ssh-daemon)
+             (memq 'cuirass-ssh-firewall (shepherd-service-requirement (provider 'ssh-daemon))))
+  (error "The SSH listener must wait for the registered Tailscale firewall"))

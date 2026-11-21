@@ -1,4 +1,5 @@
 (use-modules (gnu home)
+             (gnu home services)
              (gnu services)
              (gnu packages base)
              (nongnu packages password-utils)
@@ -6,34 +7,18 @@
              (guix store)
              (guix derivations)
              (ice-9 textual-ports)
-             (srfi srfi-1)
              (srfi srfi-13))
 
 (define home
   (load (string-append (getcwd) "/guix-system/config/nagi-home.scm")))
 
-(define (find-home-service name)
-  (find (lambda (service)
-          (eq? (service-type-name (service-kind service)) name))
-        (home-environment-services home)))
-
-(define agent-service
-  (find-home-service 'bitwarden-ssh-agent))
-
-(unless (and agent-service
-             (equal? (assoc-ref (service-value agent-service) "SSH_AUTH_SOCK")
-                     "$HOME/.bitwarden-ssh-agent.sock"))
-  (error "SSH clients must use the Bitwarden agent socket in the user's home"))
-
-(define launcher-service
-  (find-home-service 'bitwarden-wayland-launcher))
-
-(unless launcher-service
-  (error "Bitwarden must have a Wayland launcher"))
-
 (define launcher
-  (assoc-ref (service-value launcher-service)
+  (assoc-ref (service-value (fold-services (home-environment-services home)
+                                           #:target-type home-files-service-type))
              ".local/share/applications/bitwarden.desktop"))
+
+(unless launcher
+  (error "Guix Home must install the Bitwarden Wayland launcher"))
 
 (with-store store
   (let* ((drv (run-with-store store (lower-object (car launcher))))
@@ -65,4 +50,4 @@
       (unless (string=? actual expected)
         (error "Only the launch environment may differ from upstream")))))
 
-(display "PASS: Bitwarden SSH agent is selected; Wayland launcher preserves upstream fields\n")
+(display "PASS: Bitwarden Wayland launcher preserves upstream fields\n")

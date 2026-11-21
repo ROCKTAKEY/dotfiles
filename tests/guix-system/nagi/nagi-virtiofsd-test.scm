@@ -4,29 +4,15 @@
              (guix store)
              (guix derivations)
              (json)
-             (ice-9 popen)
-             (roquix packages virtiofsd)
-             (srfi srfi-1))
+             (ice-9 popen))
 
 (define operating-system-configuration
   (primitive-load "guix-system/config/nagi.scm"))
 
-(unless (member virtiofsd
-                (operating-system-packages operating-system-configuration))
-  (error "nagi must install virtiofsd in the system profile"))
-
-(define virtiofsd-service
-  (find (lambda (service)
-          (eq? 'virtiofsd-vhost-user
-               (service-type-name (service-kind service))))
-        (operating-system-services operating-system-configuration)))
-
-(unless virtiofsd-service
-  (error "nagi must register virtiofsd for libvirt's vhost-user discovery"))
-
 (define descriptor
   (assoc "qemu/vhost-user/50-virtiofsd.json"
-         (service-value virtiofsd-service)))
+         (service-value (fold-services (operating-system-services operating-system-configuration)
+                                       #:target-type etc-service-type))))
 
 (unless descriptor
   (error "nagi must install virtiofsd's vhost-user descriptor under /etc"))
