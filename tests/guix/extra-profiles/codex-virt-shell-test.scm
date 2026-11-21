@@ -3,33 +3,31 @@
              (srfi srfi-1)
              (srfi srfi-64))
 
-(setenv "XDG_RUNTIME_DIR" "/run/user/1000")
+(define runtime (string-append "/run/user/" (number->string (getuid))))
+(setenv "XDG_RUNTIME_DIR" runtime)
 (setenv "WAYLAND_DISPLAY" "wayland-1")
-(setenv "DBUS_SESSION_BUS_ADDRESS" "unix:path=/run/user/1000/bus")
-
-(define config
-  (load (string-append (getcwd)
-                       "/guix/.config/guix/extra-profiles/virt/shell.scm")))
-
-(define (shared? source)
-  (any (lambda (mount)
-         (and (string=? source (shell-mount-source mount))
-              (eq? 'read-write (shell-mount-access mount))))
-       (shell-configuration-mounts config)))
+(setenv "DBUS_SESSION_BUS_ADDRESS" (string-append "unix:path=" runtime "/bus"))
 
 (test-begin "codex-virt-shell")
 (define runner (test-runner-current))
-(test-assert "desktop sockets remain available"
-  (and (shared? "/run/user/1000/bus")
-       (shared? "/run/user/1000/wayland-1")))
-(test-assert "Codex and virt compose without runtime mount conflicts"
-  (compose-shell-configurations
-   (list
-    (cons (parse-profile-name "codex")
-          (shell-configuration
-           (container? #t)
-           (mounts (list (share "/tmp/codex-runtime"
-                               #:target "/run/user/1000")))))
-    (cons (parse-profile-name "virt") config))))
+(test-assert "Desktop sockets are shared inside the combined Codex and virt runtime"
+  (let* ((combined
+          (compose-shell-configurations
+           (map (lambda (name)
+                  (cons (parse-profile-name name)
+                        (load (string-append (getcwd) "/guix/.config/guix/extra-profiles/"
+                                             name "/shell.scm"))))
+                '("codex" "virt"))))
+         (mounts (map requested-shell-mount-value
+                      (shell-mount-plan-requests
+                       (composed-shell-configuration-mounts combined)))))
+    (every (lambda (name)
+             (let ((path (string-append runtime "/" name)))
+               (any (lambda (mount)
+                      (and (string=? path (shell-mount-source mount))
+                           (string=? path (shell-mount-target mount))
+                           (eq? 'read-write (shell-mount-access mount))))
+                    mounts)))
+           '("bus" "wayland-1"))))
 (test-end "codex-virt-shell")
 (exit (if (zero? (test-runner-fail-count runner)) 0 1))
