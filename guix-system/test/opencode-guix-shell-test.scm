@@ -1,0 +1,36 @@
+(use-modules (roquix extra-profiles shell-configuration)
+             (srfi srfi-1)
+             (srfi srfi-64))
+
+(define project (getcwd))
+(define config
+  (load (string-append project "/guix/.config/guix/extra-profiles/opencode/shell.scm")))
+
+(test-begin "opencode-guix-shell")
+(define runner (test-runner-current))
+(for-each
+ (lambda (mapping)
+   (test-assert (string-append "Writable project mount for " (cdr mapping))
+     (any (lambda (mount)
+            (and (string=? (car mapping) (shell-mount-source mount))
+                 (string=? (cdr mapping) (shell-mount-target mount))
+                 (eq? 'read-write (shell-mount-access mount))))
+          (shell-configuration-mounts config))))
+ (list (cons (string-append project "/.guix-shell/home") (getenv "HOME"))
+       (cons project project)
+       (cons (string-append project "/.guix-shell/tmp") "/tmp")
+       (cons (string-append project "/.guix-shell/runtime")
+             (string-append "/run/user/" (number->string (getuid))))))
+(test-assert "OpenCode can update host credentials from its private HOME"
+  (let ((data (or (getenv "XDG_DATA_HOME")
+                  (string-append (getenv "HOME") "/.local/share"))))
+    (any (lambda (mount)
+           (and (string=? (shell-mount-source mount) (string-append data "/opencode"))
+                (string=? (shell-mount-target mount)
+                          (string-append (getenv "HOME") "/.local/share/opencode"))
+                (eq? 'read-write (shell-mount-access mount))))
+         (shell-configuration-mounts config))))
+(test-assert "OpenCode receives the server password supplied at launch"
+  (member "^OPENCODE_PASSWORD$" (shell-configuration-preserve config)))
+(test-end "opencode-guix-shell")
+(exit (if (zero? (test-runner-fail-count runner)) 0 1))
