@@ -12,8 +12,10 @@
              (gnu packages sync)
              (gnu packages xdisorg)
              (nongnu packages password-utils)
+             (roquix home services docker)
              (roquix home services procshelf)
              (roquix home services t3code)
+             (roquix packages docker)
              (roquix packages t3code))
 
 (define nextcloud-autostart
@@ -66,6 +68,9 @@
   (packages (list dex font-cica))
   (services
    (cons*
+    (service home-docker-cli-plugins-service-type
+             (home-docker-cli-plugins-configuration
+              (plugins (list docker-compose docker-buildx))))
     (service home-procshelf-service-type)
     (service home-t3code-service-type
              (home-t3code-configuration
