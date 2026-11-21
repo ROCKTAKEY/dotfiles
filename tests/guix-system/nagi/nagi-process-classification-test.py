@@ -20,10 +20,10 @@ cases = [
     ('kworker', [], 'kworker'),
 ]
 
-with tempfile.TemporaryDirectory(prefix='process-exporter-classification-') as tmp:
-    root = pathlib.Path(tmp)
-    (root / 'stat').write_bytes(pathlib.Path('/proc/stat').read_bytes())
-    for pid, (comm, args, expected) in enumerate(cases, 1000):
+for pid, (comm, args, expected) in enumerate(cases, 1000):
+    with tempfile.TemporaryDirectory(prefix='process-exporter-classification-') as tmp:
+        root = pathlib.Path(tmp)
+        (root / 'stat').write_bytes(pathlib.Path('/proc/stat').read_bytes())
         proc = root / str(pid)
         proc.mkdir()
         (proc / 'fd').mkdir()
@@ -36,12 +36,11 @@ with tempfile.TemporaryDirectory(prefix='process-exporter-classification-') as t
         (proc / 'cmdline').write_bytes(
             b'\0'.join(arg.encode() for arg in args) + (b'\0' if args else b''))
 
-    output = subprocess.check_output([
-        sys.argv[1], '-procfs', tmp, '-config.path', str(config),
-        '-threads=false', '-children=false', '-gather-smaps=true',
-        '-once-to-stdout-delay=1s',
-    ], text=True)
-    groups = dict(re.findall(
-        r'namedprocess_namegroup_num_procs\{groupname="([^"]+)"\} (\d+)', output))
-    assert groups == {expected: '1' for _, _, expected in cases}, groups
-    print('PASS: Strata, T3 ports, comm fallback, and empty command line')
+        output = subprocess.check_output([
+            sys.argv[1], '-procfs', tmp, '-config.path', str(config),
+            '-threads=false', '-children=false', '-gather-smaps=true',
+            '-once-to-stdout-delay=1s',
+        ], text=True)
+        groups = dict(re.findall(
+            r'namedprocess_namegroup_num_procs\{groupname="([^"]+)"\} (\d+)', output))
+        assert groups == {expected: '1'}, groups
