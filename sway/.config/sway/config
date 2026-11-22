@@ -161,6 +161,7 @@ input type:pointer {
     # We just use 1-10 as the default.
 
     # Switch to workspace
+    bindsym Mod1+Tab workspace next_on_output
     bindsym Ctrl+1 workspace number 1
     bindsym Ctrl+2 workspace number 2
     bindsym Ctrl+3 workspace number 3
